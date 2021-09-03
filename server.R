@@ -1,0 +1,114 @@
+server <- function(input, output, session) {
+
+  res <- eventReactive(input$inp_res_table, {
+    req(input$inp_res_table)
+
+    extension <- tools::file_ext(input$inp_res_table$name)
+    tmp <- switch(extension,
+                  csv = vroom::vroom(input$inp_res_table$datapath, delim = ","),
+                  tsv = vroom::vroom(input$inp_res_table$datapath, delim = "\t"),
+                  validate("Invalid file : Need a .csv or .tsv file")
+    )
+
+    # Vérifier l'intégrité des données
+    val_cols <- c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj") %in% colnames(tmp)
+    shinyFeedback::feedbackDanger("inp_res_table",
+                                  !val_cols,
+                                  "The table does not contain minimum column names (such as baseMean, log2FoldChange)")
+    req(val_cols)
+    tmp
+  })
+
+  counts <- eventReactive(input$inp_compt_table, {
+    req(input$inp_compt_table)
+
+    extension <- tools::file_ext(input$inp_res_table$name)
+    tmp <- switch(extension,
+                  csv = vroom::vroom(input$inp_res_table$datapath, delim = ","),
+                  tsv = vroom::vroom(input$inp_res_table$datapath, delim = "\t"),
+                  validate("Invalid file : Need a .csv or .tsv file")
+    )
+    shinyFeedback::feedbackWarning("inp_comp_table",
+                                   ncol(tmp) <= 5,
+                                   "The counts table has less than 5 samples")
+    shinyFeedback::feedbackWarning("inp_compt_table",
+                                   nrow(tmp) <= 10000,
+                                   "The counts table has less than 10000 annotations")
+    tmp
+  })
+
+  volcano_plot <- reactive({
+    min_x <- res() %>%
+      as.data.frame() %>%
+      pull(log2FoldChange) %>%
+      min() %>%
+      floor()
+    max_x <- res() %>%
+      as.data.frame() %>%
+      pull(log2FoldChange) %>%
+      max() %>%
+      ceiling()
+    # maximum value of the x axis
+    max_val <- max(c(abs(min_x), abs(max_x)))
+
+    # y axis shouldn't be too long
+    max_y <-  res() %>%
+      as.data.frame() %>%
+      na.omit() %>%
+      transmute(log_padj = -log10(padj)) %>%
+      max() %>%
+      ceiling()
+    plot_max_y <- min(max_y, 50)
+
+    # Choice of colors/transparency for up/down
+    cols <- c("up" = "#fe7f00", "down" = "#007ffe", "ns" = "black")
+    alphas <- c("up" = 1, "down" = 1, "ns" = 0.3)
+
+    tmp <- res() %>%
+      as.data.frame() %>%
+      mutate(sig_expr = factor(case_when(log2FoldChange >= 1 & padj <= 0.05 ~ "up",
+                                         log2FoldChange <= -1 & padj <= 0.05 ~ "down",
+                                         TRUE ~ "ns"))) %>%
+      mutate(sig_expr = relevel(sig_expr, "up")) %>%
+      ggplot(aes(x = log2FoldChange,
+                 y = -log10(padj),
+                 alpha = sig_expr,
+                 fill = sig_expr)) +
+      geom_point(color = "black",
+                 na.rm = TRUE,
+                 shape = 21,
+                 stroke = 0.1) +
+      geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
+      geom_vline(xintercept = c(-1, 1), linetype = "dashed") +
+      scale_x_continuous(breaks = c(seq(-max_val, max_val, 4)),
+                         limits = c(-max_val, max_val)) +
+      scale_fill_manual(values = cols) +
+      scale_alpha_manual(values = alphas, guide = "none") +
+      labs(title = paste("Gene expression change"),
+           x = "Log2 Fold Change",
+           y = "-Log10(Adjusted p-value)",
+           fill = "Expression\nChange") +
+      theme_bw() +
+      theme(plot.title = element_text(face = "bold", size = 20, hjust = 0.5))
+    if (plot_max_y == 50) {
+      tmp <- tmp + scale_y_continuous(limits = c(NA, plot_max_y), oob = scales::squish) +
+        geom_hline(yintercept = plot_max_y, linetype = "dashed") +
+        annotate("text", x = max_val - 3, y = plot_max_y - 3,
+                 size = 3,
+                 label = "Genes above this line\nhave a log10(p-value)\n superior to 50")
+    }
+    tmp
+  })
+
+  output$volcano_plot <- renderPlot({
+    req(res())
+    volcano_plot()
+  })
+
+  output$down_volc <- downloadHandler(
+    filename = "volcano_plot.svg",
+    content = function(file) {
+      ggsave(file, plot = req(volcano_plot()), device = "svg")
+    }
+  )
+}
