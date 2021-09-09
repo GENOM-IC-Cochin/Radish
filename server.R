@@ -78,9 +78,9 @@ server <- function(input, output, session) {
                 nrow(counts()),
                 "</p>"))
   })
-
-  volcano_plot <- reactive({
-    min_x <- res() %>%
+  
+  x_max_abs <- eventReactive(res(),{
+     min_x <- res() %>%
       as.data.frame() %>%
       pull(log2FoldChange) %>%
       min() %>%
@@ -91,8 +91,17 @@ server <- function(input, output, session) {
       max() %>%
       ceiling()
     # maximum value of the x axis
-    max_val <- max(c(abs(min_x), abs(max_x)))
-
+    max(c(abs(min_x), abs(max_x)))
+  })
+  
+  observe({
+  updateSliderInput(inputId = "x_max",
+                    max = x_max_abs(),
+                    value = x_max_abs())
+  })
+  
+  
+  volcano_plot <- reactive({
     # y axis shouldn't be too long
     max_y <-  res() %>%
       as.data.frame() %>%
@@ -122,11 +131,9 @@ server <- function(input, output, session) {
                  stroke = 0.1) +
       geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
       geom_vline(xintercept = c(-1, 1), linetype = "dashed") +
-      scale_x_continuous(breaks = c(seq(-max_val, max_val, 4)),
-                         limits = c(-max_val, max_val)) +
       scale_fill_manual(values = cols) +
       scale_alpha_manual(values = alphas, guide = "none") +
-      labs(title = paste("Gene expression change"),
+      labs(title = input$plot_title,
            x = "Log2 Fold Change",
            y = "-Log10(Adjusted p-value)",
            fill = "Expression\nChange") +
@@ -134,10 +141,18 @@ server <- function(input, output, session) {
       theme(plot.title = element_text(face = "bold", size = 20, hjust = 0.5))
     if (plot_max_y == 50) {
       tmp <- tmp + scale_y_continuous(limits = c(NA, plot_max_y), oob = scales::squish) +
-        geom_hline(yintercept = plot_max_y, linetype = "dashed") +
-        annotate("text", x = max_val - 3, y = plot_max_y - 3,
+        geom_hline(yintercept = plot_max_y, linetype = "dotted") +
+        annotate("text", x = input$x_max - 3, y = plot_max_y - 3,
                  size = 3,
                  label = "Genes above this line\nhave a log10(p-value)\n superior to 50")
+    }
+    if(input$x_max != x_max_abs()) {
+      tmp <- tmp + scale_x_continuous(limits = c(-input$x_max, input$x_max),
+                                      oob = scales::squish) +
+        geom_vline(xintercept = c(-input$x_max, input$x_max),
+                   linetype = "dotted")
+    } else {
+      tmp <- tmp + scale_x_continuous(limits = c(-x_max_abs(), x_max_abs()))
     }
     tmp
   })
