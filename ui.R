@@ -79,6 +79,12 @@ ui <- dashboardPage(
                             label = "Choose the color of the downregulated genes",
                             value = "#007ffe"
                         ),
+                        selectizeInput(
+                            inputId = "sel_gene",
+                            label = "Select which genes to highlight :",
+                            choices = NULL,
+                            multiple = TRUE
+                        ),
                         selectInput(
                             inputId = "volcano_format",
                             label = "Format of the dowloaded plot",

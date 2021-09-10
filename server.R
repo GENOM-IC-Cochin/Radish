@@ -7,6 +7,15 @@ server <- function(input, output, session) {
       if(input$auto_inp) {
         tmp <- vroom::vroom("./NGS21-023_Resultats/Analyses_supervisees/NGS21-023_ensemblGCRm38r101_deseq2_results_contrast_High_vs_Controle.tsv",
                             delim = "\t")
+        # Find the symbol column
+        nom_col <- colnames(tmp)
+        col_symb_test <- str_detect(nom_col, "symbol")
+        shinyFeedback::feedbackDanger("inp_res_table",
+                                      !any(col_symb_test),
+                                      "The table does not contain a symbol (gene name) column")
+        req(any(col_symb_test))
+        col_symbol <- which(col_symb_test)
+        colnames(tmp)[col_symbol] <- "symbol"
         return(tmp)
       }
       req(input$inp_res_table)
@@ -24,6 +33,17 @@ server <- function(input, output, session) {
                                     !val_cols,
                                     "The table does not contain minimum column names")
       req(all(val_cols))
+      
+      # Find the symbol column
+      nom_col <- colnames(tmp)
+      col_symb_test <- str_detect(nom_col, "symbol")
+      shinyFeedback::feedbackDanger("inp_res_table",
+                                    !any(col_symb_test),
+                                    "The table does not contain a symbol (gene name) column")
+      req(any(col_symb_test))
+      col_symbol <- which(col_symb_test)
+      colnames(tmp)[col_symbol] <- "symbol"
+      
       tmp
     })
 
@@ -116,12 +136,22 @@ server <- function(input, output, session) {
   })
   
   
-  observeEvent(my_values$res, {
+  observeEvent(res(), {
     updateSelectizeInput(
       inputId = "sel_gene", 
-      choices = as.vector(res()),
-      server = TRUE
+      choices = as.vector(res()$symbol),
+      server = TRUE,
+      selected = NULL
     )
+  })
+  
+  res_to_plot <- eventReactive(res(), {
+    res() %>%
+      as.data.frame() %>%
+      mutate(sig_expr = factor(case_when(log2FoldChange >= 1 & padj <= 0.05 ~ "up",
+                                         log2FoldChange <= -1 & padj <= 0.05 ~ "down",
+                                         TRUE ~ "ns"))) %>%
+      mutate(sig_expr = relevel(sig_expr, "up"))
   })
   
   volcano_plot <- reactive({
@@ -129,12 +159,7 @@ server <- function(input, output, session) {
     cols <- c("up" = input$up_col, "down" = input$down_col, "ns" = "black")
     alphas <- c("up" = 1, "down" = 1, "ns" = 0.3)
 
-    tmp <- res() %>%
-      as.data.frame() %>%
-      mutate(sig_expr = factor(case_when(log2FoldChange >= 1 & padj <= 0.05 ~ "up",
-                                         log2FoldChange <= -1 & padj <= 0.05 ~ "down",
-                                         TRUE ~ "ns"))) %>%
-      mutate(sig_expr = relevel(sig_expr, "up")) %>%
+    tmp <-  res_to_plot() %>%
       ggplot(aes(x = log2FoldChange,
                  y = -log10(padj),
                  alpha = sig_expr,
@@ -162,6 +187,19 @@ server <- function(input, output, session) {
                                       oob = scales::squish) +
         geom_vline(xintercept = c(-input$x_max, input$x_max),
                    linetype = "dotted")
+    }
+    if(!is.null(input$sel_gene)) {
+      # Choice of genes, do not show labels of non significant genes
+      genes_to_highlight <- which(res_to_plot()$symbol %in% input$sel_gene &
+                                    res_to_plot()$sig_expr != "ns")
+      tmp <- tmp + geom_label_repel(
+        data = res_to_plot()[genes_to_highlight, ],
+        aes(label = symbol),
+        color = "black",
+        fill = "white",
+        min.segment.length = 0,
+        show.legend = FALSE
+      )
     }
     tmp
   })
