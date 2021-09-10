@@ -3,7 +3,7 @@ library(shiny)
 library(shinydashboard)
 library(dplyr)
 library(ggplot2)
-
+library(colourpicker)
 # Preliminary code
 
 # update max upload size to 50mB

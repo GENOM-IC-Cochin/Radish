@@ -25,8 +25,9 @@ ui <- dashboardPage(
                             p("Please enter the result table (csv or tsv format: NO .xls)"),
                             br(),
                             fileInput("inp_res_table",
-                                      NULL,
-                                      accept = c(".csv", ".tsv")),
+                                NULL,
+                                accept = c(".csv", ".tsv")
+                            ),
                             hr(),
                             htmlOutput("size_res")
                         ),
@@ -35,8 +36,9 @@ ui <- dashboardPage(
                             p("Please enter the counts table (csv or tsv format: NO .xls)"),
                             br(),
                             fileInput("inp_compt_table",
-                                      NULL,
-                                      accept = c(".csv", ".tsv")),
+                                NULL,
+                                accept = c(".csv", ".tsv")
+                            ),
                             hr(),
                             htmlOutput("size_count")
                         )
@@ -48,6 +50,35 @@ ui <- dashboardPage(
                 sidebarLayout(
                     sidebarPanel(
                         h3("Settings"),
+                        sliderInput(
+                            inputId = "x_max",
+                            label = "Maximum value of the x axis",
+                            min = 0,
+                            max = 100,
+                            value = 10
+                        ),
+                        sliderInput(
+                            inputId = "y_max",
+                            label = "Maximum value of the y axis",
+                            min = 0,
+                            max = 100,
+                            value = 10
+                        ),
+                        textInput(
+                            inputId = "plot_title",
+                            label = "Title of the plot",
+                            value = "Gene expression change"
+                        ),
+                        colourInput(
+                            inputId = "up_col",
+                            label = "Choose the color of the upregulated genes",
+                            value = "#fe7f00"
+                        ),
+                        colourInput(
+                            inputId = "down_col",
+                            label = "Choose the color of the downregulated genes",
+                            value = "#007ffe"
+                        ),
                         selectInput(
                             inputId = "volcano_format",
                             label = "Format of the dowloaded plot",
@@ -57,15 +88,7 @@ ui <- dashboardPage(
                         downloadButton(
                             outputId = "down_volc",
                             label = "Download plot"
-                        ),
-                        sliderInput(inputId = "x_max",
-                                    label = "Maximum value of the x axis",
-                                    min = 0,
-                                    max = 100,
-                                    value = 19),
-                        textInput(inputId = "plot_title",
-                                  label = "Title of the plot",
-                                  value = "Gene expression change")
+                        )
                     ),
                     mainPanel(
                         plotOutput(outputId = "volcano_plot")

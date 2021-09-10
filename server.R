@@ -94,25 +94,39 @@ server <- function(input, output, session) {
     max(c(abs(min_x), abs(max_x)))
   })
   
+  y_max_abs <-eventReactive(res(), {
+    res() %>%
+      as.data.frame() %>%
+      na.omit() %>%
+      transmute(log_padj = -log10(padj)) %>%
+      max() %>%
+      ceiling()
+  }) 
+  
   observe({
   updateSliderInput(inputId = "x_max",
                     max = x_max_abs(),
                     value = x_max_abs())
   })
   
+  observe({
+  updateSliderInput(inputId = "y_max",
+                    max = y_max_abs(),
+                    value = y_max_abs())
+  })
+  
+  
+  observeEvent(my_values$res, {
+    updateSelectizeInput(
+      inputId = "sel_gene", 
+      choices = as.vector(res()),
+      server = TRUE
+    )
+  })
   
   volcano_plot <- reactive({
-    # y axis shouldn't be too long
-    max_y <-  res() %>%
-      as.data.frame() %>%
-      na.omit() %>%
-      transmute(log_padj = -log10(padj)) %>%
-      max() %>%
-      ceiling()
-    plot_max_y <- min(max_y, 50)
-
     # Choice of colors/transparency for up/down
-    cols <- c("up" = "#fe7f00", "down" = "#007ffe", "ns" = "black")
+    cols <- c("up" = input$up_col, "down" = input$down_col, "ns" = "black")
     alphas <- c("up" = 1, "down" = 1, "ns" = 0.3)
 
     tmp <- res() %>%
@@ -139,20 +153,15 @@ server <- function(input, output, session) {
            fill = "Expression\nChange") +
       theme_bw() +
       theme(plot.title = element_text(face = "bold", size = 20, hjust = 0.5))
-    if (plot_max_y == 50) {
-      tmp <- tmp + scale_y_continuous(limits = c(NA, plot_max_y), oob = scales::squish) +
-        geom_hline(yintercept = plot_max_y, linetype = "dotted") +
-        annotate("text", x = input$x_max - 3, y = plot_max_y - 3,
-                 size = 3,
-                 label = "Genes above this line\nhave a log10(p-value)\n superior to 50")
+    if (input$y_max != y_max_abs()) {
+      tmp <- tmp + scale_y_continuous(limits = c(NA, input$y_max), oob = scales::squish) +
+        geom_hline(yintercept = input$y_max, linetype = "dotted")
     }
     if(input$x_max != x_max_abs()) {
       tmp <- tmp + scale_x_continuous(limits = c(-input$x_max, input$x_max),
                                       oob = scales::squish) +
         geom_vline(xintercept = c(-input$x_max, input$x_max),
                    linetype = "dotted")
-    } else {
-      tmp <- tmp + scale_x_continuous(limits = c(-x_max_abs(), x_max_abs()))
     }
     tmp
   })
