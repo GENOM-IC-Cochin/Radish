@@ -69,6 +69,21 @@ ui <- dashboardPage(
                             label = "Title of the plot",
                             value = "Gene expression change"
                         ),
+                        textInput(
+                            inputId = "up_leg",
+                            label = "Choose the upregulated legend name",
+                            value = "up"
+                        ),
+                        textInput(
+                            inputId = "down_leg",
+                            label = "Choose the downregulated legend name",
+                            value = "down"
+                        ),
+                        textInput(
+                            inputId = "ns_leg",
+                            label = "Choose the nonsignificant legend name",
+                            value = "ns"
+                        ),
                         colourInput(
                             inputId = "up_col",
                             label = "Choose the color of the upregulated genes",

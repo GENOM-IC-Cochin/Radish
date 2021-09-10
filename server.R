@@ -30,7 +30,7 @@ server <- function(input, output, session) {
       # Vérifier l'intégrité des données
       val_cols <- c("baseMean", "log2FoldChange", "lfcSE", "stat", "pvalue", "padj") %in% colnames(tmp)
       shinyFeedback::feedbackDanger("inp_res_table",
-                                    !val_cols,
+                                    !all(val_cols),
                                     "The table does not contain minimum column names")
       req(all(val_cols))
       
@@ -170,7 +170,8 @@ server <- function(input, output, session) {
                  stroke = 0.1) +
       geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
       geom_vline(xintercept = c(-1, 1), linetype = "dashed") +
-      scale_fill_manual(values = cols) +
+      scale_fill_manual(values = cols,
+                        labels = c(input$up_leg, input$down_leg, input$ns_leg)) +
       scale_alpha_manual(values = alphas, guide = "none") +
       labs(title = input$plot_title,
            x = "Log2 Fold Change",
