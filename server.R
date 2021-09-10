@@ -176,16 +176,22 @@ server <- function(input, output, session) {
            x = "Log2 Fold Change",
            y = "-Log10(Adjusted p-value)",
            fill = "Expression\nChange") +
-      theme_bw() +
-      theme(plot.title = element_text(face = "bold", size = 20, hjust = 0.5))
+      scale_x_continuous(limits = c(-input$x_max, input$x_max),
+                                      oob = scales::squish) +
+      scale_y_continuous(limits = c(NA, input$y_max), oob = scales::squish)
+    if(input$theme == "Classic") {
+      tmp <- tmp + theme_classic()
+    } else if(input$theme == "Gray") {
+      tmp <- tmp + theme_gray()
+    } else if(input$theme == "Classic with gridlines") {
+      tmp <- tmp + theme_bw()
+    }
+    tmp <- tmp + theme(plot.title = element_text(face = "bold", size = 15, hjust = 0.5))
     if (input$y_max != y_max_abs()) {
-      tmp <- tmp + scale_y_continuous(limits = c(NA, input$y_max), oob = scales::squish) +
-        geom_hline(yintercept = input$y_max, linetype = "dotted")
+      tmp <- tmp + geom_hline(yintercept = input$y_max, linetype = "dotted")
     }
     if(input$x_max != x_max_abs()) {
-      tmp <- tmp + scale_x_continuous(limits = c(-input$x_max, input$x_max),
-                                      oob = scales::squish) +
-        geom_vline(xintercept = c(-input$x_max, input$x_max),
+      tmp <- tmp + geom_vline(xintercept = c(-input$x_max, input$x_max),
                    linetype = "dotted")
     }
     if(!is.null(input$sel_gene)) {

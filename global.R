@@ -6,7 +6,10 @@ library(ggplot2)
 library(ggrepel)
 library(colourpicker)
 library(stringr)
-# Preliminary code
 
+# Preliminary code
 # update max upload size to 50mB
 options(shiny.maxRequestSize = 50 * 1024^2)
+themes_gg <- c("Classic",
+               "Gray",
+               "Classic with gridlines")

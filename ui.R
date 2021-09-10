@@ -81,9 +81,15 @@ ui <- dashboardPage(
                         ),
                         selectizeInput(
                             inputId = "sel_gene",
-                            label = "Select which genes to highlight :",
+                            label = "Select which significant genes to highlight :",
                             choices = NULL,
                             multiple = TRUE
+                        ),
+                        selectInput(
+                            inputId = "theme",
+                            label = "Choose the theme for the plot",
+                            choices = themes_gg,
+                            selected = "Classic"
                         ),
                         selectInput(
                             inputId = "volcano_format",
