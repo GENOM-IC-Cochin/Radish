@@ -106,6 +106,13 @@ ui <- dashboardPage(
                             choices = themes_gg,
                             selected = "Classic"
                         ),
+                        sliderInput(
+                            inputId = "volc_ratio",
+                            label = "Choose the plot aspect ratio",
+                            value = 1,
+                            min = 0.5,
+                            max = 2
+                        ),
                         selectInput(
                             inputId = "volcano_format",
                             label = "Format of the dowloaded plot",

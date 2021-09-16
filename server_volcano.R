@@ -104,7 +104,8 @@ volcano_plot <- reactive({
     }
     tmp <- tmp + theme(plot.title = element_text(face = "bold",
                                                  size = 15,
-                                                 hjust = 0.5))
+                                                 hjust = 0.5),
+                       aspect.ratio = input$volc_ratio)
     if (input$y_max != y_max_abs()) {
         tmp <- tmp + geom_hline(yintercept = input$y_max, linetype = "dotted")
     }
@@ -141,6 +142,9 @@ output$down_volc <- downloadHandler(
     },
     content = function(file) {
         ggsave(file, plot = req(volcano_plot()),
-               device = req(input$volcano_format))
+               device = req(input$volcano_format),
+               height = 3.5 + 3.5 * input$volc_ratio,
+               width = 3.5 + 3.5 / input$volc_ratio,
+               dpi = 600)
     }
 )
