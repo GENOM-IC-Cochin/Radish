@@ -135,7 +135,7 @@ ui <- dashboardPage(
                             ),
                             numericInput(
                                 inputId = "lfc_cutoff",
-                                label = "Enter the minimum (absolute) logFoldChange :",
+                                label = "Enter the minimum (absolute) logFold2Change :",
                                 value = 1,
                                 min = 0
                             ),
