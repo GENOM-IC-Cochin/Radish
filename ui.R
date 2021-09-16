@@ -122,7 +122,33 @@ ui <- dashboardPage(
                     )
                 )
             ),
-            tabItem(tabName = "tabl_gene")
+            tabItem(tabName = "tabl_gene",
+                    sidebarLayout(
+                        sidebarPanel(
+                            numericInput(
+                                inputId = "pval_cutoff",
+                                label = "Enter the maximum p-value :",
+                                value = 0.05,
+                                min = 0,
+                                max = 1,
+                                step = .05
+                            ),
+                            numericInput(
+                                inputId = "lfc_cutoff",
+                                label = "Enter the minimum (absolute) logFoldChange :",
+                                value = 1,
+                                min = 0
+                            ),
+                            checkboxGroupInput(
+                                inputId = "genes_columns",
+                                label = "Choose the genes column to display :"
+                            )
+                        ),
+                        mainPanel(
+                            DT::dataTableOutput(outputId = "genes")
+                        )
+                    )
+            )
         )
     )
 )
