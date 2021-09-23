@@ -7,16 +7,8 @@ res <- eventReactive(c(
             delim = "\t"
         )
         # Find the symbol column
-        nom_col <- colnames(tmp)
-        col_symb_test <- str_detect(nom_col, "symbol")
-        shinyFeedback::feedbackDanger(
-            "inp_res_table",
-            !any(col_symb_test),
-            "The table does not contain a symbol (gene name) column"
-        )
-        req(any(col_symb_test))
-        col_symbol <- which(col_symb_test)
-        colnames(tmp)[col_symbol] <- "symbol"
+        tmp <- find_symb_col(tmp)
+        
         return(tmp)
     }
     req(input$inp_res_table)
@@ -43,16 +35,7 @@ res <- eventReactive(c(
     req(all(val_cols))
 
     # Find the symbol column
-    nom_col <- colnames(tmp)
-    col_symb_test <- str_detect(nom_col, "symbol")
-    shinyFeedback::feedbackDanger(
-        "inp_res_table",
-        !any(col_symb_test),
-        "The table does not contain a symbol (gene name) column"
-    )
-    req(any(col_symb_test))
-    col_symbol <- which(col_symb_test)
-    colnames(tmp)[col_symbol] <- "symbol"
+    tmp <- find_symb_col(tmp)
 
     tmp
 })
@@ -87,6 +70,11 @@ counts <- eventReactive(c(
             "The counts table has less than 10000 annotations"
         )
     }
+    # Find the symbol column
+    tmp <- find_symb_col(tmp) 
+    tmp
+})
+
     tmp
 })
 
