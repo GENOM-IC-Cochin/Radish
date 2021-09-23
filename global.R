@@ -6,6 +6,8 @@ library(ggplot2)
 library(ggrepel)
 library(colourpicker)
 library(stringr)
+library(pheatmap)
+library(RColorBrewer)
 
 # Preliminary code
 # update max upload size to 50mB

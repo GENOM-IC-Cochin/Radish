@@ -2,3 +2,8 @@
 *.zip
 /NGS21-023_Resultats/
 *~
+^#.*#$
+^#
+^\\#
+*.R#
+/script_heatmap_RNASeq_20210917.R

@@ -1,10 +1,33 @@
+heatmap_panels <- tabsetPanel(
+    id = "settings",
+    type = "hidden",
+    tabPanel("diff",
+             numericInput(
+                 "nb_top_gene",
+                 "Select the number of top differentially expressed genes",
+                 value = 100,
+                 min = 0,
+                 max = 20000)
+    ),
+    tabPanel("all",
+             selectizeInput(
+                 "sel_gene_hm",
+                 "Select genes present on the heatmap",
+                 choices = NULL,
+                 multiple = TRUE,
+                 options = list(maxItems = 200)
+             )
+    )
+)
+
 ui <- dashboardPage(
     dashboardHeader(title = "Plotting tool"),
     dashboardSidebar(
         sidebarMenu(
             menuItem("Inputs", tabName = "inp"),
             menuItem("Volcano plot", tabName = "volcano"),
-            menuItem("Interactive table", tabName = "tabl_gene")
+            menuItem("Interactive table", tabName = "tabl_gene"),
+            menuItem("Heatmap", tabName = "heatmap")
         )
     ),
     dashboardBody(
@@ -35,12 +58,25 @@ ui <- dashboardPage(
                             width = 6,
                             p("Please enter the counts table (csv or tsv format: NO .xls)"),
                             br(),
-                            fileInput("inp_compt_table",
+                            fileInput(
+                                "inp_compt_table",
                                 NULL,
                                 accept = c(".csv", ".tsv")
                             ),
                             hr(),
                             htmlOutput("size_count")
+                        )
+                    ),
+                    fluidRow(
+                        column(
+                            width = 6,
+                            p("Please enter the config file (.conf file in the R/ Folder)"),
+                            br(),
+                            fileInput(
+                                "inp_conf_file",
+                                NULL,
+                                accept = c(".conf")
+                            )
                         )
                     )
                 )
@@ -148,14 +184,38 @@ ui <- dashboardPage(
                             ),
                             checkboxGroupInput(
                                 inputId = "genes_columns",
-                                label = "Choose the genes column to display :"
+                                label = "Choose the columns to display :"
                             )
                         ),
                         mainPanel(
                             DT::dataTableOutput(outputId = "genes")
                         )
                     )
+            ),
+            tabItem(
+                tabName = "heatmap",
+                sidebarLayout(
+                    sidebarPanel(
+                        checkboxInput(
+                                inputId = "top_gene",
+                                label = "",
+                                value = TRUE
+                            ),
+                        checkboxGroupInput(
+                            inputId = "sel_cond",
+                            label = "Choose the conditions",
+                        ),
+                        heatmap_panels,
+                        actionButton("draw_hm",
+                                     "Draw heatmap")
+                    ),
+                    mainPanel(
+                        plotOutput("heatmap")
+                    )
+                )
             )
         )
     )
 )
+
+

@@ -75,6 +75,17 @@ counts <- eventReactive(c(
     tmp
 })
 
+
+conf_file <- eventReactive(c(input$inp_conf_file, input$auto_inp), {
+    if (input$auto_inp) {
+        tmp <- vroom::vroom("./NGS21-023_Resultats/R/PROJET.conf",
+                            delim = "\t"
+        )
+    } else {
+        req(input$inp_conf_file)
+        extension <- tools::file_ext(input$inp_compt_table$name)
+        tmp <- vroom::vroom(input$inp_conf_file$datapath, delim = "\t")
+    } 
     tmp
 })
 
@@ -103,5 +114,13 @@ output$size_count <- renderUI({
         nrow(counts()),
         "</p>"
     ))
+})
+
+contrast_actuel <- reactive({
+    tmp <- str_sub(input$inp_res_table$name, end = -5) %>% 
+        str_split(., "_")
+    tmp <- unlist(tmp)
+    contr_num <- which(tmp == "contrast")
+    c(tmp[contr_num + 1], tmp[contr_num +3])
 })
 
