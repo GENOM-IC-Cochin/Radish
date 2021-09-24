@@ -51,7 +51,7 @@ res_volc <- function(deseq_results) {
 
 volcano_plot <- function(plot_data,
                          titre,
-                         colors,
+                         colors = c("up" = "#fe7f00", "down" = "#007ffe"),
                          legends,
                          axis_max,
                          ratio,

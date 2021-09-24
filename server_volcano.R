@@ -30,7 +30,7 @@ volc_data <- reactive({
     res_volc(res())
 })
 
-output$volcano_plot <- renderPlot({
+volc_plot <- reactive({
     req(volc_data())
     volcano_plot(
         plot_data = volc_data(),
@@ -44,12 +44,16 @@ output$volcano_plot <- renderPlot({
     )
 })
 
+output$volcano_plot <- renderPlot({
+    volc_plot()
+})
+
 output$down_volc <- downloadHandler(
     filename = function() {
         paste0("volcano_plot.", req(input$volcano_format))
     },
     content = function(file) {
-        ggsave(file, plot = req(volcano_plot()),
+        ggsave(file, plot = req(volc_plot()),
                device = req(input$volcano_format),
                height = (3.5 + 3.5 * input$volc_ratio),
                width = (3.5 + 3.5 / input$volc_ratio),

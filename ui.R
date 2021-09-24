@@ -16,6 +16,11 @@ heatmap_panels <- tabsetPanel(
                  choices = NULL,
                  multiple = TRUE,
                  options = list(maxItems = 200)
+             ),
+             checkboxInput(
+                 "show_names",
+                 "Show gene names",
+                 value = FALSE
              )
     )
 )
@@ -152,8 +157,8 @@ ui <- dashboardPage(
                         selectInput(
                             inputId = "volcano_format",
                             label = "Format of the dowloaded plot",
-                            choices = c("svg", "jpg", "png"),
-                            selected = "png"
+                            choices = c("svg", "png", "pdf"),
+                            selected = "pdf"
                         ),
                         downloadButton(
                             outputId = "down_volc",
@@ -205,12 +210,29 @@ ui <- dashboardPage(
                             inputId = "sel_cond",
                             label = "Choose the conditions",
                         ),
+                        selectInput(
+                            inputId = "palette_hm",
+                            label = "Choose the color palette of the heatmap",
+                            choices = brewer.pal.info %>%
+                                filter(category == "seq") %>%
+                                rownames_to_column() %>%
+                                pull(rowname),
+                            selected = "YlOrRd"
+                        ),
                         heatmap_panels,
                         actionButton("draw_hm",
                                      "Draw heatmap")
                     ),
                     mainPanel(
-                        plotOutput("heatmap")
+                        plotOutput("heatmap"),
+                        selectInput(inputId = "heatmap_format",
+                                    label = "Format of the downloaded plot :",
+                                    choices = c("png", "pdf", "svg"),
+                                    selected = "pdf"),
+                        downloadButton(
+                            outputId = "down_hm",
+                            label = "Download plot"
+                        )
                     )
                 )
             )

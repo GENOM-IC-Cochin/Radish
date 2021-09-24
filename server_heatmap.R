@@ -49,7 +49,11 @@ observe({
 })
 
 
-heatmap_data <- eventReactive(input$draw_hm, {
+heatmap_data <- eventReactive({
+  input$draw_hm
+  res()
+  counts()
+  }, {
   req(input$sel_cond, conf_file(), counts())
   # sélection du nom des échantillons
   echantillons <- conf_file() %>%
@@ -60,32 +64,68 @@ heatmap_data <- eventReactive(input$draw_hm, {
     res() %>%
       filter(log2FoldChange > 1 | log2FoldChange < -1) %>%
       slice_min(order_by = padj, n = input$nb_top_gene) %>%
-      select(echantillons) %>%
+      select(all_of(echantillons)) %>%
       as.matrix()
   } else {
     # Si l'on veut sélectionner à la main
     counts() %>%
       filter(symbol %in% input$sel_gene_hm) %>%
-      select(echantillons) %>%
+      column_to_rownames(var = "symbol") %>%
+      select(all_of(echantillons)) %>%
       as.matrix()
   }
 })
 
 
+annotation_col <- eventReactive({
+  input$draw_hm
+  conf_file()
+  },{
+  conf_file() %>%
+      filter(Condition %in% input$sel_cond) %>%
+      select(-File) %>%
+      column_to_rownames(var = "Name")
+})
 
 output$heatmap <- renderPlot({
   req(heatmap_data())
   pheatmap(
     mat = heatmap_data(),
-    color = colorRampPalette(brewer.pal(9, "YlOrRd"))(255),
+    color = colorRampPalette(brewer.pal(9, input$palette_hm))(255),
     cluster_rows = TRUE,
-    show_rownames = FALSE,
-    # annotation_col = conf_file() %>%
-    #   filter(Condition %in% input$sel_cond) %>%
-    #   select(-File),
+    show_rownames = input$show_names,
+    annotation_col = annotation_col(),
     border_color = NA,
     fontsize = 10,
     scale = "row",
     fontsize_row = 10
   )
 })
+
+
+output$down_hm <- downloadHandler(
+  filename = function() {
+    paste0("heatmap.png")
+  },
+  content = function(file) {
+    if(input$heatmap_format == "png") {
+      agg_png(file, width = 7, height = 7, units = "in", res = 600)
+    } else if (input$heatmap_format == "pdf") {
+      pdf(file)
+    } else if (input$heatmap_format == "svg") {
+      svglite(file, width = 7, height = 7)
+    }
+      pheatmap(
+        mat = heatmap_data(),
+        color = colorRampPalette(brewer.pal(9, input$palette_hm))(255),
+        cluster_rows = TRUE,
+        show_rownames = input$show_names,
+        annotation_col = annotation_col(),
+        border_color = NA,
+        fontsize = 10,
+        scale = "row",
+        fontsize_row = 10
+      )
+      dev.off()
+  }
+)

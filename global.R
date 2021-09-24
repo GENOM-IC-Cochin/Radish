@@ -8,6 +8,9 @@ library(colourpicker)
 library(stringr)
 library(pheatmap)
 library(RColorBrewer)
+library(tibble)
+library(svglite)
+library(ragg)
 
 # Preliminary code
 # update max upload size to 50mB
