@@ -7,3 +7,4 @@
 ^\\#
 *.R#
 /script_heatmap_RNASeq_20210917.R
+/gen_rds/

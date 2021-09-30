@@ -7,7 +7,7 @@ heatmap_panels <- tabsetPanel(
                  "Select the number of top differentially expressed genes",
                  value = 100,
                  min = 0,
-                 max = 20000)
+                 max = 20000),
     ),
     tabPanel("all",
              selectizeInput(
@@ -88,9 +88,17 @@ ui <- dashboardPage(
             ),
             tabItem(
                 tabName = "volcano",
-                sidebarLayout(
-                    sidebarPanel(
-                        h3("Settings"),
+                fluidRow(
+                    box(title = "Volcano Plot",
+                        status = "primary",
+                        width = 12,
+                        plotOutput(outputId = "volcano_plot")
+                    )
+                ),
+                fluidRow(
+                    box(title = "Aesthetics",
+                        status = "warning",
+                        width = 4,
                         sliderInput(
                             inputId = "x_max",
                             label = "Maximum value of the x axis",
@@ -104,7 +112,34 @@ ui <- dashboardPage(
                             min = 0,
                             max = 100,
                             value = 10
+                        ),     
+                        colourInput(
+                            inputId = "up_col",
+                            label = "Choose the color of the upregulated genes",
+                            value = "#fe7f00"
                         ),
+                        colourInput(
+                            inputId = "down_col",
+                            label = "Choose the color of the downregulated genes",
+                            value = "#007ffe"
+                        ),
+                        selectInput(
+                            inputId = "theme",
+                            label = "Choose the theme for the plot",
+                            choices = themes_gg,
+                            selected = "Classic"
+                        ),
+                        sliderInput(
+                            inputId = "volc_ratio",
+                            label = "Choose the plot aspect ratio",
+                            value = 1,
+                            min = 0.5,
+                            max = 2
+                        )
+                    ),
+                    box(title = "Text",
+                        status = "warning",
+                        width = 4,
                         textInput(
                             inputId = "plot_title",
                             label = "Title of the plot",
@@ -125,35 +160,16 @@ ui <- dashboardPage(
                             label = "Choose the nonsignificant legend name",
                             value = "ns"
                         ),
-                        colourInput(
-                            inputId = "up_col",
-                            label = "Choose the color of the upregulated genes",
-                            value = "#fe7f00"
-                        ),
-                        colourInput(
-                            inputId = "down_col",
-                            label = "Choose the color of the downregulated genes",
-                            value = "#007ffe"
-                        ),
                         selectizeInput(
                             inputId = "sel_gene",
                             label = "Select which significant genes to highlight :",
                             choices = NULL,
                             multiple = TRUE
-                        ),
-                        selectInput(
-                            inputId = "theme",
-                            label = "Choose the theme for the plot",
-                            choices = themes_gg,
-                            selected = "Classic"
-                        ),
-                        sliderInput(
-                            inputId = "volc_ratio",
-                            label = "Choose the plot aspect ratio",
-                            value = 1,
-                            min = 0.5,
-                            max = 2
-                        ),
+                        )
+                    ),
+                    box(title = "Download",
+                        status = "warning",
+                        width = 4,
                         selectInput(
                             inputId = "volcano_format",
                             label = "Format of the dowloaded plot",
@@ -164,15 +180,14 @@ ui <- dashboardPage(
                             outputId = "down_volc",
                             label = "Download plot"
                         )
-                    ),
-                    mainPanel(
-                        plotOutput(outputId = "volcano_plot")
                     )
                 )
             ),
             tabItem(tabName = "tabl_gene",
-                    sidebarLayout(
-                        sidebarPanel(
+                    fluidRow(
+                        box(title = "Settings",
+                            status = "warning",
+                            width = 3,
                             numericInput(
                                 inputId = "pval_cutoff",
                                 label = "Enter the maximum p-value :",
@@ -192,47 +207,53 @@ ui <- dashboardPage(
                                 label = "Choose the columns to display :"
                             )
                         ),
-                        mainPanel(
+                        box(title = "Gene Table",
+                            status = "primary",
+                            width = 9,
                             DT::dataTableOutput(outputId = "genes")
                         )
                     )
             ),
             tabItem(
                 tabName = "heatmap",
-                sidebarLayout(
-                    sidebarPanel(
-                        checkboxInput(
-                                inputId = "top_gene",
-                                label = "",
-                                value = TRUE
-                            ),
-                        checkboxGroupInput(
-                            inputId = "sel_cond",
-                            label = "Choose the conditions",
-                        ),
-                        selectInput(
-                            inputId = "palette_hm",
-                            label = "Choose the color palette of the heatmap",
-                            choices = brewer.pal.info %>%
-                                filter(category == "seq") %>%
-                                rownames_to_column() %>%
-                                pull(rowname),
-                            selected = "YlOrRd"
-                        ),
-                        heatmap_panels,
-                        actionButton("draw_hm",
-                                     "Draw heatmap")
-                    ),
-                    mainPanel(
-                        plotOutput("heatmap"),
-                        selectInput(inputId = "heatmap_format",
-                                    label = "Format of the downloaded plot :",
-                                    choices = c("png", "pdf", "svg"),
-                                    selected = "pdf"),
-                        downloadButton(
-                            outputId = "down_hm",
-                            label = "Download plot"
-                        )
+                fluidRow(
+                         box(title = "Settings",
+                             status = "warning",
+                             width = 3,
+                             checkboxInput(
+                                 inputId = "top_gene",
+                                 label = "",
+                                 value = TRUE
+                             ),
+                             checkboxGroupInput(
+                                 inputId = "sel_cond",
+                                 label = "Choose the conditions",
+                             ),
+                             selectInput(
+                                 inputId = "palette_hm",
+                                 label = "Choose the color palette of the heatmap",
+                                 choices = brewer.pal.info %>%
+                                     filter(category == "seq") %>%
+                                     rownames_to_column() %>%
+                                     pull(rowname),
+                                 selected = "YlOrRd"
+                             ),
+                             heatmap_panels,
+                             actionButton("draw_hm",
+                                          "Draw heatmap")
+                         ),
+                         box(title = "Heatmap",
+                             status = "primary",
+                             width = 9,
+                             plotOutput("heatmap"),
+                             selectInput(inputId = "heatmap_format",
+                                         label = "Format of the downloaded plot :",
+                                         choices = c("png", "pdf", "svg"),
+                                         selected = "pdf"),
+                             downloadButton(
+                                 outputId = "down_hm",
+                                 label = "Download plot"
+                             )
                     )
                 )
             )
