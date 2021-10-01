@@ -47,43 +47,16 @@ ui <- dashboardPage(
                 ),
                 conditionalPanel(
                     condition = "input.auto_inp == false",
-                    fluidRow(
-                        column(
-                            width = 6,
-                            p("Please enter the result table (csv or tsv format: NO .xls)"),
-                            br(),
-                            fileInput("inp_res_table",
-                                NULL,
-                                accept = c(".csv", ".tsv")
-                            ),
-                            hr(),
-                            htmlOutput("size_res")
-                        ),
-                        column(
-                            width = 6,
-                            p("Please enter the counts table (csv or tsv format: NO .xls)"),
-                            br(),
-                            fileInput(
-                                "inp_compt_table",
-                                NULL,
-                                accept = c(".csv", ".tsv")
-                            ),
-                            hr(),
-                            htmlOutput("size_count")
-                        )
-                    ),
-                    fluidRow(
-                        column(
-                            width = 6,
-                            p("Please enter the config file (.conf file in the R/ Folder)"),
-                            br(),
-                            fileInput(
-                                "inp_conf_file",
-                                NULL,
-                                accept = c(".conf")
-                            )
-                        )
+                    fileInput("res_data",
+                              NULL,
+                              accept = c(".RData", ".Rdata")
                     )
+                ),
+                selectInput(
+                    inputId = "contrast_act",
+                    label = "Select the contrast you want to study",
+                    choices = NULL,
+                    selected = NULL
                 )
             ),
             tabItem(

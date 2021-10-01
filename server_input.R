@@ -1,126 +1,55 @@
-res <- eventReactive(c(
-    input$inp_res_table,
+observeEvent(c(
+    input$res_data,
     input$auto_inp
 ), {
     if (input$auto_inp) {
-        tmp <- vroom::vroom("./NGS21-023_Resultats/Analyses_supervisees/NGS21-023_ensemblGCRm38r101_deseq2_results_contrast_High_vs_Controle.tsv",
-            delim = "\t"
+        load(file = "./gen_rds/results.RData")
+        # Find the symbol column
+        my_values$counts <- find_symb_col(dataMerged)
+        my_values$all_results <- vector(mode = "list", length = length(all_results))
+        names(my_values$all_results) <- names(all_results) 
+        for (contraste in names(all_results)) {
+            my_values$all_results[[contraste]] <- find_symb_col(all_results[[contraste]])
+        }
+        my_values$rld <- rld %>%
+            assay() %>%
+            as.data.frame() %>%
+            rownames_to_column(var = "Row.names")
+        my_values$config <- configuration
+        my_values$contrastes = contrasteList
+    } else {
+        req(input$res_data)
+        
+        extension <- tools::file_ext(input$res_data$name)
+        switch(extension,
+               RData = load(input$res_data$datapath),
+               Rdata = load(input$res_data$datapath),
+               validate("Invalid file : Need a .RData file")
         )
         # Find the symbol column
-        tmp <- find_symb_col(tmp)
-        
-        return(tmp)
+        my_values$counts <- find_symb_col(dataMerged)
+        my_values$all_results <- vector(mode = "list", length = length(all_results))
+        names(my_values$all_results) <- names(all_results) 
+        for (contraste in names(all_results)) {
+            my_values$all_results[[contraste]] <- find_symb_col(all_results[[contraste]])
+        }
+        my_values$rld <- rld
+        my_values$config <- configuration
+        my_values$contrastes <- contrasteList
     }
-    req(input$inp_res_table)
+})
 
-    extension <- tools::file_ext(input$inp_res_table$name)
-    tmp <- switch(extension,
-        csv = vroom::vroom(input$inp_res_table$datapath, delim = ","),
-        tsv = vroom::vroom(input$inp_res_table$datapath, delim = "\t"),
-        validate("Invalid file : Need a .csv or .tsv file")
+observe({
+    updateSelectInput(
+        inputId = "contrast_act",
+        choices = names(my_values$all_results)
     )
-
-    # Vérifier l'intégrité des données
-    val_cols <- c("baseMean",
-                  "log2FoldChange",
-                  "lfcSE",
-                  "stat",
-                  "pvalue",
-                  "padj") %in% colnames(tmp)
-    shinyFeedback::feedbackDanger(
-        "inp_res_table",
-        !all(val_cols),
-        "The table does not contain minimum column names"
-    )
-    req(all(val_cols))
-
-    # Find the symbol column
-    tmp <- find_symb_col(tmp)
-
-    tmp
-})
-
-counts <- eventReactive(c(
-    input$inp_compt_table,
-    input$auto_inp
-), {
-    if (input$auto_inp) {
-        tmp <- vroom::vroom("./NGS21-023_Resultats/Donnees_Normalisees/NGS21-023_ensemblGCRm38r101_deseq2_NormalizedMatrix.tsv",
-            delim = "\t"
-        )
-    } else {
-        req(input$inp_compt_table)
-
-        extension <- tools::file_ext(input$inp_compt_table$name)
-        tmp <- switch(extension,
-            csv = vroom::vroom(input$inp_compt_table$datapath, delim = ","),
-            tsv = vroom::vroom(input$inp_compt_table$datapath, delim = "\t"),
-            validate("Invalid file : Need a .csv or .tsv file")
-        )
-
-        # Vérifier la vraisemblance des données
-        shinyFeedback::feedbackWarning(
-            "inp_comp_table",
-            ncol(tmp) <= 5,
-            "The counts table has less than 5 samples"
-        )
-        shinyFeedback::feedbackWarning(
-            "inp_compt_table",
-            nrow(tmp) <= 10000,
-            "The counts table has less than 10000 annotations"
-        )
-    }
-    # Find the symbol column
-    tmp <- find_symb_col(tmp) 
-    tmp
 })
 
 
-conf_file <- eventReactive(c(input$inp_conf_file, input$auto_inp), {
-    if (input$auto_inp) {
-        tmp <- vroom::vroom("./NGS21-023_Resultats/R/PROJET.conf",
-                            delim = "\t"
-        )
-    } else {
-        req(input$inp_conf_file)
-        extension <- tools::file_ext(input$inp_compt_table$name)
-        tmp <- vroom::vroom(input$inp_conf_file$datapath, delim = "\t")
-    } 
-    tmp
+res <- eventReactive({
+    input$contrast_act
+    my_values$all_results
+}, {
+    my_values$all_results[[input$contrast_act]]
 })
-
-
-output$size_res <- renderUI({
-    req(res())
-    HTML(paste0(
-        "<p> Number of columns read : ",
-        ncol(res()),
-        "</p>",
-        "<br>",
-        "Number of rows read :",
-        nrow(res()),
-        "</p>"
-    ))
-})
-
-output$size_count <- renderUI({
-    req(counts())
-    HTML(paste0(
-        "<p> Number of columns read : ",
-        ncol(counts()),
-        "</p>",
-        "<br>",
-        "Number of rows read :",
-        nrow(counts()),
-        "</p>"
-    ))
-})
-
-contrast_actuel <- reactive({
-    tmp <- str_sub(input$inp_res_table$name, end = -5) %>% 
-        str_split(., "_")
-    tmp <- unlist(tmp)
-    contr_num <- which(tmp == "contrast")
-    c(tmp[contr_num + 1], tmp[contr_num +3])
-})
-

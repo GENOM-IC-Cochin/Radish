@@ -17,7 +17,7 @@ output$genes <- DT::renderDataTable(
                     log2FoldChange < -input$lfc_cutoff
             ) %>%
             # Risqué : pourrait sélectionner trop largement
-            select(matches(input$genes_columns)) %>%
+            select(all_of(input$genes_columns)) %>%
             # Significant digits
             mutate(dplyr::across(where(is.numeric), signif, 3))
     },

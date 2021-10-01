@@ -1,16 +1,16 @@
-observe({
+observeEvent(res(),{
     updateSliderInput(
         inputId = "x_max",
-        max = x_max_abs(donnees = req(res())),
-        value = x_max_abs(donnees = req(res()))
+        max = x_max_abs(donnees = res()),
+        value = x_max_abs(donnees = res())
     )
 })
 
-observe({
+observeEvent(res(), {
     updateSliderInput(
         inputId = "y_max",
-        max = y_max(donnees = req(res())),
-        value = y_max(donnees = req(res()))
+        max = y_max(donnees = res()),
+        value = y_max(donnees = res())
     )
 })
 
@@ -27,7 +27,7 @@ observeEvent(res(), {
 volc_data <- reactive({
     # collé ici pour ne pas le recalculer,
     #à chaque modif des paramètres de volcano_plot
-    res_volc(res())
+    res_volc(req(res()))
 })
 
 volc_plot <- reactive({

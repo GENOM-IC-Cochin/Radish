@@ -1,6 +1,5 @@
 y_max <- function(donnees) {
    donnees %>%
-       as.data.frame() %>%
        na.omit() %>%
        transmute(log_padj = -log10(padj)) %>%
        max() %>%
@@ -9,12 +8,10 @@ y_max <- function(donnees) {
 
 x_max_abs <- function(donnees) {
     min_x <- donnees %>%
-        as.data.frame() %>%
         pull(log2FoldChange) %>%
         min() %>%
         floor()
     max_x <- donnees %>%
-        as.data.frame() %>%
         pull(log2FoldChange) %>%
         max() %>%
         ceiling()
@@ -39,7 +36,6 @@ find_symb_col <- function(input_table) {
 res_volc <- function(deseq_results) {
     #Ajoute la colonne sur l'expression significative
     deseq_results %>%
-        as.data.frame() %>%
         mutate(sig_expr = factor(case_when(
             log2FoldChange >= 1 & padj <= 0.05 ~ "up",
             log2FoldChange <= -1 & padj <= 0.05 ~ "down",
@@ -127,11 +123,4 @@ volcano_plot <- function(plot_data,
         )
     }
     tmp
-}
-
-g_heatmap <- function(results,
-                      genes,
-                      ech_couleur,
-                      dendro = TRUE) {
-    pheatmap()
 }
