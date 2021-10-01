@@ -63,6 +63,7 @@ heatmap_data <- eventReactive(input$draw_hm, {
   echantillons <- my_values$config %>%
     filter(Condition %in% input$sel_cond) %>%
     pull(Name)
+  
   if(input$top_gene) {
     req(input$nb_top_gene)
     # Si l'on veut que les plus différentiellement exprimés
@@ -70,7 +71,7 @@ heatmap_data <- eventReactive(input$draw_hm, {
       select(Row.names, padj, log2FoldChange) %>%
       filter(log2FoldChange > 1 | log2FoldChange < -1 & padj < 0.05) %>%
       slice_min(order_by = padj, n = input$nb_top_gene) %>%
-      inner_join(my_values$rld, by = "Row.names", copy = TRUE) %>%
+      inner_join(rld_df(), by = "Row.names", copy = TRUE) %>%
       select(all_of(echantillons)) %>%
       as.matrix()
   } else {
@@ -79,7 +80,7 @@ heatmap_data <- eventReactive(input$draw_hm, {
     my_values$counts %>%
       select(Row.names, symbol) %>%
       filter(symbol %in% input$sel_gene_hm) %>%
-      inner_join(my_values$rld, by = "Row.names", copy = TRUE) %>%
+      inner_join(rld_df(), by = "Row.names", copy = TRUE) %>%
       column_to_rownames(var = "symbol") %>%
       select(all_of(echantillons)) %>%
       as.matrix()

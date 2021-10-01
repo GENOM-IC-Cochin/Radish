@@ -30,9 +30,12 @@ ui <- dashboardPage(
     dashboardSidebar(
         sidebarMenu(
             menuItem("Inputs", tabName = "inp"),
-            menuItem("Volcano plot", tabName = "volcano"),
+            menuItem("PCA", tabName = "pca"),
             menuItem("Interactive table", tabName = "tabl_gene"),
-            menuItem("Heatmap", tabName = "heatmap")
+            menuItem("Volcano plot", tabName = "volcano"),
+            menuItem("Heatmap", tabName = "heatmap"),
+            img(src = "LOGO_GENOM'IC_WHITE.svg",
+                style="position:absolute;bottom:0;margin:0 0 15px 25px;")
         )
     ),
     dashboardBody(
@@ -57,6 +60,31 @@ ui <- dashboardPage(
                     label = "Select the contrast you want to study",
                     choices = NULL,
                     selected = NULL
+                )
+            ),
+            tabItem(
+                tabName = "pca",
+                fluidRow(
+                    box(
+                        title = "PCA plot",
+                        status = "primary",
+                        width = 12,
+                        plotOutput("pca")
+                    )
+                ),
+                fluidRow(
+                    box(
+                        title = "Settings",
+                        status = "warning",
+                        width = 3,
+                        selectInput(
+                            inputId = "excl_samp",
+                            label = "Select samples to exclude",
+                            multiple = TRUE,
+                            choices = NULL,
+                            selected = NULL
+                        )
+                    )
                 )
             ),
             tabItem(

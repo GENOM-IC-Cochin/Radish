@@ -11,10 +11,7 @@ observeEvent(c(
         for (contraste in names(all_results)) {
             my_values$all_results[[contraste]] <- find_symb_col(all_results[[contraste]])
         }
-        my_values$rld <- rld %>%
-            assay() %>%
-            as.data.frame() %>%
-            rownames_to_column(var = "Row.names")
+        my_values$rld <- rld
         my_values$config <- configuration
         my_values$contrastes = contrasteList
     } else {
@@ -52,4 +49,11 @@ res <- eventReactive({
     my_values$all_results
 }, {
     my_values$all_results[[input$contrast_act]]
+})
+
+rld_df <- reactive({
+    my_values$rld %>%
+            assay() %>%
+            as.data.frame() %>%
+            rownames_to_column(var = "Row.names")
 })
