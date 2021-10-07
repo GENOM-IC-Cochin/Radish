@@ -35,3 +35,14 @@ output$pca <- renderPlot({
   req(pca_data())
   my_lil_pca(pca_data(), theme = input$theme_pca)
 })
+
+output$down_pca <- downloadHandler(
+  filename = function() {
+    paste0("pca.", input$pca_format)
+  },
+  content = function(file) {
+    ggsave(file, plot = my_lil_pca(req(pca_data()), theme = input$theme_pca),
+           device = req(input$pca_format),
+           dpi = 600)
+  }
+)

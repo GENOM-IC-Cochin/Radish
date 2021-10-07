@@ -25,10 +25,24 @@ heatmap_panels <- tabsetPanel(
     )
 )
 
+global_theme <- create_theme(#one day in its own css
+    theme = "flatly",
+    adminlte_color(
+        light_blue = "#006499"
+    ),
+    adminlte_global(
+        content_bg = "#FFF",
+        box_bg = "#EEF0F6", 
+        info_box_bg = "#EEF0F6"
+    )
+)
+
+
 ui <- dashboardPage(
     header = dashboardHeader(
-        title = "Plotting tool",
-        leftUi = tagList(dropdownBlock(
+        title = "SHARE",
+        leftUi = tagList(
+            dropdownBlock(
                 id = "contr",
                 selectInput(
                     inputId = "contrast_act",
@@ -49,10 +63,11 @@ ui <- dashboardPage(
             menuItem("Volcano plot", tabName = "volcano"),
             menuItem("Heatmap", tabName = "heatmap"),
             img(src = "LOGO_GENOM'IC_WHITE.svg",
-                style="position:absolute;bottom:0;margin:0 0 15px 25px;")
+                style="position:fixed;bottom:0;margin:0 0 15px 25px;")
         )
     ),
     body = dashboardBody(
+        use_theme(global_theme),
         shinyFeedback::useShinyFeedback(),
         tabItems(
             tabItem(
@@ -83,8 +98,8 @@ ui <- dashboardPage(
                 fluidRow(
                     box(
                         title = "Settings",
-                        status = "warning",
-                        width = 3,
+                        status = "orange",
+                        width = 4,
                         selectizeInput(
                             inputId = "excl_samp",
                             label = "Select samples to exclude",
@@ -98,6 +113,20 @@ ui <- dashboardPage(
                             label = "Choose the theme for the plot",
                             choices = themes_gg,
                             selected = "Classic"
+                        )
+                    ),
+                    box(title = "Download",
+                        status = "orange",
+                        width = 4,
+                        selectInput(
+                            inputId = "pca_format",
+                            label = "Format of the dowloaded plot",
+                            choices = c("svg", "png", "pdf"),
+                            selected = "pdf"
+                        ),
+                        downloadButton(
+                            outputId = "down_pca",
+                            label = "Download plot"
                         )
                     )
                 )
@@ -113,7 +142,7 @@ ui <- dashboardPage(
                 ),
                 fluidRow(
                     box(title = "Aesthetics",
-                        status = "warning",
+                        status = "orange",
                         width = 4,
                         sliderInput(
                             inputId = "x_max",
@@ -154,7 +183,7 @@ ui <- dashboardPage(
                         )
                     ),
                     box(title = "Text",
-                        status = "warning",
+                        status = "orange",
                         width = 4,
                         textInput(
                             inputId = "plot_title",
@@ -184,7 +213,7 @@ ui <- dashboardPage(
                         )
                     ),
                     box(title = "Download",
-                        status = "warning",
+                        status = "orange",
                         width = 4,
                         selectInput(
                             inputId = "volcano_format",
@@ -202,7 +231,7 @@ ui <- dashboardPage(
             tabItem(tabName = "tabl_gene",
                     fluidRow(
                         box(title = "Settings",
-                            status = "warning",
+                            status = "orange",
                             width = 3,
                             numericInput(
                                 inputId = "pval_cutoff",
@@ -234,7 +263,7 @@ ui <- dashboardPage(
                 tabName = "heatmap",
                 fluidRow(
                          box(title = "Settings",
-                             status = "warning",
+                             status = "orange",
                              width = 3,
                              checkboxInput(
                                  inputId = "top_gene",

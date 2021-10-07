@@ -140,3 +140,5 @@ my_lil_pca <- function(pca_data, theme = "Gray") {
                "Classic" = theme_classic(),
                "Classic with gridlines" = theme_bw())
 }
+
+
