@@ -6,6 +6,13 @@ server <- function(input, output, session) {
     config = NULL,
     contrastes = NULL
   )
+  observe({
+    updateSelectInput(
+      inputId = "contrast_act",
+      choices = names(my_values$all_results)
+    )
+  })
+
   source(file = "./utils.R", local = TRUE)
   source(file = "./server_pca.R", local = TRUE)
   source(file = "./server_volcano.R", local = TRUE)

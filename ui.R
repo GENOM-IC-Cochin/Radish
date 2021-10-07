@@ -26,8 +26,22 @@ heatmap_panels <- tabsetPanel(
 )
 
 ui <- dashboardPage(
-    dashboardHeader(title = "Plotting tool"),
-    dashboardSidebar(
+    header = dashboardHeader(
+        title = "Plotting tool",
+        leftUi = tagList(dropdownBlock(
+                id = "contr",
+                selectInput(
+                    inputId = "contrast_act",
+                    label = "Select the contrast you want to study",
+                    choices = NULL,
+                    selected = NULL
+                ),
+                title = "Current contrast",
+                badgeStatus = NULL
+            )
+        )
+    ),
+    sidebar = dashboardSidebar(
         sidebarMenu(
             menuItem("Inputs", tabName = "inp"),
             menuItem("PCA", tabName = "pca"),
@@ -38,7 +52,7 @@ ui <- dashboardPage(
                 style="position:absolute;bottom:0;margin:0 0 15px 25px;")
         )
     ),
-    dashboardBody(
+    body = dashboardBody(
         shinyFeedback::useShinyFeedback(),
         tabItems(
             tabItem(
@@ -54,12 +68,6 @@ ui <- dashboardPage(
                               NULL,
                               accept = c(".RData", ".Rdata")
                     )
-                ),
-                selectInput(
-                    inputId = "contrast_act",
-                    label = "Select the contrast you want to study",
-                    choices = NULL,
-                    selected = NULL
                 )
             ),
             tabItem(

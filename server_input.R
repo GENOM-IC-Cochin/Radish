@@ -36,12 +36,6 @@ observeEvent(c(
     }
 })
 
-observe({
-    updateSelectInput(
-        inputId = "contrast_act",
-        choices = names(my_values$all_results)
-    )
-})
 
 
 res <- eventReactive({

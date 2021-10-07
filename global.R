@@ -1,6 +1,8 @@
 # Libraries
 library(shiny)
 library(shinydashboard)
+library(shinydashboardPlus)
+library(fresh)
 library(dplyr)
 library(ggplot2)
 library(ggrepel)
