@@ -77,12 +77,19 @@ ui <- dashboardPage(
                         title = "Settings",
                         status = "warning",
                         width = 3,
-                        selectInput(
+                        selectizeInput(
                             inputId = "excl_samp",
                             label = "Select samples to exclude",
                             multiple = TRUE,
                             choices = NULL,
-                            selected = NULL
+                            selected = NULL,
+                            options = NULL
+                        ),
+                        selectInput(
+                            inputId = "theme_pca",
+                            label = "Choose the theme for the plot",
+                            choices = themes_gg,
+                            selected = "Classic"
                         )
                     )
                 )

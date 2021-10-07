@@ -1,7 +1,9 @@
 observe({
-  updateSelectInput(
+  updateSelectizeInput(
     inputId = "excl_samp",
-    choices = my_values$config$Name
+    choices = my_values$config$Name,
+    # To forbid PCA plots with two samples
+    options = list(maxItems = length(my_values$config$Name) - 3)
   )
 })
 
@@ -31,5 +33,5 @@ pca_data <- reactive({
 
 output$pca <- renderPlot({
   req(pca_data())
-  my_lil_pca(pca_data())
+  my_lil_pca(pca_data(), theme = input$theme_pca)
 })

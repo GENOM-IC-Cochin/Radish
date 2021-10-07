@@ -88,14 +88,12 @@ volcano_plot <- function(plot_data,
             limits = c(-axis_max[1], axis_max[1]),
             oob = scales::squish
         ) +
-        scale_y_continuous(limits = c(NA, axis_max[2]), oob = scales::squish)
-    if (theme == "Classic") {
-        tmp <- tmp + theme_classic()
-    } else if (theme == "Gray") {
-        tmp <- tmp + theme_gray()
-    } else if (theme == "Classic with gridlines") {
-        tmp <- tmp + theme_bw()
-    }
+        scale_y_continuous(limits = c(NA, axis_max[2]), oob = scales::squish) +
+        switch(theme,
+               "Gray" = theme_gray(),
+               "Classic" = theme_classic(),
+               "Classic with gridlines" = theme_bw())
+    
     tmp <- tmp + theme(plot.title = element_text(face = "bold",
                                                  size = 15,
                                                  hjust = 0.5),
@@ -125,13 +123,20 @@ volcano_plot <- function(plot_data,
     tmp
 }
 
-my_lil_pca <- function(pca_data) {
+my_lil_pca <- function(pca_data, theme = "Gray") {
     ggplot(pca_data$data,
-           aes(x=PC1,y=PC2,col=condition,label=rownames(pca_data$data))) + 
-        geom_point(aes(shape=condition, color=condition), size = 5) +
+           aes(x = PC1,
+               y = PC2,
+               col = condition,
+               label = rownames(pca_data$data))) + 
+        geom_point(aes(shape = condition, color = condition), size = 5) +
         geom_point() +
         geom_label_repel() +
-        xlab(paste0("PC1: ",round(pca_data$variance[1],1),"% variance")) +
-        ylab(paste0("PC2: ",round(pca_data$variance[2],1),"% variance")) +
-        coord_fixed()
+        xlab(paste0("PC1: ", round(pca_data$variance[1],1), "% variance")) +
+        ylab(paste0("PC2: ", round(pca_data$variance[2],1), "% variance")) +
+        coord_fixed() +
+        switch(theme,
+               "Gray" = theme_gray(),
+               "Classic" = theme_classic(),
+               "Classic with gridlines" = theme_bw())
 }

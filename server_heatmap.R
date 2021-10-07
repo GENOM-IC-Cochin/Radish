@@ -38,7 +38,7 @@ observe(
 observe(
   updateNumericInput(
     inputId = "nb_top_gene",
-    max = nrow(req(counts))
+    max = nrow(req(my_values$counts))
   )
 )
 
