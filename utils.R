@@ -21,7 +21,7 @@ x_max_abs <- function(donnees) {
 
 find_symb_col <- function(input_table) {
     cols <- colnames(input_table)
-    col_symb_test <- str_detect(cols, "symbol")
+    col_symb_test <- str_detect(cols, "symbol|name$")
         shinyFeedback::feedbackDanger(
             "inp_res_table",
             !any(col_symb_test),
