@@ -20,7 +20,7 @@ observeEvent(input$top_gene,
              )
 )
 
-observe({
+observeEvent(input$contrast_act, {
   updateCheckboxInput(
     inputId = "top_gene",
     label = paste("I want the heatmap to contain the top significant genes",
@@ -28,29 +28,35 @@ observe({
   )
 })
 
-observe(
+observeEvent(condition_possibles(),
   updateCheckboxGroupInput(
     inputId = "sel_cond",
     choices = condition_possibles()
   )
 )
 
-observe(
+observeEvent(my_values$counts,
   updateNumericInput(
     inputId = "nb_top_gene",
-    max = nrow(req(my_values$counts))
+    max = nrow(my_values$counts)
   )
 )
 
-observe({
-  req(my_values$counts)
+observeEvent(my_values$counts, {
   updateSelectizeInput(
-    inputId = "sel_gene_hm",
+    inputId = "sel_gene_hm_nm",
     choices = as.vector(my_values$counts$symbol),
     server = TRUE
   )
 })
 
+observeEvent(my_values$counts, {
+  updateSelectizeInput(
+    inputId = "sel_gene_hm_id",
+    choices = as.vector(my_values$counts$Row.names),
+    server = TRUE
+  )
+})
 
 heatmap_data <- eventReactive(input$draw_hm, {
   req(input$sel_cond,
@@ -77,11 +83,14 @@ heatmap_data <- eventReactive(input$draw_hm, {
   } else {
     # Si l'on veut sélectionner à la main
     # Utilisation de counts juste pour les symboles
+    browser()
     my_values$counts %>%
       select(Row.names, symbol) %>%
-      filter(symbol %in% input$sel_gene_hm) %>%
+      filter(symbol %in% input$sel_gene_hm_nm |
+               Row.names %in% input$sel_gene_hm_id) %>%
       inner_join(rld_df(), by = "Row.names", copy = TRUE) %>%
-      column_to_rownames(var = "symbol") %>%
+      mutate(name = coalesce(symbol, Row.names)) %>%
+      column_to_rownames(var = "name") %>%
       select(all_of(echantillons)) %>%
       as.matrix()
   }
@@ -104,13 +113,13 @@ annotation_colors <- eventReactive({
   my_values$config
   annotation_col()
 }, {
-  res <- vector(mode = "list", length = ncol(annotation_col()))
-  names(res) <- colnames(annotation_col())
-  for (name in names(res)) {
+  ret <- vector(mode = "list", length = ncol(annotation_col()))
+  names(ret) <- colnames(annotation_col())
+  for (name in names(ret)) {
     quels_cond <- unique(annotation_col()[, name]) 
-    res[[name]] <- setNames(condition_colors[1:length(quels_cond)], quels_cond)
+    ret[[name]] <- setNames(condition_colors[1:length(quels_cond)], quels_cond)
   }
-  res
+  ret
 })
 
 heatmap_plot <- reactive({

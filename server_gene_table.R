@@ -1,4 +1,4 @@
-observe({
+observeEvent(res(), {
     updateCheckboxGroupInput(
         inputId = "genes_columns",
         choices = res() %>% colnames(),

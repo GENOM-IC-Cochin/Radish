@@ -52,7 +52,8 @@ volcano_plot <- function(plot_data,
                          axis_max,
                          ratio,
                          theme,
-                         selected_genes = NULL
+                         selected_genes = NULL,
+                         label_size
                          ) {
     # Choice of colors/transparency for up/down
     cols <- c(colors, "ns" = "black")
@@ -109,11 +110,13 @@ volcano_plot <- function(plot_data,
     }
     if (!is.null(selected_genes)) {
         # Choice of genes, do not show labels of non significant genes
-        genes_to_highlight <- which((plot_data$symbol %in% input$sel_gene) &
+        genes_to_highlight <- which((plot_data$symbol %in% selected_genes |
+                                         plot_data$Row.names %in% selected_genes) &
                                     (plot_data$sig_expr != "ns"))
         tmp <- tmp + geom_label_repel(
             data = plot_data[genes_to_highlight, ],
-            aes(label = symbol),
+            size = label_size,
+            aes(label = coalesce(symbol, Row.names)),
             color = "black",
             fill = "white",
             min.segment.length = 0,

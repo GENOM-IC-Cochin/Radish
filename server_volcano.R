@@ -17,8 +17,17 @@ observeEvent(res(), {
 
 observeEvent(res(), {
     updateSelectizeInput(
-        inputId = "sel_gene",
+        inputId = "sel_gene_vp_nm",
         choices = as.vector(res()$symbol),
+        server = TRUE,
+        selected = NULL
+    )
+})
+
+observeEvent(res(), {
+    updateSelectizeInput(
+        inputId = "sel_gene_vp_id",
+        choices = as.vector(res()$Row.names),
         server = TRUE,
         selected = NULL
     )
@@ -40,7 +49,8 @@ volc_plot <- reactive({
         axis_max = c(input$x_max, input$y_max),
         ratio = input$volc_ratio,
         theme = input$theme,
-        selected_genes = input$sel_gene
+        selected_genes = c(input$sel_gene_vp_nm, input$sel_gene_vp_id),
+        label_size = input$vp_lab_size
     )
 })
 

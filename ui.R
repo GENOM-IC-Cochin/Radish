@@ -11,8 +11,15 @@ heatmap_panels <- tabsetPanel(
     ),
     tabPanel("all",
              selectizeInput(
-                 "sel_gene_hm",
-                 "Select genes present on the heatmap",
+                 "sel_gene_hm_nm",
+                 "Select genes (by name) present on the heatmap",
+                 choices = NULL,
+                 multiple = TRUE,
+                 options = list(maxItems = 200)
+             ),
+             selectizeInput(
+                 "sel_gene_hm_id",
+                 "Select genes (by id) present on the heatmap",
                  choices = NULL,
                  multiple = TRUE,
                  options = list(maxItems = 200)
@@ -206,10 +213,24 @@ ui <- dashboardPage(
                             value = "ns"
                         ),
                         selectizeInput(
-                            inputId = "sel_gene",
-                            label = "Select which significant genes to highlight :",
+                            inputId = "sel_gene_vp_nm",
+                            label = "Select which significant genes (by name) to highlight :",
                             choices = NULL,
                             multiple = TRUE
+                        ),
+                        selectizeInput(
+                            inputId = "sel_gene_vp_id",
+                            label = "Select which significant genes (by id) to highlight :",
+                            choices = NULL,
+                            multiple = TRUE
+                        ),
+                        sliderInput(
+                            inputId = "vp_lab_size",
+                            label = "Choose the size of the labels",
+                            value = 3,
+                            min = 1,
+                            max = 4,
+                            step = .25
                         )
                     ),
                     box(title = "Download",
