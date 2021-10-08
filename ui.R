@@ -64,7 +64,7 @@ ui <- dashboardPage(
     ),
     sidebar = dashboardSidebar(
         sidebarMenu(
-            menuItem("Inputs", tabName = "inp"),
+            menuItem("Data", tabName = "inp"),
             menuItem("PCA", tabName = "pca"),
             menuItem("Interactive table", tabName = "tabl_gene"),
             menuItem("Volcano plot", tabName = "volcano"),
@@ -82,13 +82,12 @@ ui <- dashboardPage(
                 checkboxInput(
                     inputId = "auto_inp",
                     label = "Auto-detection of input files (debug feature)",
-                    value = TRUE
+                    value = FALSE 
                 ),
                 conditionalPanel(
                     condition = "input.auto_inp == false",
                     fileInput("res_data",
-                              NULL,
-                              accept = c(".RData", ".Rdata")
+                              NULL
                     )
                 )
             ),
@@ -306,7 +305,8 @@ ui <- dashboardPage(
                              ),
                              heatmap_panels,
                              actionButton("draw_hm",
-                                          "Draw heatmap")
+                                          "Draw heatmap",
+                                          class = "btn-warning")
                          ),
                          box(title = "Heatmap",
                              status = "primary",

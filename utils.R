@@ -33,6 +33,13 @@ find_symb_col <- function(input_table) {
         return(input_table)
 }
 
+tidy_symbols <- function(symbols) {
+    # Makes symbols unique, if they are not NA
+    indx <- which(!is.na(symbols))
+    symbols[indx] <- make.unique(symbols[indx])
+    return(symbols)
+}
+
 res_volc <- function(deseq_results) {
     #Ajoute la colonne sur l'expression significative
     deseq_results %>%
