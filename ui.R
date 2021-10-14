@@ -109,11 +109,16 @@ ui <- dashboardPage(
             tabItem(
                 tabName = "pca",
                 fluidRow(
-                    box(
-                        title = "PCA plot",
-                        status = "primary",
+                    tabBox(
                         width = 12,
-                        plotOutput("pca")
+                        tabPanel(
+                            title = "PCA plot",
+                            plotOutput("pca")
+                        ),
+                        tabPanel(
+                            title = "Screeplot",
+                            plotOutput("scree")
+                        )
                     )
                 ),
                 fluidRow(

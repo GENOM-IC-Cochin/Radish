@@ -26,7 +26,7 @@ pca_data <- reactive({
   eig <- (pc$sdev)^2
   variance <- eig*100/sum(eig)
   
-  PCAdata<-as.data.frame(pc$x[,1:3])
+  PCAdata<-as.data.frame(pc$x)
   PCAdata$condition <- rld_tr$Condition
   list("data" = PCAdata, "variance" = variance)
 })
@@ -34,6 +34,15 @@ pca_data <- reactive({
 output$pca <- renderPlot({
   req(pca_data())
   my_lil_pca(pca_data(), theme = input$theme_pca)
+})
+
+output$scree <- renderPlot({
+  req(pca_data())
+  browser()
+  data.frame(variance_exp = pca_data()$variance) %>%
+    rownames_to_column() %>%
+    ggplot(aes(x = rowname, y = variance_exp)) +
+    geom_bar(stat = "identity")
 })
 
 output$down_pca <- downloadHandler(
