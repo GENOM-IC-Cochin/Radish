@@ -21,5 +21,6 @@ output$genes <- DT::renderDataTable(
             # Significant digits
             mutate(dplyr::across(where(is.numeric), signif, 3))
     },
-    rownames = FALSE
+    rownames = FALSE,
+    options = list(scrollX = TRUE)
 )

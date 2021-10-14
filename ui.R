@@ -39,7 +39,6 @@ global_theme <- create_theme(#one day in its own css
     ),
     adminlte_global(
         content_bg = "#FFF",
-        box_bg = "#EEF0F6", 
         info_box_bg = "#EEF0F6"
     )
 )
@@ -64,6 +63,7 @@ ui <- dashboardPage(
     ),
     sidebar = dashboardSidebar(
         sidebarMenu(
+            menuItem("Home", tabName = "home"),
             menuItem("Data", tabName = "inp"),
             menuItem("PCA", tabName = "pca"),
             menuItem("Interactive table", tabName = "tabl_gene"),
@@ -77,6 +77,21 @@ ui <- dashboardPage(
         use_theme(global_theme),
         shinyFeedback::useShinyFeedback(),
         tabItems(
+            tabItem(
+                tabName = "home",
+                tabBox(
+                    title = "SHARE : A Shiny app for RNA-Seq Exploration",
+                    width = 12,
+                    tabPanel(
+                        "About",
+                        includeMarkdown("www/intro.md")
+                    ),
+                    tabPanel(
+                        "Authors",
+                        includeMarkdown("www/authors.md")
+                    )
+                )
+            ),
             tabItem(
                 tabName = "inp",
                 checkboxInput(

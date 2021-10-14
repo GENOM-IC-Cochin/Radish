@@ -10,3 +10,5 @@
 /gen_rds/
 /NGS21-037_Resultats/
 /README.org
+*.org
+/www/intro.html
