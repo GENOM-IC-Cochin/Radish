@@ -116,15 +116,17 @@ annotation_colors <- eventReactive({
   ret
 })
 
-heatmap_plot <- reactive({
+heatmap_plot <- eventReactive(input$draw_hm, {
   req(heatmap_data(),
       annotation_col(),
       annotation_colors())
+      
   pheatmap( # C'est le traducteur de ComplexHeatmap
     mat = heatmap_data(),
-    color = brewer.pal(9, input$palette_hm),
+    color = rev(brewer.pal(9, input$palette_hm)),
     cluster_rows = TRUE,
-    show_rownames = input$show_names,
+    # No row names if top genes
+    show_rownames = input$show_names & !input$top_gene,
     annotation_col = annotation_col(),
     annotation_colors = annotation_colors(),
     border_color = NA,
