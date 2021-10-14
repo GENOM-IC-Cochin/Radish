@@ -33,10 +33,22 @@ observeEvent(res(), {
     )
 })
 
+observeEvent(res(), {
+    contr <- strsplit(input$contrast_act, "_") %>% unlist()
+    updateTextInput(
+        inputId = "plot_title",
+        value = paste(c("Gene expression change in", contr),
+                      collapse = " ")
+    )
+})
+
 volc_data <- reactive({
     # collé ici pour ne pas le recalculer,
     #à chaque modif des paramètres de volcano_plot
-    res_volc(req(res()))
+    req(input$lfc_cut, input$pval_cut)
+    res_volc(req(res()),
+             lfc_cutoff = input$lfc_cut,
+             pval_cutoff = input$pval_cut)
 })
 
 volc_plot <- reactive({
@@ -50,7 +62,9 @@ volc_plot <- reactive({
         ratio = input$volc_ratio,
         theme = input$theme,
         selected_genes = c(input$sel_gene_vp_nm, input$sel_gene_vp_id),
-        label_size = input$vp_lab_size
+        label_size = input$vp_lab_size,
+        lfc_cutoff = req(input$lfc_cut),
+        pval_cutoff =req(input$pval_cut) 
     )
 })
 

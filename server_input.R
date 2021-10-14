@@ -13,7 +13,7 @@ observeEvent(c(
         }
         my_values$rld <- rld
         my_values$config <- configuration
-        my_values$contrastes = contrasteList
+        my_values$contrastes <- contrasteList
     } else {
         req(input$res_data)
         extension <- tools::file_ext(input$res_data$name)

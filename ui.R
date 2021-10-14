@@ -179,6 +179,20 @@ ui <- dashboardPage(
                             max = 100,
                             value = 10
                         ),     
+                        sliderInput(
+                            inputId = "lfc_cut",
+                            label = "LogFoldChange limit for significance",
+                            min = 0,
+                            max = 5,
+                            value = 1,
+                            step = .5
+                        ),
+                        sliderTextInput(
+                            inputId = "pval_cut",
+                            label = "pvalue limit for significance",
+                            choices = c(0.0001, 0.001, 0.01, 0.05, 0.1),
+                            selected = 0.05
+                        ),
                         colourInput(
                             inputId = "up_col",
                             label = "Choose the color of the upregulated genes",
@@ -313,7 +327,7 @@ ui <- dashboardPage(
                                  inputId = "palette_hm",
                                  label = "Choose the color palette of the heatmap",
                                  choices = brewer.pal.info %>%
-                                     filter(category == "seq") %>%
+                                     filter(category == "div" & colorblind == TRUE) %>%
                                      rownames_to_column() %>%
                                      pull(rowname),
                                  selected = "YlOrRd"

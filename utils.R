@@ -40,12 +40,14 @@ tidy_symbols <- function(symbols) {
     return(symbols)
 }
 
-res_volc <- function(deseq_results) {
+res_volc <- function(deseq_results,
+                     lfc_cutoff = 1,
+                     pval_cutoff = 0.05) {
     #Ajoute la colonne sur l'expression significative
     deseq_results %>%
         mutate(sig_expr = factor(case_when(
-            log2FoldChange >= 1 & padj <= 0.05 ~ "up",
-            log2FoldChange <= -1 & padj <= 0.05 ~ "down",
+            log2FoldChange >= lfc_cutoff & padj <= pval_cutoff ~ "up",
+            log2FoldChange <= -lfc_cutoff & padj <= pval_cutoff ~ "down",
             TRUE ~ "ns"
         ))) %>%
         mutate(sig_expr = relevel(sig_expr, "up"))
@@ -60,7 +62,9 @@ volcano_plot <- function(plot_data,
                          ratio,
                          theme,
                          selected_genes = NULL,
-                         label_size
+                         label_size,
+                         lfc_cutoff,
+                         pval_cutoff
                          ) {
     # Choice of colors/transparency for up/down
     cols <- c(colors, "ns" = "black")
@@ -79,8 +83,8 @@ volcano_plot <- function(plot_data,
             shape = 21,
             stroke = 0.1
         ) +
-        geom_hline(yintercept = -log10(0.05), linetype = "dashed") +
-        geom_vline(xintercept = c(-1, 1), linetype = "dashed") +
+        geom_hline(yintercept = -log10(pval_cutoff), linetype = "dashed") +
+        geom_vline(xintercept = c(-lfc_cutoff, lfc_cutoff), linetype = "dashed") +
         scale_fill_manual(
             values = cols,
             labels = legends 

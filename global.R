@@ -2,6 +2,7 @@
 library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
+library(shinyWidgets)
 library(fresh)
 library(magrittr)
 library(dplyr)
