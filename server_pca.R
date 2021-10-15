@@ -38,11 +38,14 @@ output$pca <- renderPlot({
 
 output$scree <- renderPlot({
   req(pca_data())
-  browser()
-  data.frame(variance_exp = pca_data()$variance) %>%
-    rownames_to_column() %>%
-    ggplot(aes(x = rowname, y = variance_exp)) +
-    geom_bar(stat = "identity")
+  data.frame(variance_exp = pca_data()$variance,
+             dimension = as.factor(1:length(pca_data()$variance))) %>%
+    ggplot(aes(x = dimension, y = variance_exp)) +
+    geom_bar(stat = "identity", fill = "steelblue") +
+    labs(x = "Dimensions",
+         y = "Percentage of variance") +
+    geom_text(aes(label = signif(variance_exp, 3)), vjust = 1.6, colour = "white") +
+    theme_bw()
 })
 
 output$down_pca <- downloadHandler(
