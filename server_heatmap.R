@@ -31,7 +31,8 @@ observeEvent(input$contrast_act, {
 observeEvent(condition_possibles(),
   updateCheckboxGroupInput(
     inputId = "sel_cond",
-    choices = condition_possibles()
+    choices = condition_possibles(),
+    selected = condition_possibles(),
   )
 )
 
@@ -62,7 +63,6 @@ heatmap_data <- eventReactive(input$draw_hm, {
   req(input$sel_cond,
       my_values$config,
       my_values$counts,
-      my_values$rld,
       res(),
       input$sel_cond)
   # sélection du nom des échantillons

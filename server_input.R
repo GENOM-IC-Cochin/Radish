@@ -51,10 +51,3 @@ res <- eventReactive({
 }, {
     my_values$all_results[[input$contrast_act]]
 })
-
-rld_df <- reactive({
-    my_values$rld %>%
-            assay() %>%
-            as.data.frame() %>%
-            rownames_to_column(var = "Row.names")
-})

@@ -335,7 +335,7 @@ ui <- dashboardPage(
                                      filter(category == "div" & colorblind == TRUE) %>%
                                      rownames_to_column() %>%
                                      pull(rowname),
-                                 selected = "YlOrRd"
+                                 selected = "RdYlBu"
                              ),
                              heatmap_panels,
                              actionButton("draw_hm",
