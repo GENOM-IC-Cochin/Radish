@@ -163,7 +163,9 @@ ui <- dashboardPage(
                     box(title = "Volcano Plot",
                         status = "primary",
                         width = 12,
-                        plotOutput(outputId = "volcano_plot")
+                        plotOutput(outputId = "volcano_plot"),
+                        actionButton("draw_vp", "Draw Volcano Plot",
+                                     class = "btn-warning")
                     )
                 ),
                 fluidRow(

@@ -15,19 +15,23 @@ observeEvent(res(), {
 })
 
 
-observeEvent(res(), {
+observeEvent(volc_data(), {
     updateSelectizeInput(
         inputId = "sel_gene_vp_nm",
-        choices = as.vector(res()$symbol),
+        choices = volc_data() %>%
+            filter(sig_expr != "ns") %>%
+            pull(symbol),
         server = TRUE,
         selected = NULL
     )
 })
 
-observeEvent(res(), {
+observeEvent(volc_data(), {
     updateSelectizeInput(
         inputId = "sel_gene_vp_id",
-        choices = as.vector(res()$Row.names),
+        choices = volc_data() %>%
+            filter(sig_expr != "ns") %>%
+            pull(Row.names),
         server = TRUE,
         selected = NULL
     )
@@ -51,7 +55,7 @@ volc_data <- reactive({
              pval_cutoff = input$pval_cut)
 })
 
-volc_plot <- reactive({
+volc_plot <- eventReactive(input$draw_vp, {
     req(volc_data())
     volcano_plot(
         plot_data = volc_data(),
