@@ -18,7 +18,7 @@ library(ragg)
 
 # Preliminary code
 # update max upload size to 50mB
-options(shiny.maxRequestSize = 50 * 1024^2)
+options(shiny.maxRequestSize = 100 * 1024^2)
 themes_gg <- c("Classic",
                "Gray",
                "Classic with gridlines")
