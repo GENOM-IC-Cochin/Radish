@@ -12,3 +12,5 @@
 /README.org
 *.org
 /www/intro.html
+.Rproj.user
+/shinyproject.Rproj
