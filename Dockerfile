@@ -32,6 +32,5 @@ COPY . .
 RUN chown app:app -R /home/app
 USER app
 RUN R -e 'renv::restore()'
-RUN echo "local(options(shiny.port = 3838, shiny.host = '0.0.0.0'))" > /usr/lib/R/etc/Rprofile.site
 EXPOSE 3838
-CMD ["R", "-e", "shiny::runApp('/home/app')"]
+CMD ["R", "-e", "shiny::runApp('/home/app', port = 3838, host = '0.0.0.0')"]
