@@ -15,6 +15,7 @@ library(ComplexHeatmap) #remplace pheatmap qui bug, mais la fonction reste
 library(RColorBrewer)
 library(svglite)
 library(ragg)
+library(markdown)
 
 # Preliminary code
 # update max upload size to 50mB

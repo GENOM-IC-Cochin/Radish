@@ -9,7 +9,7 @@
     ]
   },
   "Bioconductor": {
-    "Version": null
+    "Version": "3.12"
   },
   "Packages": {
     "BiocGenerics": {
@@ -17,6 +17,13 @@
       "Version": "0.36.0",
       "Source": "Bioconductor",
       "Hash": "1fe8a6250d04cfb040ebec87447770ba"
+    },
+    "BiocManager": {
+      "Package": "BiocManager",
+      "Version": "1.30.16",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "2fdca0877debdd4668190832cdee4c31"
     },
     "Cairo": {
       "Package": "Cairo",
@@ -372,6 +379,13 @@
       "Repository": "CRAN",
       "Hash": "41287f1ac7d28a92f0a286ed507928d3"
     },
+    "markdown": {
+      "Package": "markdown",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "61e4a10781dd00d7d81dd06ca9b94e95"
+    },
     "matrixStats": {
       "Package": "matrixStats",
       "Version": "0.58.0",
@@ -644,6 +658,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ad03909b44677f930fa156d47d7a3aeb"
+    },
+    "xfun": {
+      "Package": "xfun",
+      "Version": "0.27",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "12b69332f085d350fc1f2ea6cca58397"
     },
     "xtable": {
       "Package": "xtable",
