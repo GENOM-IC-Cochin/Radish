@@ -1,4 +1,4 @@
-FROM rocker/rbase:4.0.5
+FROM rocker/r-ver:4.0.5
 LABEL maintainer="Paul Etheimer <paul.etheimer@inserm.fr>"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libtiff-dev \
     libfribidi-dev \
-    lipjpeg-dev \
+    libjpeg-dev \
 # for colourpicker
     pandoc \
 # for stringr
