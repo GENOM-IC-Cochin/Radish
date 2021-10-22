@@ -13,21 +13,26 @@ pca_data <- reactive({
   
   # Exclude samples
   if(!is.null(input$excl_samp)) {
-    drop_samp <- which(my_values$rld$Name %in% input$excl_samp)
+    drop_samp <- which((my_values$rld %>% colnames) %in% input$excl_samp)
     rld_tr <- my_values$rld[, -drop_samp]
   } else {
   rld_tr <- my_values$rld
   }
 
-  rv <- rowVars(assay(rld_tr))
+  rv <- rowVars(rld_tr)
   selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
-  mat <- t(assay(rld_tr)[selected_genes, ])
+  mat <- t(rld_tr[selected_genes, ])
   pc <- prcomp(mat)
   eig <- (pc$sdev)^2
   variance <- eig*100/sum(eig)
   
   PCAdata<-as.data.frame(pc$x)
-  PCAdata$condition <- rld_tr$Condition
+  # Join with condition, on name, to be sure of matches
+  PCAdata <- PCAdata %>%
+    rownames_to_column(var = "Name") %>%
+    inner_join(configuration, by = "Name", copy = TRUE) %>%
+    select(-File) %>%
+    column_to_rownames(var = "Name")
   list("data" = PCAdata, "variance" = variance)
 })
 

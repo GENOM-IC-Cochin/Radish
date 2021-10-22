@@ -141,9 +141,9 @@ my_lil_pca <- function(pca_data, theme = "Gray") {
     ggplot(pca_data$data,
            aes(x = PC1,
                y = PC2,
-               col = condition,
+               col = Condition,
                label = rownames(pca_data$data))) + 
-        geom_point(aes(shape = condition, color = condition), size = 5) +
+        geom_point(aes(shape = Condition, color = Condition), size = 5) +
         geom_point() +
         geom_label_repel() +
         xlab(paste0("PC1: ", round(pca_data$variance[1],1), "% variance")) +

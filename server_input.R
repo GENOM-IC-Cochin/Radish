@@ -11,7 +11,7 @@ observeEvent(c(
         for (contraste in names(all_results)) {
             my_values$all_results[[contraste]] <- find_symb_col(all_results[[contraste]])
         }
-        my_values$rld <- rld
+        my_values$rld <- rld_df
         my_values$config <- configuration
         my_values$contrastes <- contrasteList
     } else {
@@ -37,7 +37,7 @@ observeEvent(c(
             my_values$all_results[[contraste]]$symbol %<>% 
                 tidy_symbols()
         }
-        my_values$rld <- rld
+        my_values$rld <- rld_df
         my_values$config <- configuration
         my_values$contrastes <- contrasteList
     }
