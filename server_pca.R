@@ -1,4 +1,4 @@
-observe({
+observeEvent(my_values$config, {
   updateSelectizeInput(
     inputId = "excl_samp",
     choices = my_values$config$Name,

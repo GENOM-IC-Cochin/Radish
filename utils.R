@@ -55,16 +55,16 @@ res_volc <- function(deseq_results,
 
 
 volcano_plot <- function(plot_data,
-                         titre,
+                         titre = "",
                          colors = c("up" = "#fe7f00", "down" = "#007ffe"),
-                         legends,
+                         legends = c("up" = "up", "down" = "down", "ns" = "ns"),
                          axis_max,
-                         ratio,
-                         theme,
+                         ratio = 1,
+                         theme = "Classic with gridlines",
                          selected_genes = NULL,
-                         label_size,
-                         lfc_cutoff,
-                         pval_cutoff
+                         label_size = 3.8,
+                         lfc_cutoff = 1,
+                         pval_cutoff = 0.05
                          ) {
     # Choice of colors/transparency for up/down
     cols <- c(colors, "ns" = "black")
@@ -92,7 +92,7 @@ volcano_plot <- function(plot_data,
         scale_alpha_manual(values = alphas, guide = "none") +
         labs(
             title = titre,
-            x = "Log2 Fold Change",
+            x = "Log2(Fold Change)",
             y = "-Log10(Adjusted p-value)",
             fill = "Expression\nChange"
         ) +

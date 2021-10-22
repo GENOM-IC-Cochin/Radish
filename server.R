@@ -6,7 +6,7 @@ server <- function(input, output, session) {
     config = NULL,
     contrastes = NULL
   )
-  observe({
+  observeEvent(my_values$all_results, {
     updateSelectInput(
       inputId = "contrast_act",
       choices = names(my_values$all_results)
