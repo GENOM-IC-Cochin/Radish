@@ -19,7 +19,7 @@ pca_data <- reactive({
   rld_tr <- my_values$rld
   }
 
-  rv <- rowVars(rld_tr)
+  rv <- matrixStats::rowVars(rld_tr)
   selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
   mat <- t(rld_tr[selected_genes, ])
   pc <- prcomp(mat)
