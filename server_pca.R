@@ -9,8 +9,8 @@ observe({
 
 pca_data <- reactive({
   ntop <- 500
-  req(my_values$rld)
-  
+  req(my_values$rld,
+      my_values$config)
   # Exclude samples
   if(!is.null(input$excl_samp)) {
     drop_samp <- which((my_values$rld %>% colnames) %in% input$excl_samp)
@@ -30,7 +30,7 @@ pca_data <- reactive({
   # Join with condition, on name, to be sure of matches
   PCAdata <- PCAdata %>%
     rownames_to_column(var = "Name") %>%
-    inner_join(configuration, by = "Name", copy = TRUE) %>%
+    inner_join(my_values$config, by = "Name", copy = TRUE) %>%
     select(-File) %>%
     column_to_rownames(var = "Name")
   list("data" = PCAdata, "variance" = variance)
