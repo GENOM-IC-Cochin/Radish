@@ -6,7 +6,7 @@ SHARE is a GENOM'IC tool for RNA-seq exploration. It uses data processed with GE
 
 -   In the **Data** tab, load the `results.RData` file, provided in the `NGSXX-XX_Resultats` folder given to you by GENOM'IC.
 
--   Assess the samples' quality in the **PCA** tab. You can remove a sample and the PCA plot gets redrawn, if you want to see if a specific sample might be an outlier. *However*, this does not impact subsequent figures and the analysis on the whole : if you want to re-analyse the data, while excluding a sample, please [contact us](mailto:ngs.u1016@inserm.fr).
+-   Assess the samples' quality in the **PCA** tab. You can remove a sample and the PCA plot gets redrawn, if you want to assess the distribution of samples without a possible outlier. The incriminated sample is removed from the raw data, and the normalisation, as well as the regularising transformation, are recalculated. Finally, the singular value decomposition is recomputed and the plot redrawn. Thus, the whole process can be somewhat long. *In any case*, this does not impact subsequent figures and the analysis on the whole : if you want to re-analyse the data, while excluding a sample, please [contact us](mailto:ngs.u1016@inserm.fr).
 
 -   Set the **contrast** you want to study : in the top left bar, you can select the contrast of conditions you want to study, for instance *Treatment\_vs\_Control*.
 

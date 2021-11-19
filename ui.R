@@ -188,7 +188,7 @@ ui <- dashboardPage(
                         ),
                         sliderTextInput(
                             inputId = "pval_cut",
-                            label = "pvalue limit for significance",
+                            label = "Adjusted pvalue limit for significance",
                             choices = c(0.0001, 0.001, 0.01, 0.05, 0.1),
                             selected = 0.05
                         ),
@@ -283,7 +283,7 @@ ui <- dashboardPage(
                             width = 3,
                             numericInput(
                                 inputId = "pval_cutoff",
-                                label = "Enter the maximum p-value :",
+                                label = "Enter the maximum adjusted p-value (padj) :",
                                 value = 0.05,
                                 min = 0,
                                 max = 1,
