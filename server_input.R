@@ -2,19 +2,6 @@ observeEvent(c(
     input$res_data,
     input$auto_inp
 ), {
-    if (input$auto_inp) {
-        load(file = "./gen_rds/results.RData")
-        # Find the symbol column
-        my_values$counts <- find_symb_col(dataMerged)
-        my_values$all_results <- vector(mode = "list", length = length(all_results))
-        names(my_values$all_results) <- names(all_results) 
-        for (contraste in names(all_results)) {
-            my_values$all_results[[contraste]] <- find_symb_col(all_results[[contraste]])
-        }
-        my_values$rld <- rld_df
-        my_values$config <- configuration
-        my_values$contrastes <- contrasteList
-    } else {
         req(input$res_data)
         extension <- tools::file_ext(input$res_data$name)
         switch(extension,

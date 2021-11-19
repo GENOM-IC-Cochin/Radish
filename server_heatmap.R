@@ -143,7 +143,7 @@ output$heatmap <- renderPlot({
 
 output$down_hm <- downloadHandler(
   filename = function() {
-    paste0("heatmap", input$heatmap_format)
+    paste0("heatmap.", input$heatmap_format)
   },
   content = function(file) {
     if(input$heatmap_format == "png") {

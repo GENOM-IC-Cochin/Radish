@@ -93,18 +93,10 @@ ui <- dashboardPage(
                 )
             ),
             tabItem(
-                tabName = "inp",
-                checkboxInput(
-                    inputId = "auto_inp",
-                    label = "Auto-detection of input files (debug feature)",
-                    value = FALSE 
-                ),
-                conditionalPanel(
-                    condition = "input.auto_inp == false",
-                    fileInput("res_data",
-                              NULL
-                    )
-                )
+              tabName = "inp",
+              fileInput("res_data",
+                        NULL
+              )
             ),
             tabItem(
                 tabName = "pca",
