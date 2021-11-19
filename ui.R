@@ -303,7 +303,11 @@ ui <- dashboardPage(
                         box(title = "Gene Table",
                             status = "primary",
                             width = 9,
-                            DT::dataTableOutput(outputId = "genes")
+                            DT::dataTableOutput(outputId = "genes"),
+                            downloadButton(
+                              outputId = "download_sel_genes",
+                              label = "Download selected genes"
+                            )
                         )
                     )
             ),
