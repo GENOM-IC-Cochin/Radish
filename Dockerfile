@@ -18,9 +18,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
 # for colourpicker
     pandoc \
+# for DESeq2
+    libxml2-dev \
 # for stringr
     libicu-dev \
     && rm -rf /var/lib/apt/lists/*
+
 # Install renv
 ENV RENV_VERSION 0.14.0
 RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
