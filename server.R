@@ -12,6 +12,10 @@ server <- function(input, output, session) {
       choices = names(my_values$all_results)
     )
   })
+  
+  output$disp_contr <- renderText({
+    input$contrast_act
+  })
 
   source(file = "./utils.R", local = TRUE)
   source(file = "./server_pca.R", local = TRUE)

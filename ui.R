@@ -56,8 +56,16 @@ ui <- dashboardPage(
                     choices = NULL,
                     selected = NULL
                 ),
-                title = "Current contrast",
+                title = "Current contrast :",
                 badgeStatus = NULL
+            ),
+            # afficher le contraste
+            textOutput("disp_contr"),
+            # bricoler son apparence
+            tags$head(tags$style("#disp_contr{
+                                 margin-top: 7.5px;
+                                 color: white;
+                                 }")
             )
         )
     ),
