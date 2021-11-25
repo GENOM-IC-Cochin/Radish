@@ -297,7 +297,8 @@ ui <- dashboardPage(
                             ),
                             checkboxGroupInput(
                                 inputId = "genes_columns",
-                                label = "Choose the columns to display :"
+                                label = "Choose additional columns to display :",
+                                selected = NULL,
                             )
                         ),
                         box(title = "Gene Table",

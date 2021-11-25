@@ -3,6 +3,7 @@ library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyWidgets)
+library(DT)
 library(fresh)
 library(magrittr)
 library(dplyr)
@@ -24,3 +25,9 @@ themes_gg <- c("Classic",
                "Gray",
                "Classic with gridlines")
 condition_colors <- brewer.pal(8, "Set2")
+# Columns always present in the table (to be renamed)
+base_table_columns <- c("baseMean",
+                        "log2FoldChange",
+                        "padj",
+                        "ensembl_gene_id",
+                        "symbol")
