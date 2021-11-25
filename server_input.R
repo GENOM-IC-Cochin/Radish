@@ -24,10 +24,10 @@ observeEvent(c(
             my_values$all_results[[contraste]]$symbol %<>% 
                 tidy_symbols()
         }
-        my_values$rld <- rld_df
+        my_values$rld <- rld
         my_values$config <- configuration
         my_values$contrastes <- contrasteList
-    }
+        my_values$txi.rsem <- txi.rsem
 })
 
 

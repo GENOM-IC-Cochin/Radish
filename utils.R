@@ -137,6 +137,22 @@ volcano_plot <- function(plot_data,
     tmp
 }
 
+recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
+  # Fonction qui recalcule la normalisation DESeq2, puis le rlog pour la PCA
+  # Nécéssaire si on élimine un échantillon considéré comme outlier
+  dds <- DESeqDataSetFromTximport(txi.rsem, configuration, ~ Condition)
+  dds <- dds[, -drop_samp]
+  dds <- estimateSizeFactors(dds)
+  idx <- rowSums( counts(dds, normalized=TRUE) >= 10 ) >= 3 # filter out genes where there are less than 3 samples with normalized counts greater than or equal to 10.
+  dds <- dds[idx, ]
+  dds <- estimateDispersions(dds) # Pas de DESeq(), car le nombre d'ech peut alors être insuffisant
+  if(ncol(dds) <= 30) {
+    rlog(dds, blind = TRUE)
+  } else {
+    vst(dds, blind = TRUE)
+  }
+}
+
 my_lil_pca <- function(pca_data, theme = "Gray") {
     ggplot(pca_data$data,
            aes(x = PC1,

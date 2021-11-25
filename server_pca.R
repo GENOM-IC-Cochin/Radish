@@ -10,18 +10,21 @@ observeEvent(my_values$config, {
 pca_data <- reactive({
   ntop <- 500
   req(my_values$rld,
-      my_values$config)
+      my_values$config,
+      my_values$txi.rsem)
   # Exclude samples
   if(!is.null(input$excl_samp)) {
-    drop_samp <- which((my_values$rld %>% colnames) %in% input$excl_samp)
-    rld_tr <- my_values$rld[, -drop_samp]
+    withProgress(message = "Recalculating...",{
+      drop_samp <- which((my_values$config$Name) %in% input$excl_samp)
+      rld_tr <- recalculate_rld_pca(my_values$txi.rsem, drop_samp, my_values$config) 
+    })
   } else {
-  rld_tr <- my_values$rld
+    rld_tr <- my_values$rld
   }
 
-  rv <- matrixStats::rowVars(rld_tr)
+  rv <- rowVars(assay(rld_tr))
   selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
-  mat <- t(rld_tr[selected_genes, ])
+  mat <- t(assay(rld_tr)[selected_genes, ])
   pc <- prcomp(mat)
   eig <- (pc$sdev)^2
   variance <- eig*100/sum(eig)

@@ -128,7 +128,7 @@ ui <- dashboardPage(
                         width = 4,
                         selectizeInput(
                             inputId = "excl_samp",
-                            label = "Select samples to exclude",
+                            label = "Select outliers to exclude (quite slow)",
                             multiple = TRUE,
                             choices = NULL,
                             selected = NULL,

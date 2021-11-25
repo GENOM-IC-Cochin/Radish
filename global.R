@@ -13,6 +13,7 @@ library(ggrepel)
 library(colourpicker)
 library(stringr)
 library(ComplexHeatmap) #remplace pheatmap qui bug, mais la fonction reste
+library(DESeq2)
 library(RColorBrewer)
 library(svglite)
 library(ragg)
