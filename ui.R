@@ -334,6 +334,10 @@ ui <- dashboardPage(
                             downloadButton(
                               outputId = "download_sel_genes",
                               label = "Download selected genes"
+                            ),
+                            downloadButton(
+                              outputId = "download_sel_names",
+                              label = "Download selected genes' names"
                             )
                         )
                     )

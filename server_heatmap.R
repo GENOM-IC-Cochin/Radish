@@ -43,19 +43,27 @@ observeEvent(my_values$counts,
   )
 )
 
-observeEvent(my_values$counts, {
+observeEvent({
+  my_values$counts
+  sel_genes_names()
+}, {
   updateSelectizeInput(
     inputId = "sel_gene_hm_nm",
     choices = as.vector(my_values$counts$symbol),
-    server = TRUE
+    server = TRUE,
+    selected = sel_genes_names()
   )
 })
 
-observeEvent(my_values$counts, {
+observeEvent({
+  my_values$counts
+  sel_genes_ids()
+  }, {
   updateSelectizeInput(
     inputId = "sel_gene_hm_id",
     choices = as.vector(my_values$counts$Row.names),
-    server = TRUE
+    server = TRUE,
+    selected = sel_genes_ids()
   )
 })
 
@@ -74,7 +82,8 @@ heatmap_data <- eventReactive(input$draw_hm, {
     req(input$nb_top_gene)
     # Si l'on veut que les plus différentiellement exprimés
     res() %>%
-      filter(log2FoldChange > 1 | log2FoldChange < -1 & padj < 0.05) %>%
+      filter(log2FoldChange > 1 | log2FoldChange < -1,
+             padj < 0.05) %>%
       slice_min(order_by = padj, n = input$nb_top_gene) %>%
       select(all_of(echantillons)) %>%
       as.matrix()

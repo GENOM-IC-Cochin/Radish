@@ -27,8 +27,8 @@ themes_gg <- c("Classic",
                "Classic with gridlines")
 condition_colors <- brewer.pal(8, "Set2")
 # Columns always present in the table (to be renamed)
-base_table_columns <- c("baseMean",
+base_table_columns <- c("Row.names",
+                        "baseMean",
                         "log2FoldChange",
                         "padj",
-                        "ensembl_gene_id",
                         "symbol")

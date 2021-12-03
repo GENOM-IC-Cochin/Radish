@@ -15,25 +15,31 @@ observeEvent(res(), {
 })
 
 
-observeEvent(volc_data(), {
-    updateSelectizeInput(
-        inputId = "sel_gene_vp_nm",
-        choices = volc_data() %>%
-            filter(sig_expr != "ns") %>%
-            pull(symbol),
-        server = TRUE,
-        selected = NULL
-    )
+observeEvent({
+  genes_table()
+  volc_data()
+  sel_genes_names()
+}, {
+  updateSelectizeInput(
+    inputId = "sel_gene_vp_nm",
+    choices = volc_data() %>%
+      pull(symbol),
+    server = TRUE,
+    selected = sel_genes_names()
+  )
 })
 
-observeEvent(volc_data(), {
+observeEvent({
+  genes_table()
+  volc_data()
+  sel_genes_ids()
+  }, {
     updateSelectizeInput(
         inputId = "sel_gene_vp_id",
         choices = volc_data() %>%
-            filter(sig_expr != "ns") %>%
             pull(Row.names),
         server = TRUE,
-        selected = NULL
+        selected = sel_genes_ids()
     )
 })
 

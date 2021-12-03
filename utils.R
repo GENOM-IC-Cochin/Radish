@@ -127,9 +127,9 @@ volcano_plot <- function(plot_data,
     }
     if (!is.null(selected_genes)) {
         # Choice of genes, do not show labels of non significant genes
+       # Shows gene names if there is one
         genes_to_highlight <- which((plot_data$symbol %in% selected_genes |
-                                         plot_data$Row.names %in% selected_genes) &
-                                    (plot_data$sig_expr != "ns"))
+                                         plot_data$Row.names %in% selected_genes))
         tmp <- tmp + geom_label_repel(
             data = plot_data[genes_to_highlight, ],
             size = label_size,

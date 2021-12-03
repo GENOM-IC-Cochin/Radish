@@ -1,7 +1,6 @@
-observeEvent(c(
-    input$res_data,
-    input$auto_inp
-), {
+observeEvent(
+    input$res_data
+, {
         req(input$res_data)
         extension <- tools::file_ext(input$res_data$name)
         switch(extension,
