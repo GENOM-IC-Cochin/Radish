@@ -1,3 +1,5 @@
+# Heatmap Conditional UI -------------------------------------------------------
+
 heatmap_panels <- tabsetPanel(
     id = "settings",
     type = "hidden",
@@ -43,6 +45,7 @@ global_theme <- create_theme(#one day in its own css
     )
 )
 
+# Global UI --------------------------------------------------------------------
 
 ui <- dashboardPage(
     header = dashboardHeader(
@@ -117,7 +120,11 @@ ui <- dashboardPage(
                         width = 12,
                         tabPanel(
                             title = "PCA plot",
-                            plotOutput("pca")
+                            plotOutput("pca"),
+                            actionButton("pca_button",
+                                         "Calculate PCA",
+                                         class = "btn-warning")
+                            
                         ),
                         tabPanel(
                             title = "Screeplot",

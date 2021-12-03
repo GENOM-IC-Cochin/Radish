@@ -146,7 +146,7 @@ volcano_plot <- function(plot_data,
 recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
   # Fonction qui recalcule la normalisation DESeq2, puis le rlog pour la PCA
   # Nécéssaire si on élimine un échantillon considéré comme outlier
-  dds <- DESeqDataSetFromTximport(txi.rsem, configuration, ~ Condition)
+  dds <- DESeqDataSetFromTximport(txi.rsem, configuration, ~ 1)
   dds <- dds[, -drop_samp]
   dds <- estimateSizeFactors(dds)
   idx <- rowSums( counts(dds, normalized=TRUE) >= 10 ) >= 3 # filter out genes where there are less than 3 samples with normalized counts greater than or equal to 10.

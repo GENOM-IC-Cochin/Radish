@@ -7,7 +7,12 @@ observeEvent(my_values$config, {
   )
 })
 
-pca_data <- reactive({
+pca_data <- eventReactive({
+  my_values$rld
+  my_values$txi.rsem
+  my_values$config
+  input$pca_button
+},{
   ntop <- 500
   req(my_values$rld,
       my_values$config,
