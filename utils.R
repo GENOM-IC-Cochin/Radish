@@ -1,37 +1,43 @@
 y_max <- function(donnees) {
-   donnees %>%
-       na.omit() %>%
-       transmute(log_padj = -log10(padj)) %>%
-       max() %>%
-       ceiling()
+  donnees %>%
+    select(log2FoldChange, padj) %>%
+    na.omit() %>%
+    transmute(log_padj = -log10(padj)) %>%
+    max() %>%
+    ceiling()
 }
 
 x_max_abs <- function(donnees) {
-    min_x <- donnees %>%
-        pull(log2FoldChange) %>%
-        min() %>%
-        floor()
-    max_x <- donnees %>%
-        pull(log2FoldChange) %>%
-        max() %>%
-        ceiling()
-    # maximum value of the x axis
-    max(c(abs(min_x), abs(max_x)))
+  min_x <- donnees %>%
+    select(log2FoldChange, padj) %>%
+    na.omit() %>%
+    pull(log2FoldChange) %>%
+    min() %>%
+    floor()
+  max_x <- donnees %>%
+    select(log2FoldChange, padj) %>%
+    na.omit() %>%
+    pull(log2FoldChange) %>%
+    max() %>%
+    ceiling()
+  # maximum value of the x axis
+  max(c(abs(min_x), abs(max_x)))
 }
 
-find_symb_col <- function(input_table) {
-    cols <- colnames(input_table)
-    col_symb_test <- str_detect(cols, "symbol|name$")
-        shinyFeedback::feedbackDanger(
-            "inp_res_table",
-            !any(col_symb_test),
-            "The table does not contain a symbol (gene name) column"
-        )
-        req(any(col_symb_test))
-        col_symbol <- which(col_symb_test)
-        colnames(input_table)[col_symbol] <- "symbol"
-        return(input_table)
-}
+# find_symb_col <- function(input_table) {
+#     # cols <- colnames(input_table)
+#     # col_symb_test <- str_detect(cols, "symbol|name$")
+#     #     shinyFeedback::feedbackDanger(
+#     #         "inp_res_table",
+#     #         !any(col_symb_test),
+#     #         "The table does not contain a symbol (gene name) column"
+#     #     )
+#     #     req(any(col_symb_test))
+#     #     col_symbol <- which(col_symb_test)
+#     #     colnames(input_table)[col_symbol] <- "symbol"
+#     #     return(input_table)
+#   input_table %>% rename("symbol" = 9)
+# }
 
 tidy_symbols <- function(symbols) {
     # Makes symbols unique, if they are not NA

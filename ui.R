@@ -105,7 +105,11 @@ ui <- dashboardPage(
               fileInput("res_data",
                         NULL
               )
+              
             ),
+            
+# PCA Tab UI -------------------------------------------------------------------
+
             tabItem(
                 tabName = "pca",
                 fluidRow(
@@ -134,6 +138,7 @@ ui <- dashboardPage(
                             selected = NULL,
                             options = NULL
                         ),
+                        
                         selectInput(
                             inputId = "theme_pca",
                             label = "Choose the theme for the plot",
@@ -157,6 +162,9 @@ ui <- dashboardPage(
                     )
                 )
             ),
+
+# Volcano tab UI ---------------------------------------------------------------
+
             tabItem(
                 tabName = "volcano",
                 fluidRow(
@@ -284,6 +292,9 @@ ui <- dashboardPage(
                     )
                 )
             ),
+
+# Gene Table Tab UI ------------------------------------------------------------
+
             tabItem(tabName = "tabl_gene",
                     fluidRow(
                         box(title = "Settings",
@@ -320,6 +331,9 @@ ui <- dashboardPage(
                         )
                     )
             ),
+
+# Heatmap Tab UI ---------------------------------------------------------------
+
             tabItem(
                 tabName = "heatmap",
                 fluidRow(
