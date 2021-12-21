@@ -142,8 +142,8 @@ heatmap_plot <- eventReactive(input$draw_hm, {
     annotation_colors = annotation_colors(),
     border_color = NA,
     fontsize = 10,
+    fontsize_row = input$fontsize_hm,
     scale = "row",
-    fontsize_row = 10
   )
 })
 

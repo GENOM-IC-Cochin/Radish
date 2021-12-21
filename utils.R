@@ -137,7 +137,10 @@ volcano_plot <- function(plot_data,
             color = "black",
             fill = "white",
             min.segment.length = 0,
-            show.legend = FALSE
+            show.legend = FALSE,
+            # There are many points
+            # They count as things overlapped
+            max.overlaps = Inf
         )
     }
     tmp
