@@ -5,7 +5,7 @@ server <- function(input, output, session) {
     rld = NULL,
     config = NULL,
     contrastes = NULL,
-    given_genes = NULL
+    given_genes_rows = NULL
   )
   observeEvent(my_values$all_results, {
     updateSelectInput(

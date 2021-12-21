@@ -31,6 +31,8 @@ observeEvent(
 
 
 
+
+
 res <- eventReactive({
     input$contrast_act
     my_values$all_results

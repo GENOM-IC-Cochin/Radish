@@ -32,14 +32,16 @@ observeEvent({
 observeEvent({
   genes_table()
   volc_data()
-  sel_genes_ids()
+  sel_genes_table()
   }, {
     updateSelectizeInput(
         inputId = "sel_gene_vp_id",
         choices = volc_data() %>%
             pull(Row.names),
         server = TRUE,
-        selected = sel_genes_ids()
+        selected = sel_genes_table() %>%
+          filter(is.na(symbol)) %>%
+          pull(Row.names)
     )
 })
 

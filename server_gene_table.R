@@ -1,38 +1,31 @@
-observeEvent(res(), {
-  colnames_table <- res() %>% colnames()
-    updateCheckboxGroupInput(
-        inputId = "genes_columns",
-        choices = colnames_table[!(colnames_table %in% base_table_columns)],
-    )
-})
-
 output$outlier <- renderUI({
   req(res())
   nb_na <- res() %>% 
     filter(if_any(padj, ~ is.na(.x))) %>%
     nrow()
-  HTML(paste("<b> ", 
+  HTML(paste("<b>", 
              nb_na,
              "</b>",
-             " genes were removed, as they are deemed outliers.",
+             "genes were removed, as they are deemed outliers.",
              "<br>",
              "<br>"))
 })
 
+output$sig_genes <- renderUI({
+  req(res())
+  n_sig <- res() %>%
+    filter(padj < 0.05, abs(log2FoldChange) > 1) %>%
+    nrow()
+  HTML(paste("<b>", n_sig, "</b>",
+             "genes are significantly differentially expressed",
+             "at an adjusted <i> pvalue </i> of 0.05 and a minimum log2(Foldchange) of 1.",
+             "<br>"))
+})
+
 genes_table <- eventReactive({
-  input$pval_cutoff
-  input$lfc_cutoff
-  input$genes_columns
   res()
 },{
   res() %>%
-    filter(
-      padj < input$pval_cutoff,
-      log2FoldChange > input$lfc_cutoff |
-        log2FoldChange < -input$lfc_cutoff
-    ) %>%
-    # Risqué : pourrait sélectionner trop largement
-    select(all_of(base_table_columns), all_of(input$genes_columns)) %>%
     # Significant digits
     mutate(dplyr::across(where(is.numeric), signif, 3))
 })
@@ -58,27 +51,66 @@ sel_genes_names <- eventReactive(
       pull(symbol)
 })
 
-# For the choice in VP and HM
 sel_genes_ids <- eventReactive(
   sel_genes_table(),
   {
     sel_genes_table() %>%
-      filter(is.na(symbol)) %>%
       pull(Row.names)
 })
 
-select_num <- eventReactive({
-  my_values$given_genes
+
+# Matches the genes given and the rows in the table
+observeEvent({
+  # either one or the other
+  # both NULL stops observeEvent
+  c(input$given_genes_names, input$given_genes_ids)
   genes_table()
-}, {
-  gg_reg <- paste(my_values$given_genes, collapse = "|")
-  grep(gg_reg, genes_table()$symbol, ignore.case = TRUE)
+},
+{
+  # give priority to ids
+  if(!is.null(input$given_genes_ids)) {
+    extension <- tools::file_ext(input$given_genes_ids$name)
+    validate(need(extension == "txt", "Please upload a plain text (txt) file"))
+    
+    gene_ids <- scan(file = input$given_genes_ids$datapath,
+                     what = character())
+    my_values$given_genes_rows <- which(genes_table()$Row.names %in% gene_ids)
+    
+  }
+  if(!is.null(input$given_genes_names)) {
+    extension <- tools::file_ext(input$given_genes_names$name)
+    validate(need(extension == "txt", "Please upload a plain text (txt) file"))
+    
+    gene_names <- scan(file = input$given_genes_names$datapath,
+                       what = character())
+    gg_reg <- paste(gene_names, collapse = "|")
+    my_values$given_genes_rows <- c(my_values$given_genes_rows,
+                                    grep(gg_reg, 
+                                         genes_table()$symbol,
+                                         ignore.case = TRUE)) %>% unique()
+  }
+}
+)
+
+cols_to_hide <- eventReactive(res(),{
+  # - 1 because JS indices start at 0
+  which(!(colnames(res()) %in% base_table_columns)) - 1
+})
+
+proxy <- dataTableProxy("genes")
+
+observeEvent(input$select_genes, {
+  proxy %>% selectRows(my_values$given_genes_rows)
+})
+
+observeEvent(input$clear, {
+  proxy %>% selectRows(NULL)
 })
 
 output$genes <- renderDT(
   {
-    req(c(input$pval_cutoff, input$lfc_cutoff))
     req(res())
+    proxy %>% hideCols(cols_to_hide())
     genes_table()
   },
   rownames = FALSE,
@@ -89,8 +121,23 @@ output$genes <- renderDT(
                "Mean of normalised counts, all samples" = "baseMean",
                "log2(FoldChange)" = "log2FoldChange",
                "Gene name" = "symbol"),
-  options = list(scrollX = TRUE)
+  extensions = "Buttons",
+  options = list(scrollX = TRUE,
+                 dom = "Bfrtip",
+                 columnDefs = list(
+                   list(targets = c(0, 1, 2, 6, 8), className = "noVis")
+                 ),
+                 buttons = list(
+                   list(extend = 'colvis', columns = I(':not(.noVis)'))
+                   )),
+  selection = list(target = "row")
 )
+
+output$n_selected <- renderUI({
+  req(input$genes_rows_selected)
+  HTML(paste("<br>", "<b>", length(input$genes_rows_selected), "</b>",
+             "rows are currently selected."))
+})
 
 output$download_sel_genes <- downloadHandler(
   filename = function() {
@@ -101,11 +148,11 @@ output$download_sel_genes <- downloadHandler(
   }
 )
 
-output$download_sel_names <- downloadHandler(
+output$download_sel_ids <- downloadHandler(
   filename = function() {
-    paste("selected_genes_names", ".txt", sep = "")
+    paste("selected_genes_ids", ".txt", sep = "")
   },
   content = function(file) {
-    write(sel_genes_names(), file)
+    write(sel_genes_ids(), file)
   }
 )

@@ -57,13 +57,15 @@ observeEvent({
 
 observeEvent({
   my_values$counts
-  sel_genes_ids()
+  sel_genes_table()
   }, {
   updateSelectizeInput(
     inputId = "sel_gene_hm_id",
     choices = as.vector(my_values$counts$Row.names),
     server = TRUE,
-    selected = sel_genes_ids()
+    selected = sel_genes_table() %>%
+      filter(is.na(symbol)) %>%
+      pull(Row.names)
   )
 })
 
