@@ -108,9 +108,8 @@ observeEvent(input$clear, {
 })
 
 output$genes <- renderDT(
-  {
+  expr = {
     req(res())
-    proxy %>% hideCols(cols_to_hide())
     genes_table()
   },
   rownames = FALSE,
@@ -120,12 +119,14 @@ output$genes <- renderDT(
                "Adjusted p-value" = "padj",
                "Mean of normalised counts, all samples" = "baseMean",
                "log2(FoldChange)" = "log2FoldChange",
-               "Gene name" = "symbol"),
+               "Gene name" = "symbol",
+               "Gene description" = "description"),
   extensions = "Buttons",
   options = list(scrollX = TRUE,
                  dom = "Bfrtip",
                  columnDefs = list(
-                   list(targets = c(0, 1, 2, 6, 8), className = "noVis")
+                   list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
+                   list(targets = cols_to_hide(), visible = FALSE)
                  ),
                  buttons = list(
                    list(extend = 'colvis', columns = I(':not(.noVis)'))
@@ -134,10 +135,36 @@ output$genes <- renderDT(
 )
 
 output$n_selected <- renderUI({
-  req(input$genes_rows_selected)
-  HTML(paste("<br>", "<b>", length(input$genes_rows_selected), "</b>",
-             "rows are currently selected."))
+  HTML(paste("<b>", length(input$genes_rows_selected), "</b>",
+             "rows are currently selected. <br> <br>"))
 })
+
+output$genes_selected <- renderDT(
+  expr = {
+    req(sel_genes_table())
+    sel_genes_table() %>%
+      mutate(dplyr::across(where(is.numeric), signif, 3))
+  },
+  rownames = FALSE,
+  class = "cell-border stripe hover order-colum",
+  colnames = c("Gene ID" = "Row.names",
+               "Adjusted p-value" = "padj",
+               "Mean of normalised counts, all samples" = "baseMean",
+               "log2(FoldChange)" = "log2FoldChange",
+               "Gene name" = "symbol",
+               "Gene description" = "description"),
+  extensions = "Buttons",
+  options = list(scrollX = TRUE,
+                 dom = "Bfrtip",
+                 columnDefs = list(
+                   list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
+                   list(targets = cols_to_hide(), visible = FALSE)
+                 ),
+                 buttons = list(
+                   list(extend = 'colvis', columns = I(':not(.noVis)'))
+                   )),
+  selection = "none"
+)
 
 output$download_sel_genes <- downloadHandler(
   filename = function() {

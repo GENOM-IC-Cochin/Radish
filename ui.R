@@ -322,40 +322,46 @@ ui <- dashboardPage(
                              status = "warning",
                              width = 12,
                              htmlOutput("outlier"),
-                             htmlOutput("sig_genes"))),
-                column(9,
-                       box(title = "Gene Table",
-                           status = "primary",
-                           width = 12,
-                           DT::dataTableOutput(outputId = "genes"),
-                           downloadButton(
-                             outputId = "download_sel_genes",
-                             label = "Download selected genes"
-                           ),
-                           downloadButton(
-                             outputId = "download_sel_ids",
-                             label = "Download selected genes' Gene IDs"
-                           )
-                       ),
-                       box(title = "Row selection",
-                           status = "warning",
-                           width = 12,
-                           column(6,
-                                  fileInput("given_genes_names",
-                                            "Genes names for selection",
-                                            accept = "text/plain")
-                           ),
-                           column(6,
-                                  fileInput("given_genes_ids",
-                                            "Genes IDs for selection",
-                                            accept = "text/plain")
-                           ),
-                           actionButton("select_genes",
-                                        "Select Genes"),
-                           actionButton("clear",
-                                        "Clear selection"),
-                           htmlOutput("n_selected"))
-                )
+                             htmlOutput("sig_genes")),
+                         box(title = "Row selection",
+                             status = "warning",
+                             width = 12,
+                             column(6,
+                                    fileInput("given_genes_names",
+                                              "Genes names for selection",
+                                              accept = "text/plain")
+                             ),
+                             column(6,
+                                    fileInput("given_genes_ids",
+                                              "Genes IDs for selection",
+                                              accept = "text/plain")
+                             ),
+                             actionButton("select_genes",
+                                          "Select Genes"),
+                             actionButton("clear",
+                                          "Clear selection")
+                         )),
+                  column(9,
+                         tabBox(title = "Genes Tables",
+                                width = 12,
+                                tabPanel(
+                                  "All genes",
+                                  htmlOutput("n_selected"),
+                                  DTOutput(outputId = "genes"),
+                                  downloadButton(
+                                    outputId = "download_sel_genes",
+                                    label = "Download selected genes"
+                                  ),
+                                  downloadButton(
+                                    outputId = "download_sel_ids",
+                                    label = "Download selected genes' Gene IDs"
+                                  )),
+                                tabPanel(
+                                  "Selected genes",
+                                  DTOutput("genes_selected")
+                                )
+                         )
+                  )
               )
       ),
       
