@@ -9,7 +9,7 @@ observeEvent(
                validate("Invalid file : Need a .RData file")
         )
         # Permet de remplacer un nom variable (hgcn_symbol, mgi_symbol) par un nom fixe
-        my_values$counts <- dataMerged %>% dplyr::rename("symbol" = ncol(dataMerged) - 1)
+        my_values$counts <- dataMerged %>% dplyr::rename("symbol" = dplyr::contains("symbol"))
         # potentiellement lourd
         my_values$counts %<>% mutate(across(everything(), na_if, "")) 
         # Avoids duplicated symbol names
