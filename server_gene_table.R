@@ -6,7 +6,7 @@ output$outlier <- renderUI({
   HTML(paste("<b>", 
              nb_na,
              "</b>",
-             "genes were removed, as they are deemed outliers.",
+             "genes had their <i> p-values </i> set to NA, as they are deemed outliers.",
              "<br>",
              "<br>"))
 })
@@ -56,6 +56,24 @@ sel_genes_ids <- eventReactive(
   {
     sel_genes_table() %>%
       pull(Row.names)
+})
+
+output$read_items <- renderUI({
+  names <- ids <- NULL
+  if(!is.null(input$given_genes_names)) {
+    names <- scan(input$given_genes_names$datapath,
+                  what = character())
+  }
+  if(!is.null(input$given_genes_ids)) {
+    ids <- scan(input$given_genes_ids$datapath,
+                  what = character())
+  }
+    HTML("<b>",
+         paste(length(ids) + length(names)),
+         "</b>",
+         "items were read.",
+         "<br>",
+         "<br>")
 })
 
 

@@ -336,6 +336,7 @@ ui <- dashboardPage(
                                               "Genes IDs for selection",
                                               accept = "text/plain")
                              ),
+                             htmlOutput("read_items"),
                              actionButton("select_genes",
                                           "Select Genes"),
                              actionButton("clear",

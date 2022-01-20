@@ -68,6 +68,9 @@ output$down_pca <- downloadHandler(
   content = function(file) {
     ggsave(file, plot = my_lil_pca(req(pca_data()), theme = input$theme_pca),
            device = req(input$pca_format),
+           width = 7,
+           height = 5,
+           units = "in",
            dpi = 600)
   }
 )
