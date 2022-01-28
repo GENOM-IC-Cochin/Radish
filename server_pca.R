@@ -38,7 +38,7 @@ pca_data <- eventReactive({
   # Join with condition, on name, to be sure of matches
   PCAdata <- PCAdata %>%
     rownames_to_column(var = "Name") %>%
-    inner_join(my_values$config, by = "Name", copy = TRUE) %>%
+    inner_join(my_values$config, by = "Name") %>%
     select(-File) %>%
     column_to_rownames(var = "Name")
   list("data" = PCAdata, "variance" = variance)
