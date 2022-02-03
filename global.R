@@ -22,6 +22,12 @@ library(markdown)
 # Preliminary code
 # update max upload size to 50mB
 options(shiny.maxRequestSize = 100 * 1024^2)
+expected_data <- c("dataMerged",
+                   "all_results",
+                   "configuration",
+                   "contrasteList",
+                   "rld",
+                   "txi.rsem")
 themes_gg <- c("Classic",
                "Gray",
                "Classic with gridlines")

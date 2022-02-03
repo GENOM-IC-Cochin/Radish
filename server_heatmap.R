@@ -1,6 +1,9 @@
 condition_possibles <- reactive({
-  req(my_values$config, my_values$all_results)
-  condition <- my_values$config$Condition %>% unique() 
+    req(
+        config(),
+        all_results()
+    )
+  condition <- config()$Condition %>% unique()
   if(input$top_gene) {
     cond_act <- input$contrast_act %>%
       strsplit(., split = "_vs_") %>%
@@ -36,32 +39,32 @@ observeEvent(condition_possibles(),
   )
 )
 
-observeEvent(my_values$counts,
+observeEvent(counts(),
   updateNumericInput(
     inputId = "nb_top_gene",
-    max = nrow(my_values$counts)
+    max = nrow(counts())
   )
 )
 
 observeEvent({
-  my_values$counts
+  counts()
   sel_genes_names()
 }, {
   updateSelectizeInput(
     inputId = "sel_gene_hm_nm",
-    choices = as.vector(my_values$counts$symbol),
+    choices = as.vector(counts()$symbol),
     server = TRUE,
     selected = sel_genes_names()
   )
 })
 
 observeEvent({
-  my_values$counts
+  counts()
   sel_genes_table()
   }, {
   updateSelectizeInput(
     inputId = "sel_gene_hm_id",
-    choices = as.vector(my_values$counts$Row.names),
+    choices = as.vector(counts()$Row.names),
     server = TRUE,
     selected = sel_genes_table() %>%
       filter(is.na(symbol)) %>%
@@ -71,12 +74,12 @@ observeEvent({
 
 heatmap_data <- eventReactive(input$draw_hm, {
   req(input$sel_cond,
-      my_values$config,
-      my_values$counts,
+      config(),
+      counts(),
       res(),
       input$sel_cond)
   # sélection du nom des échantillons
-  echantillons <- my_values$config %>%
+  echantillons <- config() %>%
     filter(Condition %in% input$sel_cond) %>%
     pull(Name)
   
@@ -91,7 +94,7 @@ heatmap_data <- eventReactive(input$draw_hm, {
       as.matrix()
   } else {
     # Si l'on veut sélectionner à la main
-    my_values$counts %>%
+    counts() %>%
       filter(symbol %in% input$sel_gene_hm_nm |
                Row.names %in% input$sel_gene_hm_id) %>%
       mutate(name = coalesce(symbol, Row.names)) %>%
@@ -104,10 +107,10 @@ heatmap_data <- eventReactive(input$draw_hm, {
 
 # Met en correspondance les conditions choisies et les échantillons
 annotation_col <- eventReactive({
-  my_values$config
+  config()
   input$draw_hm
 },{
-  my_values$config %>%
+  config() %>%
       filter(Condition %in% input$sel_cond) %>%
       select(-File) %>%
       column_to_rownames(var = "Name")
@@ -115,7 +118,7 @@ annotation_col <- eventReactive({
 
 # A partir des annotations, leur affecte une couleur
 annotation_colors <- eventReactive({
-  my_values$config
+  config()
   annotation_col()
 }, {
   ret <- vector(mode = "list", length = ncol(annotation_col()))

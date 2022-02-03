@@ -1,30 +1,30 @@
-observeEvent(my_values$config, {
+observeEvent(config(), {
   updateSelectizeInput(
     inputId = "excl_samp",
-    choices = my_values$config$Name,
+    choices = config()$Name,
     # To forbid PCA plots with two samples
-    options = list(maxItems = length(my_values$config$Name) - 3)
+    options = list(maxItems = length(config()$Name) - 3)
   )
 })
 
 pca_data <- eventReactive({
-  my_values$rld
-  my_values$txi.rsem
-  my_values$config
+  rld()
+  txi.rsem()
+  config()
   input$pca_button
 },{
   ntop <- 500
-  req(my_values$rld,
-      my_values$config,
-      my_values$txi.rsem)
+  req(rld(),
+      config(),
+      txi.rsem())
   # Exclude samples
   if(!is.null(input$excl_samp)) {
     withProgress(message = "Recalculating...",{
-      drop_samp <- which((my_values$config$Name) %in% input$excl_samp)
-      rld_tr <- recalculate_rld_pca(my_values$txi.rsem, drop_samp, my_values$config) 
+      drop_samp <- which((config()$Name) %in% input$excl_samp)
+      rld_tr <- recalculate_rld_pca(txi.rsem(), drop_samp, config()) 
     })
   } else {
-    rld_tr <- my_values$rld
+    rld_tr <- rld()
   }
 
   rv <- rowVars(assay(rld_tr))
@@ -38,7 +38,7 @@ pca_data <- eventReactive({
   # Join with condition, on name, to be sure of matches
   PCAdata <- PCAdata %>%
     rownames_to_column(var = "Name") %>%
-    inner_join(my_values$config, by = "Name") %>%
+    inner_join(config(), by = "Name") %>%
     select(-File) %>%
     column_to_rownames(var = "Name")
   list("data" = PCAdata, "variance" = variance)

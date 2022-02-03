@@ -1,19 +1,14 @@
 server <- function(input, output, session) {
   my_values <- reactiveValues(
-    counts = NULL,
-    all_results = NULL,
-    rld = NULL,
-    config = NULL,
-    contrastes = NULL,
     given_genes_rows = NULL
   )
-  observeEvent(my_values$all_results, {
+  observeEvent(all_results(), {
     updateSelectInput(
       inputId = "contrast_act",
-      choices = names(my_values$all_results)
+      choices = names(all_results())
     )
   })
-  
+
   output$disp_contr <- renderText({
     input$contrast_act
   })
