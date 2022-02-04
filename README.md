@@ -37,7 +37,7 @@ Installation is only available through docker for now.
         docker pull paulimer/share
         docker run -dp 80:3838 --rm paulimer/share
 -   Access the app through your usual web navigator, at the adress <http://localhost/>.
--   Load your `result.Rdata` file in the **Data** tab
+-   Load your `result.rds` file in the **Data** tab
 -   Explore!
 
 
@@ -45,14 +45,14 @@ Installation is only available through docker for now.
 
 ## Using the app
 
-Follow the instructions in the app. Load the `results.Rdata` file provided by GENOM'IC in the **Data** tab, and then proceed to explore the dataset and produce your figures!
+Follow the instructions in the app. Load the `results.rds` file provided by GENOM'IC in the **Data** tab, and then proceed to explore the dataset and produce your figures!
 
 
 <a id="org453ed4a"></a>
 
 ## Demo data
 
-To experiment with the app, you can use the `demo_data.Rdata` file, in the root directory. Just load it in the **Data** tab, and explore!
+To experiment with the app, you can use the `demo_data.rds` file, in the root directory. Just load it in the **Data** tab, and explore!
 
 
 <a id="org22656d3"></a>

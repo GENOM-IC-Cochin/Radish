@@ -63,3 +63,16 @@ res <- eventReactive({
 }, {
     all_results()[[input$contrast_act]]
 })
+
+output$check_data <- renderUI({
+  req(all_results(),
+      counts(),
+      config()
+      )
+  HTML(paste("<br> Read <b>",
+             all_results() %>% length(),
+             "</b> contrasts, and <b>",
+             config() %>% nrow(),
+             "</b> samples"))
+  
+})

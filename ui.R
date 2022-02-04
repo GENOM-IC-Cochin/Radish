@@ -1,60 +1,61 @@
 # Heatmap Conditional UI -------------------------------------------------------
 
 heatmap_panels <- tabsetPanel(
-  id = "settings",
-  type = "hidden",
-  tabPanel("diff",
-           numericInput(
-             "nb_top_gene",
-             "Select the number of top differentially expressed genes",
-             value = 100,
-             min = 0,
-             max = 20000),
-  ),
-  tabPanel("all",
-           selectizeInput(
-             "sel_gene_hm_nm",
-             "Select genes (by name) present on the heatmap",
-             choices = NULL,
-             multiple = TRUE,
-             options = list(maxItems = 200)
-           ),
-           selectizeInput(
-             "sel_gene_hm_id",
-             "Select genes (by id) present on the heatmap",
-             choices = NULL,
-             multiple = TRUE,
-             options = list(maxItems = 200)
-           ),
-           checkboxInput(
-             "show_names",
-             "Show gene names",
-             value = FALSE
-           ),
-           sliderInput(
-             "fontsize_hm",
-             "Choose the row fontsize",
-             min = 3,
-             max = 12,
-             value = 10,
-             step = .5
-           )
-  )
+    id = "settings",
+    type = "hidden",
+    tabPanel(
+        "diff",
+        numericInput(
+            "nb_top_gene",
+            "Select the number of top differentially expressed genes",
+            value = 100,
+            min = 0,
+            max = 20000
+        ),
+    ),
+    tabPanel(
+        "all",
+        selectizeInput(
+            "sel_gene_hm_nm",
+            "Select genes (by name) present on the heatmap",
+            choices = NULL,
+            multiple = TRUE,
+            options = list(maxItems = 200)
+        ),
+        selectizeInput(
+            "sel_gene_hm_id",
+            "Select genes (by id) present on the heatmap",
+            choices = NULL,
+            multiple = TRUE,
+            options = list(maxItems = 200)
+        ),
+        checkboxInput(
+            "show_names",
+            "Show gene names",
+            value = FALSE
+        ),
+        sliderInput(
+            "fontsize_hm",
+            "Choose the row fontsize",
+            min = 3,
+            max = 12,
+            value = 10,
+            step = .5
+        )
+    )
 )
-
 # CSS function -----------------------------------------------------------------
 
-global_theme <- create_theme(#one day in its own css
-  theme = "flatly",
-  adminlte_color(
-    light_blue = "#006499"
-  ),
-  adminlte_global(
-    content_bg = "#FFF",
-    info_box_bg = "#EEF0F6"
-  )
+global_theme <- create_theme( # one day in its own css
+    theme = "flatly",
+    adminlte_color(
+        light_blue = "#006499"
+    ),
+    adminlte_global(
+        content_bg = "#FFF",
+        info_box_bg = "#EEF0F6"
+    )
 )
-
 # Global UI --------------------------------------------------------------------
 
 ui <- dashboardPage(
@@ -119,8 +120,9 @@ ui <- dashboardPage(
           title = "Result input",
           width = 12,
           fileInput("res_data",
-                    "Results"
-          )
+              "Results"
+          ),
+          htmlOutput("check_data")
         )
       ),
       
