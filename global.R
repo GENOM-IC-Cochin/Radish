@@ -20,7 +20,7 @@ library(ragg)
 library(markdown)
 
 # Preliminary code
-# update max upload size to 50mB
+# update max upload size to 100mB
 options(shiny.maxRequestSize = 100 * 1024^2)
 expected_data <- c(
     "dataMerged",

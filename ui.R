@@ -89,6 +89,7 @@ ui <- dashboardPage(
       menuItem("Data", tabName = "inp"),
       menuItem("PCA", tabName = "pca"),
       menuItem("Interactive table", tabName = "tabl_gene"),
+      menuItem("MA-plot", tabName = "maplot"),
       menuItem("Volcano plot", tabName = "volcano"),
       menuItem("Heatmap", tabName = "heatmap"),
       img(src = "LOGO_GENOM'IC_WHITE.svg",
@@ -184,6 +185,115 @@ ui <- dashboardPage(
           )
         )
       ),
+
+# MAplot tab UI ----------------------------------------------------------------
+      
+      tabItem(
+        tabName = "maplot",
+        fluidRow(
+          box(title = "MA-Plot",
+              status = "primary",
+              width = 12,
+              plotOutput(outputId = "ma_plot"),
+              actionButton("draw_ma", "Draw MA-Plot",
+                           class = "btn-warning")
+          )
+        ),
+        fluidRow(
+          box(title = "Aesthetics",
+              status = "orange",
+              width = 4,
+              sliderTextInput(
+                inputId = "pval_cut_ma",
+                label = "Adjusted pvalue limit for significance",
+                choices = c(0.0001, 0.001, 0.01, 0.05, 0.1),
+                selected = 0.05
+              ),
+              colourInput(
+                inputId = "up_col_ma",
+                label = "Choose the color of the upregulated genes",
+                value = "#fe7f00"
+              ),
+              colourInput(
+                inputId = "down_col_ma",
+                label = "Choose the color of the downregulated genes",
+                value = "#007ffe"
+              ),
+              selectInput(
+                inputId = "theme_ma",
+                label = "Choose the theme for the plot",
+                choices = themes_gg,
+                selected = "Classic"
+              ),
+              sliderInput(
+                inputId = "ratio_ma",
+                label = "Choose the plot aspect ratio",
+                value = 1,
+                min = 0.5,
+                max = 2
+              )
+          ),
+          box(title = "Text",
+              status = "orange",
+              width = 4,
+              textInput(
+                inputId = "plot_title_ma",
+                label = "Title of the plot",
+                value = "Gene expression change"
+              ),
+              textInput(
+                inputId = "up_leg_ma",
+                label = "Choose the upregulated legend name",
+                value = "up"
+              ),
+              textInput(
+                inputId = "down_leg_ma",
+                label = "Choose the downregulated legend name",
+                value = "down"
+              ),
+              textInput(
+                inputId = "ns_leg_ma",
+                label = "Choose the nonsignificant legend name",
+                value = "ns"
+              ),
+              selectizeInput(
+                inputId = "sel_gene_ma_nm",
+                label = "Select which significant genes (by name) to highlight :",
+                choices = NULL,
+                multiple = TRUE
+              ),
+              selectizeInput(
+                inputId = "sel_gene_ma_id",
+                label = "Select which significant genes (by id) to highlight :",
+                choices = NULL,
+                multiple = TRUE
+              ),
+              sliderInput(
+                inputId = "lab_size_ma",
+                label = "Choose the size of the labels",
+                value = 3,
+                min = 1,
+                max = 4,
+                step = .25
+              )
+          ),
+          box(title = "Download",
+              status = "orange",
+              width = 4,
+              selectInput(
+                inputId = "format_ma",
+                label = "Format of the dowloaded plot",
+                choices = c("svg", "png", "pdf"),
+                selected = "pdf"
+              ),
+              downloadButton(
+                outputId = "down_ma",
+                label = "Download plot"
+              )
+          )
+        )
+      ),
+ 
       
 # Volcano tab UI ---------------------------------------------------------------
       
