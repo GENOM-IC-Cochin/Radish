@@ -24,20 +24,6 @@ x_max_abs <- function(donnees) {
   max(c(abs(min_x), abs(max_x)))
 }
 
-# find_symb_col <- function(input_table) {
-#     # cols <- colnames(input_table)
-#     # col_symb_test <- str_detect(cols, "symbol|name$")
-#     #     shinyFeedback::feedbackDanger(
-#     #         "inp_res_table",
-#     #         !any(col_symb_test),
-#     #         "The table does not contain a symbol (gene name) column"
-#     #     )
-#     #     req(any(col_symb_test))
-#     #     col_symbol <- which(col_symb_test)
-#     #     colnames(input_table)[col_symbol] <- "symbol"
-#     #     return(input_table)
-#   input_table %>% rename("symbol" = 9)
-# }
 
 tidy_symbols <- function(symbols) {
     # Makes symbols unique, if they are not NA
@@ -147,12 +133,13 @@ volcano_plot <- function(plot_data,
 }
 
 recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
-  # Fonction qui recalcule la normalisation DESeq2, puis le rlog pour la PCA
+  # Fonction qui recalcule la normalisation DESeq2, puis le rlog/vst pour la PCA
   # Nécéssaire si on élimine un échantillon considéré comme outlier
   dds <- DESeqDataSetFromTximport(txi.rsem, configuration, ~ 1)
   dds <- dds[, -drop_samp]
   dds <- estimateSizeFactors(dds)
-  idx <- rowSums( counts(dds, normalized=TRUE) >= 10 ) >= 3 # filter out genes where there are less than 3 samples with normalized counts greater than or equal to 10.
+  # filter out genes where there are less than 3 samples with normalized counts greater than or equal to 10.
+  idx <- rowSums(DESeq2::counts(dds, normalized = TRUE) >= 10) >= 3 
   dds <- dds[idx, ]
   dds <- estimateDispersions(dds) # Pas de DESeq(), car le nombre d'ech peut alors être insuffisant
   if(ncol(dds) <= 30) {

@@ -53,7 +53,7 @@ contrastes <- eventReactive(data_loaded(), {
 
 txi.rsem <- eventReactive(data_loaded(), {
   req(data_loaded())
-  data_loaded()[["contrasteList"]]
+  data_loaded()[["txi.rsem"]]
 })
  
 
