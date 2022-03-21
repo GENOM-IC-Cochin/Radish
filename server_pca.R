@@ -13,10 +13,10 @@ pca_data <- eventReactive({
   config()
   input$pca_button
 },{
-  ntop <- 500
   req(rld(),
       config(),
       txi.rsem())
+  ntop <- 500
   # Exclude samples
   if(!is.null(input$excl_samp)) {
     withProgress(message = "Recalculating...",{
@@ -35,7 +35,7 @@ pca_data <- eventReactive({
   variance <- eig*100/sum(eig)
   
   PCAdata<-as.data.frame(pc$x)
-  # Join with condition, on name, to be sure of matches
+  # Join with condition, on name, to be sure of matches between condition and sample
   PCAdata <- PCAdata %>%
     rownames_to_column(var = "Name") %>%
     inner_join(config(), by = "Name") %>%

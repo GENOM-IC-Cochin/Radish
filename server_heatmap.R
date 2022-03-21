@@ -1,4 +1,5 @@
 condition_possibles <- reactive({
+  # Conditions from which choice is possible
     req(
         config(),
         all_results()
@@ -14,7 +15,19 @@ condition_possibles <- reactive({
   }
 })
 
+
+observeEvent(input$contrast_act, {
+  # Checkbox to switch between the two possible heatmaps UI
+  updateCheckboxInput(
+    inputId = "top_gene",
+    label = paste("Top differentially expressed genes",
+                  "from contrast", input$contrast_act)
+  )
+})
+
+
 observeEvent(input$top_gene,
+# Switch between top gene heatmap UI and selected genes heatmap UI
              updateTabsetPanel(
                inputId = "settings",
                selected = ifelse(input$top_gene,
@@ -23,23 +36,18 @@ observeEvent(input$top_gene,
              )
 )
 
-observeEvent(input$contrast_act, {
-  updateCheckboxInput(
-    inputId = "top_gene",
-    label = paste("I want the heatmap to contain the top significant genes",
-                  "from the current contrast", input$contrast_act)
-  )
-})
-
 observeEvent(condition_possibles(),
   updateCheckboxGroupInput(
     inputId = "sel_cond",
     choices = condition_possibles(),
+    # Selected, tout, car si ce Checkbox... est pas affiché (top genes)
+    # il doit alors contenir les deux conditions en contraste
     selected = condition_possibles(),
   )
 )
 
 observeEvent(counts(),
+  # Updates the max number of top genes based on the total number of genes
   updateNumericInput(
     inputId = "nb_top_gene",
     max = nrow(counts())
@@ -79,6 +87,8 @@ heatmap_data <- eventReactive(input$draw_hm, {
       res(),
       input$sel_cond)
   # sélection du nom des échantillons
+  # Basé sur les conditions selectionnees
+  # Ou par defaut dans le cas top gene
   echantillons <- config() %>%
     filter(Condition %in% input$sel_cond) %>%
     pull(Name)
@@ -106,9 +116,12 @@ heatmap_data <- eventReactive(input$draw_hm, {
 
 
 # Met en correspondance les conditions choisies et les échantillons
+# (Pour les couleurs de la heatmap)
+# retour : un df avec la correspondance désirée
 annotation_col <- eventReactive({
   config()
   input$draw_hm
+  input$sel_cond
 },{
   config() %>%
       filter(Condition %in% input$sel_cond) %>%
@@ -117,14 +130,21 @@ annotation_col <- eventReactive({
 })
 
 # A partir des annotations, leur affecte une couleur
+# retour : une liste avec la correspondance selon le format de pheatmap
+# pour le paramètre annotation_colors
 annotation_colors <- eventReactive({
   config()
   annotation_col()
 }, {
+  # Au cas où il y ait un jour plusieurs catégories (malade, traitement ...)
+  # Aujourd'hui de longueur 1
   ret <- vector(mode = "list", length = ncol(annotation_col()))
+  # on y met le nom des échantillons
   names(ret) <- colnames(annotation_col())
   for (name in names(ret)) {
+    # quelle condition correspond à ces ech
     quels_cond <- unique(annotation_col()[, name]) 
+    # condition_colors : variable globale
     ret[[name]] <- setNames(condition_colors[1:length(quels_cond)], quels_cond)
   }
   ret
@@ -136,6 +156,7 @@ heatmap_plot <- eventReactive(input$draw_hm, {
       annotation_colors())
       
   pheatmap( # C'est le traducteur de ComplexHeatmap
+    name = "z-score",
     mat = heatmap_data(),
     color = rev(brewer.pal(9, input$palette_hm)),
     cluster_rows = TRUE,

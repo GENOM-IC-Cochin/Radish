@@ -36,7 +36,7 @@ heatmap_panels <- tabsetPanel(
         ),
         sliderInput(
             "fontsize_hm",
-            "Choose the row fontsize",
+            "Choose the row names fontsize",
             min = 3,
             max = 12,
             value = 10,
@@ -186,7 +186,7 @@ ui <- dashboardPage(
         )
       ),
 
-# MAplot tab UI ----------------------------------------------------------------
+# MAplot Tab UI ----------------------------------------------------------------
       
       tabItem(
         tabName = "maplot",
@@ -295,7 +295,7 @@ ui <- dashboardPage(
       ),
  
       
-# Volcano tab UI ---------------------------------------------------------------
+# Volcano Tab UI ---------------------------------------------------------------
       
       tabItem(
         tabName = "volcano",

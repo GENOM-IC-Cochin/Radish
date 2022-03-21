@@ -115,6 +115,7 @@ cols_to_hide <- eventReactive(res(),{
   which(!(colnames(res()) %in% base_table_columns)) - 1
 })
 
+# Row selection in the DT table
 proxy <- dataTableProxy("genes")
 
 observeEvent(input$select_genes, {
