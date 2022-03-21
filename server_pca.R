@@ -46,7 +46,7 @@ pca_data <- eventReactive({
 
 output$pca <- renderPlot({
   req(pca_data())
-  my_lil_pca(pca_data(), theme = input$theme_pca)
+  my_pca(pca_data(), theme = input$theme_pca)
 })
 
 output$scree <- renderPlot({

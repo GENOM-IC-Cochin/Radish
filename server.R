@@ -14,6 +14,9 @@ server <- function(input, output, session) {
   })
 
   source(file = "./utils.R", local = TRUE)
+  source(file = "./my_pca.R", local = TRUE)
+  source(file = "./my_volcanoplot.R", local = TRUE)
+  source(file = "./my_maplot.R", local = TRUE)
   source(file = "./server_pca.R", local = TRUE)
   source(file = "./server_volcano.R", local = TRUE)
   source(file = "./server_ma.R", local = TRUE)

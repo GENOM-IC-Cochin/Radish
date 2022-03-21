@@ -65,7 +65,7 @@ volc_data <- reactive({
 
 volc_plot <- eventReactive(input$draw_vp, {
     req(volc_data())
-    volcano_plot(
+    my_volcanoplot(
         plot_data = volc_data(),
         titre = input$plot_title,
         colors = c("up" = input$up_col, "down" = input$down_col),
