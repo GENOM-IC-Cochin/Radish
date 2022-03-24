@@ -108,7 +108,7 @@ VolcanoUI <- function(id) {
             multiple = TRUE
           ),
           sliderInput(
-            inputId = ns("vp_lab_size"),
+            inputId = ns("lab_size"),
             label = "Choose the size of the labels",
             value = 3,
             min = 1,
