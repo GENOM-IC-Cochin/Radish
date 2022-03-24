@@ -18,3 +18,4 @@
 /.RData
 /demo_data.Rdata
 /test.rds
+/.Rbuildignore

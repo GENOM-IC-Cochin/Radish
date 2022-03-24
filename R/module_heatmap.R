@@ -1,5 +1,4 @@
 # Heatmap module
-source("./module_input.R")
 
 HeatmapUI <- function(id) {
   ns <- NS(id)

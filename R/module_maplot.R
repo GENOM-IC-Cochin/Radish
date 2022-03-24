@@ -1,6 +1,4 @@
 # Maplot module
-source("./my_maplot.R")
-source("./module_input.R")
 
 # UI ---------------------------------------------------------------------------
 MAplotUI <- function(id) {

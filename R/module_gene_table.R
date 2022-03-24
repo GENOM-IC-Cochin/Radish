@@ -1,5 +1,4 @@
 # Gene table module
-source("./module_input.R")
 
 # UI ---------------------------------------------------------------------------
 GeneTableUI <- function(id) {

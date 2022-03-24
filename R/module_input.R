@@ -1,5 +1,4 @@
 # Module for input
-source("./utils.R")
 
 # UI ---------------------------------------------------------------------------
 InputUI <- function(id) {

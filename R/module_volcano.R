@@ -1,6 +1,4 @@
 # Module for the volcano plot
-source("./module_input.R")
-source("./my_volcanoplot.R")
 
 # UI ---------------------------------------------------------------------------
 VolcanoUI <- function(id) {

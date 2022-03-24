@@ -22,11 +22,11 @@ library(ragg)
 library(markdown)
 
 # Temporary source
-source("./module_gene_table.R")
-source("./module_pca.R")
-source("./module_maplot.R")
-source("./module_volcano.R")
-source("./module_heatmap.R")
+# source("./module_gene_table.R")
+# source("./module_pca.R")
+# source("./module_maplot.R")
+# source("./module_volcano.R")
+# source("./module_heatmap.R")
 
 # Preliminary code
 # update max upload size to 1000mB
@@ -62,14 +62,16 @@ ShareApp <- function() {
   global_theme <- create_theme( # one day in its own css
     theme = "flatly",
     adminlte_color(
-        light_blue = "#006499"
+      light_blue = "#006499"
     ),
     adminlte_global(
-        content_bg = "#FFF",
-        info_box_bg = "#EEF0F6"
+      content_bg = "#FFF",
+      info_box_bg = "#EEF0F6"
     )
-)
-  ui <- ui <- dashboardPage(
+  )
+  
+# UI ---------------------------------------------------------------------------
+  ui <- dashboardPage(
     header = dashboardHeader(
       title = "SHARE",
       leftUi = tagList(
@@ -103,7 +105,7 @@ ShareApp <- function() {
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap"),
-        img(src = "./www/LOGO_GENOM'IC_WHITE.svg",
+        img(src = "./www/logo.svg",
             style="position:fixed;bottom:0;margin:0 0 15px 25px;",
             alt = "GENOM'IC")
       )
@@ -233,7 +235,7 @@ ShareApp <- function() {
       session = session
     )
   }
-
-    
+  
+  
   shinyApp(ui, server)
 }
