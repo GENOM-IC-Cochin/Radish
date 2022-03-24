@@ -103,8 +103,9 @@ ShareApp <- function() {
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap"),
-        img(src = "www/LOGO_GENOM'IC_WHITE.svg",
-            style="position:fixed;bottom:0;margin:0 0 15px 25px;")
+        img(src = "./www/LOGO_GENOM'IC_WHITE.svg",
+            style="position:fixed;bottom:0;margin:0 0 15px 25px;",
+            alt = "GENOM'IC")
       )
     ),
     body = dashboardBody(

@@ -35,19 +35,6 @@ HeatmapUI <- function(id) {
         choices = NULL,
         multiple = TRUE,
         options = list(maxItems = 200)
-      ),
-      checkboxInput(
-        ns("show_names"),
-        "Show gene names",
-        value = FALSE
-      ),
-      sliderInput(
-        ns("fontsize"),
-        "Choose the row names fontsize",
-        min = 3,
-        max = 12,
-        value = 10,
-        step = .5
       )
     )
   )
@@ -75,6 +62,19 @@ HeatmapUI <- function(id) {
               rownames_to_column() %>%
               pull(rowname),
             selected = "RdYlBu"
+          ),
+          checkboxInput(
+            ns("show_names"),
+            "Show gene names",
+            value = FALSE
+          ),
+          sliderInput(
+            ns("fontsize"),
+            "Choose the row names fontsize",
+            min = 3,
+            max = 12,
+            value = 10,
+            step = .5
           ),
           
           parameters_tab,
@@ -211,8 +211,11 @@ HeatmapServer <- function(
           filter(log2FoldChange > 1 | log2FoldChange < -1,
                  padj < 0.05) %>%
           slice_min(order_by = padj, n = input$nb_top_gene) %>%
+          mutate(name = coalesce(symbol, Row.names)) %>%
+          remove_rownames() %>%
+          column_to_rownames(var = "name") %>%
           select(all_of(echantillons)) %>%
-          as.matrix()
+          as.matrix(., rownames = TRUE)
       } else {
         # Si l'on veut sélectionner à la main
         counts() %>%
@@ -221,7 +224,7 @@ HeatmapServer <- function(
           mutate(name = coalesce(symbol, Row.names)) %>%
           column_to_rownames(var = "name") %>%
           select(all_of(echantillons)) %>%
-          as.matrix()
+          as.matrix(., rownames = TRUE)
       }
     })
     
