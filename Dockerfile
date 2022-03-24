@@ -1,4 +1,4 @@
-FROM rocker/r-ver:4.0.5
+FROM rocker/r-ver:4.1.2
 LABEL maintainer="Paul Etheimer <paul.etheimer@inserm.fr>"
 RUN apt-get update && apt-get install -y --no-install-recommends \
     sudo \
@@ -18,6 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libjpeg-dev \
 # for colourpicker
     pandoc \
+# for devtools
+    git \
+    make \
+    libcurl4-openssl-dev \
+    libgit2-dev \
 # for DESeq2
     libxml2-dev \
 # for stringr
@@ -25,7 +30,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install renv
-ENV RENV_VERSION 0.14.0
+ENV RENV_VERSION 0.15.4
 RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
 RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
 RUN addgroup --system app \
@@ -35,5 +40,6 @@ COPY . .
 RUN chown app:app -R /home/app
 USER app
 RUN R -e 'renv::restore()'
+RUN R -e 'devtools::load_all()'
 EXPOSE 3838
-CMD ["R", "-e", "shiny::runApp('/home/app', port = 3838, host = '0.0.0.0')"]
+CMD ["R", "-e", "ShareApp()"]

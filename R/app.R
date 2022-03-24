@@ -21,13 +21,6 @@ library(svglite)
 library(ragg)
 library(markdown)
 
-# Temporary source
-# source("./module_gene_table.R")
-# source("./module_pca.R")
-# source("./module_maplot.R")
-# source("./module_volcano.R")
-# source("./module_heatmap.R")
-
 # Preliminary code
 # update max upload size to 1000mB
 options(shiny.maxRequestSize = 1000 * 1024^2)
@@ -105,7 +98,7 @@ ShareApp <- function() {
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap"),
-        img(src = "./www/logo.svg",
+        img(src = "www/logo.svg",
             style="position:fixed;bottom:0;margin:0 0 15px 25px;",
             alt = "GENOM'IC")
       )
@@ -237,5 +230,9 @@ ShareApp <- function() {
   }
   
   
-  shinyApp(ui, server)
+  shinyApp(ui,
+           server,
+           options = list(
+             port = 3838
+           ))
 }
