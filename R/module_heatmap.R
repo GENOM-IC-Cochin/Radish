@@ -263,7 +263,7 @@ HeatmapServer <- function(
       ret
     })
     
-    plot <- eventReactive(input$draw, {
+    cur_plot <- eventReactive(input$draw, {
       req(data(),
           annotation_col(),
           annotation_colors())
@@ -285,7 +285,7 @@ HeatmapServer <- function(
     })
     
     output$heatmap <- renderPlot({
-      plot()
+      cur_plot()
     })
     
     
@@ -301,7 +301,7 @@ HeatmapServer <- function(
         } else if (input$format == "svg") {
           svglite(file, width = 7, height = 7)
         }
-        draw(plot())
+        draw(cur_plot())
         dev.off()
       }
     )

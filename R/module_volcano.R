@@ -117,16 +117,7 @@ VolcanoUI <- function(id) {
       box(title = "Download",
           status = "orange",
           width = 4,
-          selectInput(
-            inputId = ns("format"),
-            label = "Format of the dowloaded plot",
-            choices = c("svg", "png", "pdf"),
-            selected = "pdf"
-          ),
-          downloadButton(
-            outputId = ns("down"),
-            label = "Download plot"
-          )
+          DownloadUI(ns("dw"))
       )
     )
   )
@@ -215,7 +206,7 @@ VolcanoServer <- function(id,
                pval_cutoff = input$pval_cut)
     })
     
-    plot <- eventReactive(input$draw, {
+    cur_plot <- eventReactive(input$draw, {
       req(data())
       my_volcanoplot(
         plot_data = data(),
@@ -233,20 +224,17 @@ VolcanoServer <- function(id,
     })
     
     output$volcano_plot <- renderPlot({
-      plot()
+      cur_plot()
     })
     
-    output$down <- downloadHandler(
-      filename = function() {
-        paste0("volcano_plot.", req(input$format))
-      },
-      content = function(file) {
-        ggsave(file, plot = req(plot()),
-               device = req(input$format),
-               height = (3.5 + 3.5 * input$ratio),
-               width = (3.5 + 3.5 / input$ratio),
-               dpi = 600)
-      }
+    DownloadServer(
+      id = "dw",
+      cur_plot = cur_plot,
+      plotname = reactive("volcano_plot"),
+      ratio = reactive(input$ratio),
+      input = input,
+      output = output,
+      session = session
     )
   })
 }
@@ -257,7 +245,7 @@ VolcanoApp <- function() {
   ui <- fluidPage(
     tabsetPanel(type = "tabs",
     tabPanel("input", InputUI("inp")),
-    tabPanel("Volcano PLot", VolcanoUI("v1"))
+    tabPanel("Volcano Plot", VolcanoUI("v1"))
     )
   )
   server <- function(input, output, session) {

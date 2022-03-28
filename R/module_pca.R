@@ -45,16 +45,7 @@ PcaUI <- function(id) {
     box(title = "Download",
         status = "orange",
         width = 4,
-        selectInput(
-          inputId = ns("format"),
-          label = "Format of the dowloaded plot",
-          choices = c("svg", "png", "pdf"),
-          selected = "pdf"
-        ),
-        downloadButton(
-          outputId = ns("down"),
-          label = "Download plot"
-        )
+        DownloadUI(ns("dw"))
     )
   )
   )
@@ -124,10 +115,13 @@ PcaServer <- function(id,
         column_to_rownames(var = "Name")
       list("data" = PCAdata, "variance" = variance)
     })
+    
+    cur_plot <- reactive(
+      my_pca(data(), theme = input$theme)
+    )
 
     output$pca <- renderPlot({
-      req(data())
-      my_pca(data(), theme = input$theme)
+      cur_plot()
     })
 
     output$scree <- renderPlot({
@@ -142,18 +136,14 @@ PcaServer <- function(id,
         theme_bw()
     })
     
-    output$down <- downloadHandler(
-      filename = function() {
-        paste0("pca.", input$format)
-      },
-      content = function(file) {
-        ggsave(file, plot = my_pca(req(data()), theme = input$theme),
-               device = req(input$format),
-               width = 7,
-               height = 5,
-               units = "in",
-               dpi = 600)
-      }
+    DownloadServer(
+      id = "dw",
+      cur_plot = cur_plot,
+      plotname = reactive("pcaplot"),
+      ratio = reactive(1),
+      input = input,
+      output = output,
+      session = session
     )
     
   })
