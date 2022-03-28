@@ -69,18 +69,7 @@ MAplotUI <- function(id) {
                 label = "Choose the nonsignificant legend name",
                 value = "ns"
               ),
-              selectizeInput(
-                inputId = ns("sel_gene_nm"),
-                label = "Select which significant genes (by name) to highlight :",
-                choices = NULL,
-                multiple = TRUE
-              ),
-              selectizeInput(
-                inputId = ns("sel_gene_id"),
-                label = "Select which significant genes (by id) to highlight :",
-                choices = NULL,
-                multiple = TRUE
-              ),
+              GeneSelectUI(ns("gnsel")),
               sliderInput(
                 inputId = ns("lab_size"),
                 label = "Choose the size of the labels",
@@ -121,31 +110,15 @@ MAplotServer <- function(id,
   stopifnot(is.reactive(sel_genes_names))
   moduleServer(id, function(input, output, session){
     
-    observeEvent({
-      data()
-      sel_genes_names()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_nm",
-        choices = data() %>%
-          pull(symbol),
-        server = TRUE,
-        selected = sel_genes_names()
-      )
-    })
-    
-    observeEvent({
-      data()
-      sel_genes_ids()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_id",
-        choices = data() %>%
-          pull(Row.names),
-        server = TRUE,
-        selected = sel_genes_ids()
-      )
-    })
+    genes_selected <- GeneSelectServer(
+      id = "gnsel",
+      src_table = res,
+      sel_genes_names = sel_genes_names,
+      sel_genes_ids = sel_genes_ids,
+      input = input,
+      output = output,
+      session = session
+    )
     
     observeEvent(res(), {
       contr <- strsplit(contrast_act(), "_") %>% unlist()
@@ -172,7 +145,8 @@ MAplotServer <- function(id,
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
         ratio = input$ratio,
-        selected_genes = c(input$sel_gene_nm, input$sel_gene_id),
+        selected_genes = c(genes_selected$sel_genes_names(),
+                           genes_selected$sel_genes_ids()),
         theme = input$theme,
         label_size = input$lab_size,
         pval_cutoff = req(input$pval_cut) 

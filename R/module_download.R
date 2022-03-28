@@ -1,5 +1,6 @@
 # Module for (ggsave) download
 
+# UI ---------------------------------------------------------------------------
 DownloadUI <- function(id) {
   ns <- NS(id)
   tagList(
@@ -16,6 +17,8 @@ DownloadUI <- function(id) {
   )
 }
 
+
+# Server -----------------------------------------------------------------------
 DownloadServer <- function(id, cur_plot, plotname, ratio, input, output, session) {
   stopifnot(is.reactive(cur_plot))
   stopifnot(is.reactive(plotname))
@@ -38,6 +41,7 @@ DownloadServer <- function(id, cur_plot, plotname, ratio, input, output, session
 }
 
 
+# Test app ---------------------------------------------------------------------
 DownloadApp <- function() {
   ui <- fluidPage(
     plotOutput("plot"),

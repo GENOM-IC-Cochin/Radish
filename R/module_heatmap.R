@@ -21,20 +21,7 @@ HeatmapUI <- function(id) {
     tabPanel(
       "all",
       value="all",
-      selectizeInput(
-        ns("sel_gene_nm"),
-        "Select genes (by name) present on the heatmap",
-        choices = NULL,
-        multiple = TRUE,
-        options = list(maxItems = 200)
-      ),
-      selectizeInput(
-        ns("sel_gene_id"),
-        "Select genes (by id) present on the heatmap",
-        choices = NULL,
-        multiple = TRUE,
-        options = list(maxItems = 200)
-      )
+      GeneSelectUI(ns("gnsel"))
     )
   )
   
@@ -166,29 +153,15 @@ HeatmapServer <- function(
                  )
     )
     
-    observeEvent({
-      counts()
-      sel_genes_names()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_nm",
-        choices = as.vector(counts()$symbol),
-        server = TRUE,
-        selected = sel_genes_names()
-      )
-    })
-    
-    observeEvent({
-      counts()
-      sel_genes_ids()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_id",
-        choices = as.vector(counts()$Row.names),
-        server = TRUE,
-        selected = sel_genes_ids()
-      )
-    })
+    genes_selected <- GeneSelectServer(
+      id = "gnsel",
+      src_table = counts,
+      sel_genes_names = sel_genes_names,
+      sel_genes_ids = sel_genes_ids,
+      input = input,
+      output = output,
+      session = session
+    ) 
     
     data <- eventReactive(input$draw, {
       req(input$sel_cond,
@@ -218,8 +191,8 @@ HeatmapServer <- function(
       } else {
         # Si l'on veut sélectionner à la main
         counts() %>%
-          filter(symbol %in% input$sel_gene_nm |
-                   Row.names %in% input$sel_gene_id) %>%
+          filter(symbol %in% genes_selected$sel_genes_names() |
+                   Row.names %in% genes_selected$sel_genes_ids()) %>%
           mutate(name = coalesce(symbol, Row.names)) %>%
           column_to_rownames(var = "name") %>%
           select(all_of(echantillons)) %>%
@@ -241,6 +214,7 @@ HeatmapServer <- function(
         select(-File) %>%
         column_to_rownames(var = "Name")
     })
+    
     
     # A partir des annotations, leur affecte une couleur
     # retour : une liste avec la correspondance selon le format de pheatmap

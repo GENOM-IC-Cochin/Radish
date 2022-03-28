@@ -93,18 +93,7 @@ VolcanoUI <- function(id) {
             label = "Choose the nonsignificant legend name",
             value = "ns"
           ),
-          selectizeInput(
-            inputId = ns("sel_gene_nm"),
-            label = "Select which significant genes (by name) to highlight :",
-            choices = NULL,
-            multiple = TRUE
-          ),
-          selectizeInput(
-            inputId = ns("sel_gene_id"),
-            label = "Select which significant genes (by id) to highlight :",
-            choices = NULL,
-            multiple = TRUE
-          ),
+          GeneSelectUI(ns("gnsel")),
           sliderInput(
             inputId = ns("lab_size"),
             label = "Choose the size of the labels",
@@ -162,31 +151,15 @@ VolcanoServer <- function(id,
     })
     
     
-    observeEvent({
-      data()
-      sel_genes_names()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_nm",
-        choices = data() %>%
-          pull(symbol),
-        server = TRUE,
-        selected = sel_genes_names()
-      )
-    })
-    
-    observeEvent({
-      data()
-      sel_genes_ids()
-    }, {
-      updateSelectizeInput(
-        inputId = "sel_gene_id",
-        choices = data() %>%
-          pull(Row.names),
-        server = TRUE,
-        selected = sel_genes_ids()
-      )
-    })
+    genes_selected <- GeneSelectServer(
+      id = "gnsel",
+      src_table = res,
+      sel_genes_names = sel_genes_names,
+      sel_genes_ids = sel_genes_ids,
+      input = input,
+      output = output,
+      session = session
+    )
     
     observeEvent(res(), {
       contr <- strsplit(contrast_act(), "_") %>% unlist()
@@ -216,7 +189,7 @@ VolcanoServer <- function(id,
         axis_max = c(input$x_max, input$y_max),
         ratio = input$ratio,
         theme = input$theme,
-        selected_genes = c(input$sel_gene_nm, input$sel_gene_id),
+        selected_genes = c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids()),
         label_size = input$lab_size,
         lfc_cutoff = req(input$lfc_cut),
         pval_cutoff =req(input$pval_cut) 
