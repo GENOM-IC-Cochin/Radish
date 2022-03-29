@@ -11,6 +11,13 @@ HeatmapUI <- function(id) {
       "diff",
       value="diff",
       numericInput(
+        ns("lfc_cutoff"),
+        "Select an absolute Log(FoldChange) cutoff for the genes",
+        value = 1,
+        min = 0,
+        step = .25
+      ),
+      numericInput(
         ns("nb_top_gene"),
         "Select the number of top differentially expressed genes",
         value = 100,
@@ -180,8 +187,7 @@ HeatmapServer <- function(
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
         res() %>%
-          filter(log2FoldChange > 1 | log2FoldChange < -1,
-                 padj < 0.05) %>%
+          filter(abs(log2FoldChange) > input$lfc_cutoff) %>%
           slice_min(order_by = padj, n = input$nb_top_gene) %>%
           mutate(name = coalesce(symbol, Row.names)) %>%
           remove_rownames() %>%
