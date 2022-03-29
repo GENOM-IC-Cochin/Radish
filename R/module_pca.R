@@ -92,7 +92,7 @@ PcaServer <- function(id,
       # Exclude samples
       if(!is.null(input$excl_samp)) {
         withProgress(message = "Recalculating...",{
-          drop_samp <- which((config()$Name) %in% input$excl_samp)
+          drop_samp <- which((colnames(txi.rsem()$counts)) %in% input$excl_samp)
           rld_tr <- recalculate_rld_pca(txi.rsem(), drop_samp, config()) 
         })
       } else {
