@@ -58,8 +58,10 @@ InputServer <- function(id, contrast_act, input, output, session) {
       tmp <- vector(mode = "list", length = length(data_loaded()[["all_results"]]))
       names(tmp) <- names(data_loaded()[["all_results"]]) 
       for (contraste in names(data_loaded()[["all_results"]])) {
-        tmp[[contraste]] <- data_loaded()[["all_results"]][[contraste]] %>% dplyr::rename("symbol" = 9)
+        tmp[[contraste]] <- data_loaded()[["all_results"]][[contraste]] %>% 
+          dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]] %<>%
+        # Noms de gènes "" -> NA
           mutate(across(everything(), na_if, "")) 
         tmp[[contraste]]$symbol %<>% 
           tidy_symbols()

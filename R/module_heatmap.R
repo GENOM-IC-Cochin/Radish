@@ -17,12 +17,18 @@ HeatmapUI <- function(id) {
         min = 0,
         step = .25
       ),
+      sliderTextInput(
+        inputId = ns("pval_cutoff"),
+        label = "Select an adjusted pvalue cutoff for the genes",
+        choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
+        selected = 0.05
+      ),
       numericInput(
         ns("nb_top_gene"),
-        "Select the number of top differentially expressed genes",
+        "Select the number of top differentially expressed genes (max 2000)",
         value = 100,
         min = 0,
-        max = 20000
+        max = 2000
       ),
     ),
     tabPanel(
@@ -34,59 +40,73 @@ HeatmapUI <- function(id) {
   
   tagList(
     fluidRow(
-      box(title = "Settings",
-          status = "orange",
-          width = 3,
-          selectInput(
-            inputId = ns("top_gene"),
-            label = "Choose the Heatmap",
-            choices = c("Top genes from current contrast" = "diff",
-                        "Selected genes" = "all")
-          ),
-          checkboxGroupInput(
-            inputId = ns("sel_cond"),
-            label = "Choose the conditions",
-          ),
-          selectInput(
-            inputId = ns("palette"),
-            label = "Choose the color palette of the heatmap",
-            choices = brewer.pal.info %>%
-              filter(category == "div" & colorblind == TRUE) %>%
-              rownames_to_column() %>%
-              pull(rowname),
-            selected = "RdYlBu"
-          ),
-          checkboxInput(
-            ns("show_names"),
-            "Show gene names",
-            value = FALSE
-          ),
-          sliderInput(
-            ns("fontsize"),
-            "Choose the row names fontsize",
-            min = 3,
-            max = 12,
-            value = 10,
-            step = .5
-          ),
-          
-          parameters_tab,
-          actionButton(ns("draw"),
-                       "Draw heatmap",
-                       class = "btn-warning")
+      column(width = 3,
+             box(title = "Settings",
+                 status = "orange",
+                 width = 12,
+                 selectInput(
+                   inputId = ns("top_gene"),
+                   label = "Choose the Heatmap",
+                   choices = c("Top genes from current contrast" = "diff",
+                               "Selected genes" = "all")
+                 ),
+                 checkboxGroupInput(
+                   inputId = ns("sel_cond"),
+                   label = "Choose the conditions",
+                 ),
+                 selectInput(
+                   inputId = ns("palette"),
+                   label = "Choose the color palette of the heatmap",
+                   choices = brewer.pal.info %>%
+                     filter(category == "div" & colorblind == TRUE) %>%
+                     rownames_to_column() %>%
+                     pull(rowname),
+                   selected = "RdYlBu"
+                 ),
+                 checkboxInput(
+                   ns("show_names"),
+                   "Show gene names",
+                   value = FALSE
+                 ),
+                 sliderInput(
+                   ns("fontsize"),
+                   "Choose the row names fontsize",
+                   min = 3,
+                   max = 12,
+                   value = 10,
+                   step = .5
+                 ),
+                 
+                 parameters_tab,
+                 htmlOutput(ns("gene_number")),
+                 actionButton(ns("draw"),
+                              "Draw heatmap",
+                              class = "btn-warning")
+             ),
+             box(title = "Information",
+                 status = "orange",
+                 width = 12,
+                 HTML(paste("<p> <strong> Why only 2000 rows maximum? </strong> </p>",
+                            "<p> If one goes over 1080, (or 2096 in the case of a 4k screen)",
+                            "genes, then there are less pixels than rows in the matrix",
+                            "and the results displayed is a sort of mean of multiple rows.",
+                            "It is well explained <a href='https://gdevailly.netlify.app/post/plotting-big-matrices-in-r/'>here</a>.",
+                            "If you are still willing to obtain such a matrix, please contact the developpers </p>")))
       ),
-      box(title = "Heatmap",
-          status = "primary",
-          width = 9,
-          plotOutput(ns("heatmap")),
-          selectInput(inputId = ns("format"),
-                      label = "Format of the downloaded plot :",
-                      choices = c("png", "pdf", "svg"),
-                      selected = "pdf"),
-          downloadButton(
-            outputId = ns("down"),
-            label = "Download plot"
-          )
+      column(width = 9,
+             box(title = "Heatmap",
+                 status = "primary",
+                 width = 12,
+                 plotOutput(ns("heatmap")),
+                 selectInput(inputId = ns("format"),
+                             label = "Format of the downloaded plot :",
+                             choices = c("png", "pdf", "svg"),
+                             selected = "pdf"),
+                 downloadButton(
+                   outputId = ns("down"),
+                   label = "Download plot"
+                 )
+             )
       )
     )
   )
@@ -115,6 +135,14 @@ HeatmapServer <- function(
   stopifnot(is.reactive(sel_genes_names))
   
   moduleServer(id, function(input, output, session) {
+    iv <- InputValidator$new()
+    iv$add_rule("nb_top_gene", function(value) {
+      if (value > 2000) {
+        "Maximum : 2000"
+      }
+    }
+    )
+    iv$enable()
     
     condition_possibles <- reactive({
       # Conditions from which choice is possible
@@ -152,13 +180,12 @@ HeatmapServer <- function(
                  )
     )
     
-    observeEvent(counts(),
-                 # Updates the max number of top genes based on the total number of genes
-                 updateNumericInput(
-                   inputId = "nb_top_gene",
-                   max = nrow(counts())
-                 )
-    )
+   
+    output$gene_number <- renderUI({
+      req(data())
+      HTML(paste("<p>", nrow(data()), "genes are currently displayed on the heatmap </p>"))
+    })
+    
     
     genes_selected <- GeneSelectServer(
       id = "gnsel",
@@ -175,7 +202,9 @@ HeatmapServer <- function(
           config(),
           counts(),
           res(),
-          input$sel_cond)
+          input$lfc_cutoff,
+          input$pval_cutoff)
+      req(iv$is_valid())
       # sélection du nom des échantillons
       # Basé sur les conditions selectionnees
       # Ou par defaut dans le cas top gene
@@ -187,7 +216,8 @@ HeatmapServer <- function(
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
         res() %>%
-          filter(abs(log2FoldChange) > input$lfc_cutoff) %>%
+          filter(abs(log2FoldChange) > input$lfc_cutoff &
+                   padj < input$pval_cutoff) %>%
           slice_min(order_by = padj, n = input$nb_top_gene) %>%
           mutate(name = coalesce(symbol, Row.names)) %>%
           remove_rownames() %>%

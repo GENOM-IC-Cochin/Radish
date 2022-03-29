@@ -5,6 +5,7 @@ library(shiny)
 library(shinydashboard)
 library(shinydashboardPlus)
 library(shinyWidgets)
+library(shinyvalidate)
 library(DT)
 library(fresh)
 library(magrittr)
@@ -176,7 +177,7 @@ ShareApp <- function() {
       res = list_loaded$res,
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
-      contrast_act = reactive(input$contrast_act),
+      contrast_act = reactive(input$contrast_act), #should be recalculated with change
       input = input,
       output = output,
       session = session

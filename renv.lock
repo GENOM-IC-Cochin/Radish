@@ -1728,6 +1728,19 @@
         "shiny"
       ]
     },
+    "shinyvalidate": {
+      "Package": "shinyvalidate",
+      "Version": "0.1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "7dd55e732fa2b65f51be835473c30b67",
+      "Requirements": [
+        "glue",
+        "htmltools",
+        "rlang",
+        "shiny"
+      ]
+    },
     "snow": {
       "Package": "snow",
       "Version": "0.4-4",
