@@ -1,5 +1,15 @@
 # Module for input
 
+# All the objects expected in the input
+expected_data <- c(
+    "dataMerged",
+    "all_results",
+    "configuration",
+    "contrasteList",
+    "rld",
+    "txi.rsem"
+)
+
 # UI ---------------------------------------------------------------------------
 InputUI <- function(id) {
   ns <- NS(id)

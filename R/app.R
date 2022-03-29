@@ -24,15 +24,7 @@ library(markdown)
 # Preliminary code
 # update max upload size to 1000mB
 options(shiny.maxRequestSize = 1000 * 1024^2)
-# All the objects expected in the input
-expected_data <- c(
-    "dataMerged",
-    "all_results",
-    "configuration",
-    "contrasteList",
-    "rld",
-    "txi.rsem"
-)
+
 # The ggplot themes from which to choose
 themes_gg <- c(
     "Classic",
