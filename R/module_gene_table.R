@@ -214,7 +214,6 @@ GeneTableServer <- function(id,
     
     output$genes <- renderDT(
       expr = {
-        req(res())
         genes_table()
       },
       rownames = FALSE,

@@ -76,6 +76,13 @@ HeatmapUI <- function(id) {
                    value = 10,
                    step = .5
                  ),
+                 sliderInput(
+                   inputId = ns("ratio"),
+                   label = "Choose the plot aspect ratio",
+                   value = 1,
+                   min = 0.5,
+                   max = 2
+                 ),
                  
                  parameters_tab,
                  htmlOutput(ns("gene_number")),
@@ -97,7 +104,8 @@ HeatmapUI <- function(id) {
              box(title = "Heatmap",
                  status = "primary",
                  width = 12,
-                 plotOutput(ns("heatmap")),
+                 plotOutput(ns("heatmap"),
+                            height = "600px"),
                  selectInput(inputId = ns("format"),
                              label = "Format of the downloaded plot :",
                              choices = c("png", "pdf", "svg"),
@@ -180,7 +188,7 @@ HeatmapServer <- function(
                  )
     )
     
-   
+    
     output$gene_number <- renderUI({
       req(data())
       HTML(paste("<p>", nrow(data()), "genes are currently displayed on the heatmap </p>"))

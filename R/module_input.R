@@ -46,7 +46,7 @@ InputServer <- function(id, contrast_act, input, output, session) {
       # Permet de remplacer un nom variable (hgcn_symbol, mgi_symbol) par un nom fixe
       tmp <- data_loaded()[["dataMerged"]] %>%
         dplyr::rename("symbol" = dplyr::contains("symbol"))
-      # potentiellement lourd
+      # Noms de gènes "" -> NA
       tmp %<>% mutate(across(everything(), na_if, "")) 
       # Avoids duplicated symbol names
       tmp$symbol %<>% tidy_symbols()
