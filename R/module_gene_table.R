@@ -114,11 +114,14 @@ GeneTableServer <- function(id,
       # Fourni par DT
       input$genes_rows_selected
     },{
-      # res, pour avoir toutes les colonnes
-      genes_table()[input$genes_rows_selected, ] %>%
-        select(Row.names) %>%
-        inner_join(res(), by = "Row.names")
-    })
+      # res, pour avoir tous les chiffres significatifs
+        genes_rows <- input$genes_rows_selected
+        genes_table()[genes_rows, ] %>%
+          select(Row.names) %>%
+          inner_join(res(), by = "Row.names")
+    },
+    ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
+    )
     
     # For the choice in VP, MA and HM
     sel_genes_names <- eventReactive(
@@ -127,7 +130,9 @@ GeneTableServer <- function(id,
         sel_genes_table() %>%
           filter(!is.na(symbol)) %>%
           pull(symbol)
-      })
+      },
+      ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
+      )
     
     # For the choice in VP, MA and HM
     sel_genes_ids <- eventReactive(
@@ -135,7 +140,9 @@ GeneTableServer <- function(id,
       {
         sel_genes_table() %>%
           pull(Row.names)
-      })
+      },
+    ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
+      )
     
     output$read_items <- renderUI({
       names <- ids <- NULL
