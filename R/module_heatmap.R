@@ -291,6 +291,8 @@ HeatmapServer <- function(
         fontsize = 10,
         fontsize_row = input$fontsize,
         scale = "row",
+        heatmap_height = unit(5*(input$ratio^0.5), "in"),
+        heatmap_width = unit(5/(input$ratio^0.5), "in")
       )
     })
     
@@ -305,11 +307,19 @@ HeatmapServer <- function(
       },
       content = function(file) {
         if(input$format == "png") {
-          agg_png(file, width = 7, height = 7, units = "in", res = 600)
+          agg_png(file,
+                  width = 8/(input$ratio)^0.5,
+                  height = 8*(input$ratio)^0.5,
+                  units = "in",
+                  res = 600)
         } else if (input$format == "pdf") {
-          pdf(file)
+          pdf(file,
+              width = 7/(input$ratio)^0.5,
+              height = 7*(input$ratio)^0.5)
         } else if (input$format == "svg") {
-          svglite(file, width = 7, height = 7)
+          svglite(file,
+                  width = 8/(input$ratio)^0.5,
+                  height = 8*(input$ratio)^0.5)
         }
         draw(cur_plot())
         dev.off()
