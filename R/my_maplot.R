@@ -5,8 +5,7 @@ my_maplot <- function(plot_data,
                       ratio = 1,
                       selected_genes = NULL,
                       theme = "Classic",
-                      label_size = 3.8,
-                      pval_cutoff = 0.05) {
+                      label_size = 3.8) {
   color_points <- c(colors, "ns" = "black")
   alphas <- c("up" = 1, "down" = 1, "ns" = 0.3)
   

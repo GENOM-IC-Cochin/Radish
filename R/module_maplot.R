@@ -18,12 +18,7 @@ MAplotUI <- function(id) {
           box(title = "Aesthetics",
               status = "orange",
               width = 4,
-              sliderTextInput(
-                inputId = ns("pval_cut"),
-                label = "Adjusted pvalue limit for significance",
-                choices = c(0.0001, 0.001, 0.01, 0.05, 0.1),
-                selected = 0.05
-              ),
+              FilterUI(ns("fil"), list("pval" = 0.05)),
               colourInput(
                 inputId = ns("up_col"),
                 label = "Choose the color of the upregulated genes",
@@ -127,8 +122,6 @@ MAplotServer <- function(id,
     
     
     observeEvent(input$reset, {
-      updateSliderTextInput(session = session, "pval_cut", selected = 0.05)
-      updateColourInput(session = session, "up_col", value = "#fe7f00")
       updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
       updateSliderInput(inputId = "ratio", value = 1)
@@ -145,18 +138,12 @@ MAplotServer <- function(id,
       )
     })
     
-    data <- reactive({
-      # collé ici pour ne pas le recalculer,
-      #à chaque modif des paramètres de ma_plot
-      req(input$pval_cut)
-      res_ma(req(res()),
-             pval_cutoff = input$pval_cut)
-    })
+    filter_res <- FilterServer("fil", res)
     
     cur_plot <- eventReactive(input$draw, {
-      req(data())
+      req(filter_res$res_filtered())
       my_maplot(
-        plot_data = data(),
+        plot_data = filter_res$res_filtered(),
         title = input$plot_title,
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
@@ -165,7 +152,7 @@ MAplotServer <- function(id,
                            genes_selected$sel_genes_ids()),
         theme = input$theme,
         label_size = input$lab_size,
-        pval_cutoff = req(input$pval_cut) 
+        pval_cutoff = filter_res$pval
       )
     })
     

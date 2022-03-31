@@ -34,21 +34,8 @@ VolcanoUI <- function(id) {
             min = 0,
             max = 100,
             value = 10
-          ),     
-          sliderInput(
-            inputId = ns("lfc_cut"),
-            label = "LogFoldChange limit for significance",
-            min = 0,
-            max = 5,
-            value = 1,
-            step = .5
           ),
-          sliderTextInput(
-            inputId = ns("pval_cut"),
-            label = "Adjusted pvalue limit for significance",
-            choices = c(0.0001, 0.001, 0.01, 0.05, 0.1),
-            selected = 0.05
-          ),
+          FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
           colourInput(
             inputId = ns("up_col"),
             label = "Choose the color of the upregulated genes",
@@ -160,8 +147,6 @@ VolcanoServer <- function(id,
     
     
     observeEvent(input$reset, {
-      updateSliderInput(inputId = "lfc_cut", value = 1)
-      updateSliderTextInput(session = session, "pval_cut", selected = 0.05)
       updateColourInput(session = session, "up_col", value = "#fe7f00")
       updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
@@ -192,19 +177,12 @@ VolcanoServer <- function(id,
       )
     })
     
-    data <- reactive({
-      # collé ici pour ne pas le recalculer,
-      #à chaque modif des paramètres de volcano_plot
-      req(input$lfc_cut, input$pval_cut)
-      res_volc(req(res()),
-               lfc_cutoff = input$lfc_cut,
-               pval_cutoff = input$pval_cut)
-    })
+    filter_res <- FilterServer("fil", res)
     
     cur_plot <- eventReactive(input$draw, {
-      req(data())
+      req(filter_res)
       my_volcanoplot(
-        plot_data = data(),
+        plot_data = filter_res$res_filtered(),
         titre = input$plot_title,
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
@@ -213,8 +191,8 @@ VolcanoServer <- function(id,
         theme = input$theme,
         selected_genes = c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids()),
         label_size = input$lab_size,
-        lfc_cutoff = req(input$lfc_cut),
-        pval_cutoff =req(input$pval_cut) 
+        lfc_cutoff = filter_res$lfc(),
+        pval_cutoff = filter_res$pval()
       )
     })
     

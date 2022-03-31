@@ -53,31 +53,19 @@ recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
   }
 }
 
-
-res_volc <- function(deseq_results,
-                     lfc_cutoff = 1,
-                     pval_cutoff = 0.05) {
+res_filter <- function(deseq_results,
+                     lfc_filter = 0,
+                     pval_filter = 1) {
     #Ajoute la colonne sur l'expression significative
     deseq_results %>%
         mutate(sig_expr = factor(case_when(
-            log2FoldChange >= lfc_cutoff & padj <= pval_cutoff ~ "up",
-            log2FoldChange <= -lfc_cutoff & padj <= pval_cutoff ~ "down",
+            log2FoldChange >= lfc_filter & padj <= pval_filter ~ "up",
+            log2FoldChange <= -lfc_filter & padj <= pval_filter ~ "down",
             TRUE ~ "ns"
         ))) %>%
         mutate(sig_expr = relevel(sig_expr, "up"))
 }
 
-
-res_ma <- function(deseq_results,
-                   pval_cutoff = 0.05) {
-  deseq_results %>%
-    select(baseMean, log2FoldChange, symbol, padj, Row.names) %>%
-    mutate(sig_expr = factor(case_when(
-      log2FoldChange >= 0 & padj <= pval_cutoff ~ "up",
-      log2FoldChange <= 0 & padj <= pval_cutoff ~ "down",
-      TRUE ~ "ns"
-    )))
-}
 
 
 # For plotly plotting : 

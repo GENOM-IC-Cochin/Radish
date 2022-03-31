@@ -10,19 +10,7 @@ HeatmapUI <- function(id) {
     tabPanel(
       "diff",
       value="diff",
-      numericInput(
-        ns("lfc_cutoff"),
-        "Select an absolute Log(FoldChange) cutoff for the genes",
-        value = 1,
-        min = 0,
-        step = .25
-      ),
-      sliderTextInput(
-        inputId = ns("pval_cutoff"),
-        label = "Select an adjusted pvalue cutoff for the genes",
-        choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
-        selected = 0.05
-      ),
+      FilterUI(ns("fil"), default = list("pval" = 0.05, "lfc" = 1)),
       numericInput(
         ns("nb_top_gene"),
         "Select the number of top differentially expressed genes (max 2000)",
@@ -170,8 +158,6 @@ HeatmapServer <- function(
     
     
     observeEvent(input$reset, {
-      updateNumericInput(inputId = "lfc_cutoff", value = 1)
-      updateSliderTextInput(session = session, inputId = "pval_cutoff", selected = 0.05)
       updateNumericInput(inputId = "nb_top_gene", value = 100)
       updateSelectInput(inputId = "top_gene", selected = "diff")
       updateSelectInput(inputId = "palette", selected = "RdYlBu")
@@ -213,15 +199,15 @@ HeatmapServer <- function(
       src_table = counts,
       sel_genes_names = sel_genes_names,
       sel_genes_ids = sel_genes_ids
-    ) 
+    )
+    
+    res_filtered <- FilterServer("fil", res = res)$res_filtered
     
     data <- eventReactive(input$draw, {
       req(input$sel_cond,
           config(),
           counts(),
-          res(),
-          input$lfc_cutoff,
-          input$pval_cutoff)
+          res_filtered())
       req(iv$is_valid())
       # sélection du nom des échantillons
       # Basé sur les conditions selectionnees
@@ -233,9 +219,8 @@ HeatmapServer <- function(
       if(input$top_gene == "diff") {
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
-        res() %>%
-          filter(abs(log2FoldChange) > input$lfc_cutoff &
-                   padj < input$pval_cutoff) %>%
+        res_filtered() %>%
+          filter(sig_expr != "ns") %>%
           slice_min(order_by = padj, n = input$nb_top_gene) %>%
           mutate(name = coalesce(symbol, Row.names)) %>%
           remove_rownames() %>%
