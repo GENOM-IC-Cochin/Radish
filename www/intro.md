@@ -4,7 +4,7 @@ SHARE is a GENOM'IC tool for RNA-seq exploration. It uses data processed with GE
 
 **Usage :**
 
--   In the **Data** tab, load the `results.rds` file, provided in the `NGSXX-XX_Resultats` folder given to you by GENOM'IC.
+-   In the **Data** tab, load the `results.rds` file, provided in the `NGSXX-XX_Resultats` folder given to you by GENOM'IC. Or try the app with some demo data, taken from [this article](https://doi.org/10.1084/jem.20200853 "Autoimmunity affecting the biliary tract fuels the immunosurveillance of cholangiocarcinoma") by Paillet et al. (raw data otherwise available from Gene Expression Omnibus, under accession no. [GSE180289](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE180289 "Gene Expression Omnibus")).
 
 -   Assess the samples' quality in the **PCA** tab. You can remove a sample and the PCA plot gets redrawn, if you want to assess the distribution of samples without a possible outlier. The incriminated sample is removed from the raw data, and the normalisation, as well as the regularising transformation, are recalculated. Finally, the singular value decomposition is recomputed and the plot redrawn. Thus, the whole process can be somewhat long. *In any case*, this does not impact subsequent figures and the analysis on the whole : if you want to re-analyse the data, while excluding a sample, please [contact us](mailto:ngs.u1016@inserm.fr).
 

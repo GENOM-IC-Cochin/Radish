@@ -19,6 +19,7 @@ InputUI <- function(id) {
     fileInput(ns("res_data"),
               "Results"
     ),
+    actionButton(ns("demo"), "Load demo data"),
     htmlOutput(ns("check_data"))
   )
 }
@@ -28,8 +29,19 @@ InputUI <- function(id) {
 InputServer <- function(id, contrast_act, input, output, session) {
   stopifnot(is.reactive(contrast_act))
   moduleServer(id, function(input, output, session) {
+    # rds-sourced list, inpendent of demo or user-loaded data
+    data <- reactiveVal()
     
-    data_loaded <- eventReactive(input$res_data, {
+    demo_data <- eventReactive(input$demo, {
+      tmp <- readRDS("./data/demo_data.rds")
+      validate(need(all(expected_data == names(tmp)), "Missing objects in loaded file"))
+      tmp
+    })
+   
+    
+    data_loaded <- eventReactive({
+      input$res_data
+    }, {
       req(input$res_data)
       extension <- tools::file_ext(input$res_data$name)
       tmp <- switch(extension,
@@ -41,10 +53,15 @@ InputServer <- function(id, contrast_act, input, output, session) {
       tmp
     })
     
-    counts <- eventReactive(data_loaded(),{
-      req(data_loaded())
+    #switch data to the correct (last modified) data source
+    observeEvent(demo_data(), data(demo_data()))
+    observeEvent(data_loaded(), data(data_loaded()))
+    
+    
+    counts <- eventReactive(data(),{
+      req(data())
       # Permet de remplacer un nom variable (hgcn_symbol, mgi_symbol) par un nom fixe
-      tmp <- data_loaded()[["dataMerged"]] %>%
+      tmp <- data()[["dataMerged"]] %>%
         dplyr::rename("symbol" = dplyr::contains("symbol"))
       # Noms de gènes "" -> NA
       tmp %<>% mutate(across(everything(), na_if, "")) 
@@ -53,12 +70,12 @@ InputServer <- function(id, contrast_act, input, output, session) {
       tmp
     })
     
-    all_results <- eventReactive(data_loaded(),{
-      req(data_loaded())
-      tmp <- vector(mode = "list", length = length(data_loaded()[["all_results"]]))
-      names(tmp) <- names(data_loaded()[["all_results"]]) 
-      for (contraste in names(data_loaded()[["all_results"]])) {
-        tmp[[contraste]] <- data_loaded()[["all_results"]][[contraste]] %>% 
+    all_results <- eventReactive(data(),{
+      req(data())
+      tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
+      names(tmp) <- names(data()[["all_results"]]) 
+      for (contraste in names(data()[["all_results"]])) {
+        tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]] %<>%
         # Noms de gènes "" -> NA
@@ -69,24 +86,24 @@ InputServer <- function(id, contrast_act, input, output, session) {
       tmp
     })
     
-    rld <- eventReactive(data_loaded(),{
-      req(data_loaded())
-      data_loaded()[["rld"]]
+    rld <- eventReactive(data(),{
+      req(data())
+      data()[["rld"]]
     })
     
-    config <- eventReactive(data_loaded(), {
-      req(data_loaded())
-      data_loaded()[["configuration"]]
+    config <- eventReactive(data(), {
+      req(data())
+      data()[["configuration"]]
     })
     
-    contrastes <- eventReactive(data_loaded(), {
-      req(data_loaded())
-      data_loaded()[["contrasteList"]]
+    contrastes <- eventReactive(data(), {
+      req(data())
+      data()[["contrasteList"]]
     })
     
-    txi.rsem <- eventReactive(data_loaded(), {
-      req(data_loaded())
-      data_loaded()[["txi.rsem"]]
+    txi.rsem <- eventReactive(data(), {
+      req(data())
+      data()[["txi.rsem"]]
     })
     
     

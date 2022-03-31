@@ -52,7 +52,7 @@ Follow the instructions in the app. Load the `results.rds` file provided by GENO
 
 ## Demo data
 
-To experiment with the app, you can use the `demo_data.rds` file, in the root directory. Just load it in the **Data** tab, and explore!
+To experiment with the app, you can use demo data from from [this article](https://doi.org/10.1084/jem.20200853 "Autoimmunity affecting the biliary tract fuels the immunosurveillance of cholangiocarcinoma") by Paillet et al. (raw data otherwise available from Gene Expression Omnibus, under accession no. [GSE180289](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE180289 "Gene Expression Omnibus")). It is accessible by a simple button press!
 
 
 <a id="org22656d3"></a>
