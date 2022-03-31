@@ -26,7 +26,7 @@ InputUI <- function(id) {
 
 
 # Server -----------------------------------------------------------------------
-InputServer <- function(id, contrast_act, input, output, session) {
+InputServer <- function(id, contrast_act) {
   stopifnot(is.reactive(contrast_act))
   moduleServer(id, function(input, output, session) {
     # rds-sourced list, inpendent of demo or user-loaded data
@@ -144,7 +144,7 @@ InputApp <- function() {
   ui <- fluidPage(InputUI("test"))
   
   server <- function(input, output, session) {
-    InputServer("test", reactive("Cond1_vs_Control"), input, output, session)
+    InputServer("test", reactive("Cond1_vs_Control"))
   }
   shinyApp(ui, server)
 }

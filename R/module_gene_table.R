@@ -62,10 +62,7 @@ GeneTableServer <- function(id,
                             res,
                             config,
                             contrastes,
-                            contrast_act,
-                            input,
-                            output,
-                            session) {
+                            contrast_act) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
@@ -307,17 +304,14 @@ GeneTableApp <- function() {
   )
   
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"), input, output, session) 
+    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     GeneTableServer(
       id = "tab",
       counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
-      contrast_act = reactive("Cond1_vs_Control"),
-      input = input,
-      output = output,
-      session = session
+      contrast_act = reactive("Cond1_vs_Control")
     )
   }
   shinyApp(ui, server)

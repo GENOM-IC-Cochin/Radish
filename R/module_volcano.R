@@ -124,10 +124,7 @@ VolcanoServer <- function(id,
                           contrastes,
                           contrast_act,
                           sel_genes_names,
-                          sel_genes_ids,
-                          input,
-                          output,
-                          session) {
+                          sel_genes_ids) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
@@ -158,10 +155,7 @@ VolcanoServer <- function(id,
       id = "gnsel",
       src_table = res,
       sel_genes_names = sel_genes_names,
-      sel_genes_ids = sel_genes_ids,
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = sel_genes_ids
     )
     
     
@@ -232,10 +226,7 @@ VolcanoServer <- function(id,
       id = "dw",
       cur_plot = cur_plot,
       plotname = reactive("volcano_plot"),
-      ratio = reactive(input$ratio),
-      input = input,
-      output = output,
-      session = session
+      ratio = reactive(input$ratio)
     )
   })
 }
@@ -250,7 +241,7 @@ VolcanoApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"), input, output, session) 
+    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     VolcanoServer(id = "v1",
                   counts = list_loaded$counts,
                   res = list_loaded$res,
@@ -258,10 +249,7 @@ VolcanoApp <- function() {
                   contrastes = list_loaded$contrastes,
                   contrast_act = reactive("Cond1_vs_Control"),
                   sel_genes_names = reactive(c()),
-                  sel_genes_ids = reactive(c()),
-                  input = input,
-                  output = output,
-                  session = session)
+                  sel_genes_ids = reactive(c()))
     
   }
   shinyApp(ui, server)

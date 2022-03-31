@@ -25,10 +25,7 @@ GeneSelectServer <- function(
   id,
   src_table, # Either counts or res, depending on the plot
   sel_genes_names,
-  sel_genes_ids,
-  input,
-  output,
-  session
+  sel_genes_ids
 ) {
   stopifnot(is.reactive(src_table))
   stopifnot(is.reactive(sel_genes_ids))
@@ -85,15 +82,12 @@ GeneSelectApp <- function() {
   )
   
   server <- function(input, output, server) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"), input, output, session)
+    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     genes_selected <- GeneSelectServer(
       id = "gs",
       src_table = list_loaded$res,
       sel_genes_names = reactive(c()),
-      sel_genes_ids = reactive(c()),
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = reactive(c())
     )
     output$genes <- renderPrint(
       c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids())

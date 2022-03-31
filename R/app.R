@@ -159,17 +159,14 @@ ShareApp <- function() {
     output$disp_contr <- renderText({
       input$contrast_act
     })
-    list_loaded <- InputServer("inp", reactive(input$contrast_act), input, output, session) 
+    list_loaded <- InputServer("inp", reactive(input$contrast_act)) 
     PcaServer(
       id = "pca",
       counts = list_loaded$counts,
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
       txi.rsem = list_loaded$txi.rsem,
-      rld = list_loaded$rld,
-      input = input,
-      output = output,
-      session = session
+      rld = list_loaded$rld
     )
     sel_info <- GeneTableServer(
       id = "gntab",
@@ -177,10 +174,7 @@ ShareApp <- function() {
       res = list_loaded$res,
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
-      contrast_act = reactive(input$contrast_act), #should be recalculated with change
-      input = input,
-      output = output,
-      session = session
+      contrast_act = reactive(input$contrast_act) #should be recalculated with change
     )
     MAplotServer(
       id = "ma",
@@ -190,10 +184,7 @@ ShareApp <- function() {
       contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
       sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids,
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = sel_info$sel_genes_ids
     )
     VolcanoServer(
       id = "vp",
@@ -203,10 +194,7 @@ ShareApp <- function() {
       contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
       sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids,
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = sel_info$sel_genes_ids
     )
     HeatmapServer(
       id = "hm",
@@ -215,10 +203,7 @@ ShareApp <- function() {
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act),
       sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids,
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = sel_info$sel_genes_ids
     )
   }
   

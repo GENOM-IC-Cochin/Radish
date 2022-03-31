@@ -59,10 +59,7 @@ PcaServer <- function(id,
                       config,
                       contrastes,
                       txi.rsem,
-                      rld,
-                      input,
-                      output,
-                      session) {
+                      rld) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrastes))
@@ -140,10 +137,7 @@ PcaServer <- function(id,
       id = "dw",
       cur_plot = cur_plot,
       plotname = reactive("pcaplot"),
-      ratio = reactive(1),
-      input = input,
-      output = output,
-      session = session
+      ratio = reactive(1)
     )
     
   })
@@ -159,17 +153,14 @@ PcaApp <- function() {
   )
   
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"), input, output, session) 
+    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control")) 
     PcaServer(
       id = "pca1",
       counts = list_loaded$counts,
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
       txi.rsem = list_loaded$txi.rsem,
-      rld = list_loaded$rld,
-      input = input,
-      output = output,
-      session = session
+      rld = list_loaded$rld
     )
   }
   shinyApp(ui, server)

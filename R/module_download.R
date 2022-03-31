@@ -19,7 +19,7 @@ DownloadUI <- function(id) {
 
 
 # Server -----------------------------------------------------------------------
-DownloadServer <- function(id, cur_plot, plotname, ratio, input, output, session) {
+DownloadServer <- function(id, cur_plot, plotname, ratio) {
   stopifnot(is.reactive(cur_plot))
   stopifnot(is.reactive(plotname))
   stopifnot(is.reactive(ratio))
@@ -57,7 +57,7 @@ DownloadApp <- function() {
         plot_iris()
       }
     )
-    DownloadServer("dw", plot_iris, reactive("plot"), reactive(1), input, output, session)
+    DownloadServer("dw", plot_iris, reactive("plot"), reactive(1))
   }
   shinyApp(ui, server)
 }

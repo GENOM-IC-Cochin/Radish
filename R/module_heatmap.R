@@ -133,10 +133,7 @@ HeatmapServer <- function(
   config,
   contrast_act,
   sel_genes_names,
-  sel_genes_ids,
-  input,
-  output,
-  session
+  sel_genes_ids
 ) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
@@ -215,10 +212,7 @@ HeatmapServer <- function(
       id = "gnsel",
       src_table = counts,
       sel_genes_names = sel_genes_names,
-      sel_genes_ids = sel_genes_ids,
-      input = input,
-      output = output,
-      session = session
+      sel_genes_ids = sel_genes_ids
     ) 
     
     data <- eventReactive(input$draw, {
@@ -364,17 +358,14 @@ HeatmapApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"), input, output, session) 
+    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     HeatmapServer(id = "hm",
                   counts = list_loaded$counts,
                   res = list_loaded$res,
                   config = list_loaded$config,
                   contrast_act = reactive("Cond1_vs_Control"),
                   sel_genes_names = reactive(c()),
-                  sel_genes_ids = reactive(c()),
-                  input = input,
-                  output = output,
-                  session = session)
+                  sel_genes_ids = reactive(c()))
     
   }
   shinyApp(ui, server)
