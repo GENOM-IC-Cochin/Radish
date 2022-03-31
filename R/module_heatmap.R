@@ -88,7 +88,10 @@ HeatmapUI <- function(id) {
                  htmlOutput(ns("gene_number")),
                  actionButton(ns("draw"),
                               "Draw heatmap",
-                              class = "btn-warning")
+                              class = "btn-warning"),
+                 actionButton(ns("reset"),
+                              "Reset defaults",
+                              class = "btn-warning") 
              ),
              box(title = "Information",
                  status = "orange",
@@ -166,6 +169,19 @@ HeatmapServer <- function(
       } else {
         condition
       }
+    })
+    
+    
+    observeEvent(input$reset, {
+      updateNumericInput(inputId = "lfc_cutoff", value = 1)
+      updateSliderTextInput(session = session, inputId = "pval_cutoff", selected = 0.05)
+      updateNumericInput(inputId = "nb_top_gene", value = 100)
+      updateSelectInput(inputId = "top_gene", selected = "diff")
+      updateSelectInput(inputId = "palette", selected = "RdYlBu")
+      updateCheckboxInput(inputId = "show_names", value = FALSE)
+      updateSliderInput(inputId = "fontsize", value = 10)
+      updateSliderInput(inputId = "ratio", value = 1)
+      updateCheckboxGroupInput(inputId = "sel_cond", selected = req(condition_possibles()))
     })
     
     

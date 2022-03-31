@@ -11,6 +11,9 @@ VolcanoUI <- function(id) {
           width = 12,
           plotOutput(outputId = ns("volcano_plot")),
           actionButton(ns("draw"), "Draw Volcano Plot",
+                       class = "btn-warning"),
+          actionButton(ns("reset"),
+                       "Reset defaults",
                        class = "btn-warning")
       )
     ),
@@ -161,7 +164,32 @@ VolcanoServer <- function(id,
       session = session
     )
     
-    observeEvent(res(), {
+    
+    observeEvent(input$reset, {
+      updateSliderInput(inputId = "lfc_cut", value = 1)
+      updateSliderTextInput(session = session, "pval_cut", selected = 0.05)
+      updateColourInput(session = session, "up_col", value = "#fe7f00")
+      updateColourInput(session = session, "down_col", value = "#007ffe")
+      updateSelectInput(inputId = "theme", selected = "Classic")
+      updateSliderInput(inputId = "ratio", value = 1)
+      updateTextInput(inputId = "up_leg", value = "up")
+      updateTextInput(inputId = "down_leg", value = "down")
+      updateTextInput(inputId = "ns_leg", value = "ns")
+      updateSliderInput(inputId = "lab_size", value = 3)
+      req(res())
+      updateSliderInput(inputId = "y_max", value = y_max(donnees = res()))
+      updateSliderInput(inputId = "x_max", value = x_max_abs(donnees = res()))
+      req(contrast_act())
+      contr <- strsplit(contrast_act(), "_") %>% unlist()
+      updateTextInput(
+        inputId = "plot_title",
+        value = paste(c("Gene expression change in", contr),
+                      collapse = " ")
+      )
+    })
+    
+    
+    observeEvent(contrast_act(), {
       contr <- strsplit(contrast_act(), "_") %>% unlist()
       updateTextInput(
         inputId = "plot_title",
