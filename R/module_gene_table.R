@@ -28,14 +28,26 @@ GeneTableUI <- function(id) {
                             "Select Genes"),
                actionButton(ns("clear"),
                             "Clear selection")
-           )),
+           ),
+           box(title = "Selective Download",
+               status = "warning",
+               width = 12,
+               FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+               downloadButton(ns("down_fil"), "Download the filtered genes")
+           ),
+    ),
+           
     column(9,
            tabBox(title = "Genes Tables",
                   width = 12,
                   tabPanel(
                     "All genes",
                     htmlOutput(ns("n_selected")),
-                    DTOutput(outputId = ns("genes")),
+                    DTOutput(outputId = ns("genes"))
+                    ),
+                  tabPanel(
+                    "Selected genes",
+                    DTOutput(ns("genes_selected")),
                     downloadButton(
                       outputId = ns("download_sel_genes"),
                       label = "Download selected genes"
@@ -43,10 +55,7 @@ GeneTableUI <- function(id) {
                     downloadButton(
                       outputId = ns("download_sel_ids"),
                       label = "Download selected genes' Gene IDs"
-                    )),
-                  tabPanel(
-                    "Selected genes",
-                    DTOutput(ns("genes_selected"))
+                    )
                   )
            )
     )
@@ -105,7 +114,28 @@ GeneTableServer <- function(id,
         mutate(dplyr::across(where(is.numeric), signif, 3))
     })
     
-    # Pour téléchargement
+    filter_res <- FilterServer("fil", res)
+    
+    
+    output$down_fil <- downloadHandler(
+      filename = function() {
+        paste0(contrast_act(),
+               "_",
+               filter_res$pval(),
+               "_",
+               filter_res$lfc(),
+               ".csv"
+               )
+      },
+      content = function(file) {
+        filter_res$res_filtered() %>%
+          filter(sig_expr != "ns") %>%
+          select(-sig_expr) %>%
+          write.csv(., file)
+      }
+    )
+    
+    
     sel_genes_table <- eventReactive({
       genes_table()
       # Fourni par DT
