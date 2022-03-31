@@ -15,7 +15,7 @@
 
 # Introduction
 
-SHARE is a shiny application for the visualisation and analysis of pre-processed RNA-seq data. Given data processed with GENOM'IC's pipeline, it is able to produce customasible plots, such as PCA plots, Volcano plots and Heatmaps. It also allowes one to explore the counts and results table interactively.
+SHARE is a shiny application for the visualisation and analysis of pre-processed RNA-seq data. Given data processed with GENOM'IC's pipeline, it is able to produce customisable plots, such as PCA plots, Volcano plots and Heatmaps. It also allowes one to explore the counts and results table interactively.
 
 SHARE is an exploration tool, it relies on data already processed from raw reads, following a STAR -> RSEM -> DESeq2 pipeline, with gene name annotation with Biomart.
 
@@ -52,7 +52,7 @@ Follow the instructions in the app. Load the `results.rds` file provided by GENO
 
 ## Demo data
 
-To experiment with the app, you can use demo data from from [this article](https://doi.org/10.1084/jem.20200853 "Autoimmunity affecting the biliary tract fuels the immunosurveillance of cholangiocarcinoma") by Paillet et al. (raw data otherwise available from Gene Expression Omnibus, under accession no. [GSE180289](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE180289 "Gene Expression Omnibus")). It is accessible by a simple button press!
+To experiment with the app, you can use demo data kindly provided by Juliette Paillet (Kroemer team, UMRS1138), from [this article](https://doi.org/10.1084/jem.20200853 "Autoimmunity affecting the biliary tract fuels the immunosurveillance of cholangiocarcinoma") by Paillet et al. (raw data otherwise available from Gene Expression Omnibus, under accession no. [GSE180289](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE180289 "Gene Expression Omnibus")). It is accessible by a simple button press!
 
 
 <a id="org22656d3"></a>
