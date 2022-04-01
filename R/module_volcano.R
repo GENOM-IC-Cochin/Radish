@@ -5,99 +5,108 @@ VolcanoUI <- function(id) {
   # Pour rendre un peu plus court
   ns <- NS(id)
   tagList(
-    fluidRow(
-      box(title = "Volcano Plot",
-          status = "primary",
-          width = 12,
-          plotOutput(outputId = ns("volcano_plot")),
-          actionButton(ns("draw"), "Draw Volcano Plot",
-                       class = "btn-warning"),
-          actionButton(ns("reset"),
-                       "Reset defaults",
-                       class = "btn-warning")
-      )
-    ),
-    fluidRow(
-      box(title = "Aesthetics",
-          status = "orange",
-          width = 4,
-          sliderInput(
-            inputId = ns("x_max"),
-            label = "Maximum value of the x axis",
-            min = 0,
-            max = 100,
-            value = 10
-          ),
-          sliderInput(
-            inputId = ns("y_max"),
-            label = "Maximum value of the y axis",
-            min = 0,
-            max = 100,
-            value = 10
-          ),
-          FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
-          colourInput(
-            inputId = ns("up_col"),
-            label = "Choose the color of the upregulated genes",
-            value = "#fe7f00"
-          ),
-          colourInput(
-            inputId = ns("down_col"),
-            label = "Choose the color of the downregulated genes",
-            value = "#007ffe"
-          ),
-          selectInput(
-            inputId = ns("theme"),
-            label = "Choose the theme for the plot",
-            choices = themes_gg,
-            selected = "Classic"
-          ),
-          sliderInput(
-            inputId = ns("ratio"),
-            label = "Choose the plot aspect ratio",
-            value = 1,
-            min = 0.5,
-            max = 2
-          )
-      ),
-      box(title = "Text",
-          status = "orange",
-          width = 4,
-          textInput(
-            inputId = ns("plot_title"),
-            label = "Title of the plot",
-            value = "Gene expression change"
-          ),
-          textInput(
-            inputId = ns("up_leg"),
-            label = "Choose the upregulated legend name",
-            value = "up"
-          ),
-          textInput(
-            inputId = ns("down_leg"),
-            label = "Choose the downregulated legend name",
-            value = "down"
-          ),
-          textInput(
-            inputId = ns("ns_leg"),
-            label = "Choose the nonsignificant legend name",
-            value = "ns"
-          ),
-          GeneSelectUI(ns("gnsel")),
-          sliderInput(
-            inputId = ns("lab_size"),
-            label = "Choose the size of the labels",
-            value = 3,
-            min = 1,
-            max = 4,
-            step = .25
-          )
-      ),
-      box(title = "Download",
-          status = "orange",
-          width = 4,
-          DownloadUI(ns("dw"))
-      )
+    tabBox(title = "Volcano Plot",
+           width = 12,
+           tabPanel(
+             title = "Static",
+             fluidRow(
+               box(
+                 width = 12,
+                 plotOutput(outputId = ns("volcano_plot")),
+                 actionButton(ns("draw"), "Draw Volcano Plot",
+                              class = "btn-warning"),
+                 actionButton(ns("reset"),
+                              "Reset defaults",
+                              class = "btn-warning")
+               )
+             ),
+             fluidRow(
+               box(title = "Aesthetics",
+                   status = "orange",
+                   width = 4,
+                   sliderInput(
+                     inputId = ns("x_max"),
+                     label = "Maximum value of the x axis",
+                     min = 0,
+                     max = 100,
+                     value = 10
+                   ),
+                   sliderInput(
+                     inputId = ns("y_max"),
+                     label = "Maximum value of the y axis",
+                     min = 0,
+                     max = 100,
+                     value = 10
+                   ),
+                   FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+                   colourInput(
+                     inputId = ns("up_col"),
+                     label = "Choose the color of the upregulated genes",
+                     value = "#fe7f00"
+                   ),
+                   colourInput(
+                     inputId = ns("down_col"),
+                     label = "Choose the color of the downregulated genes",
+                     value = "#007ffe"
+                   ),
+                   selectInput(
+                     inputId = ns("theme"),
+                     label = "Choose the theme for the plot",
+                     choices = themes_gg,
+                     selected = "Classic"
+                   ),
+                   sliderInput(
+                     inputId = ns("ratio"),
+                     label = "Choose the plot aspect ratio",
+                     value = 1,
+                     min = 0.5,
+                     max = 2
+                   )
+               ),
+               box(title = "Text",
+                   status = "orange",
+                   width = 4,
+                   textInput(
+                     inputId = ns("plot_title"),
+                     label = "Title of the plot",
+                     value = "Gene expression change"
+                   ),
+                   textInput(
+                     inputId = ns("up_leg"),
+                     label = "Choose the upregulated legend name",
+                     value = "up"
+                   ),
+                   textInput(
+                     inputId = ns("down_leg"),
+                     label = "Choose the downregulated legend name",
+                     value = "down"
+                   ),
+                   textInput(
+                     inputId = ns("ns_leg"),
+                     label = "Choose the nonsignificant legend name",
+                     value = "ns"
+                   ),
+                   GeneSelectUI(ns("gnsel")),
+                   sliderInput(
+                     inputId = ns("lab_size"),
+                     label = "Choose the size of the labels",
+                     value = 3,
+                     min = 1,
+                     max = 4,
+                     step = .25
+                   )
+               ),
+               box(title = "Download",
+                   status = "orange",
+                   width = 4,
+                   DownloadUI(ns("dw"))
+               )
+             )
+           ),
+           tabPanel(
+             title = "Interactive",
+             plotlyOutput(outputId = ns("plotly_vp"))
+           )
     )
   )
 }
@@ -199,6 +208,26 @@ VolcanoServer <- function(id,
     
     output$volcano_plot <- renderPlot({
       cur_plot()
+    })
+    
+    output$plotly_vp <- renderPlotly({
+      req(filter_res)
+      gg_vp <- my_volcanoplot(
+        plot_data = filter_res$res_filtered(),
+        colors = c("up" = input$up_col, "down" = input$down_col),
+        legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
+        axis_max = c(input$x_max, input$y_max),
+        ratio = input$ratio,
+        theme = input$theme,
+        lfc_cutoff = filter_res$lfc(),
+        pval_cutoff = filter_res$pval()
+      )
+      
+      ggplotly(p = gg_vp,
+               tooltip = c("text"),
+               dynamicTicks = TRUE,
+               height = 600,
+               width = 600)
     })
     
     DownloadServer(

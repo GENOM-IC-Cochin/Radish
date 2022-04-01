@@ -19,7 +19,15 @@ my_volcanoplot <- function(plot_data,
             x = log2FoldChange,
             y = -log10(padj),
             alpha = sig_expr,
-            fill = sig_expr
+            fill = sig_expr,
+            text = paste0("log2(FoldChange) : ",
+                          signif(log2FoldChange, 2),
+                          "<br>",
+                          "-log10(pval) : ",
+                          signif(-log10(padj), 2),
+                          "<br>",
+                          "Name : ",
+                          coalesce(symbol, Row.names))
         )) +
         geom_point(
             color = "black",
