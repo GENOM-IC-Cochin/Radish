@@ -110,15 +110,13 @@ VolcanoServer <- function(id,
                           config,
                           contrastes,
                           contrast_act,
-                          sel_genes_names,
-                          sel_genes_ids) {
+                          sel_genes_table) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(contrast_act))
-  stopifnot(is.reactive(sel_genes_ids))
-  stopifnot(is.reactive(sel_genes_names))
+  stopifnot(is.reactive(sel_genes_table))
   moduleServer(id, function(input, output, session){
     
     observeEvent(res(),{
@@ -141,8 +139,7 @@ VolcanoServer <- function(id,
     genes_selected <- GeneSelectServer(
       id = "gnsel",
       src_table = res,
-      sel_genes_names = sel_genes_names,
-      sel_genes_ids = sel_genes_ids
+      sel_genes_table = sel_genes_table
     )
     
     
@@ -226,8 +223,7 @@ VolcanoApp <- function() {
                   config = list_loaded$config,
                   contrastes = list_loaded$contrastes,
                   contrast_act = reactive("Cond1_vs_Control"),
-                  sel_genes_names = reactive(c()),
-                  sel_genes_ids = reactive(c()))
+                  sel_genes_table = reactive(head(list_loaded$res())))
     
   }
   shinyApp(ui, server)

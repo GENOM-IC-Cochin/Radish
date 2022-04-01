@@ -168,7 +168,7 @@ ShareApp <- function() {
       txi.rsem = list_loaded$txi.rsem,
       rld = list_loaded$rld
     )
-    sel_info <- GeneTableServer(
+    sel_table <- GeneTableServer(
       id = "gntab",
       counts = list_loaded$counts,
       res = list_loaded$res,
@@ -183,8 +183,7 @@ ShareApp <- function() {
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
-      sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids
+      sel_genes_table = sel_table
     )
     VolcanoServer(
       id = "vp",
@@ -193,8 +192,7 @@ ShareApp <- function() {
       config = list_loaded$config,
       contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
-      sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids
+      sel_genes_table = sel_table
     )
     HeatmapServer(
       id = "hm",
@@ -202,8 +200,7 @@ ShareApp <- function() {
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act),
-      sel_genes_names = sel_info$sel_genes_names,
-      sel_genes_ids = sel_info$sel_genes_ids
+      sel_genes_table = sel_table
     )
   }
   

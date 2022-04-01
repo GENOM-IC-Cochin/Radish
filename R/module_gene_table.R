@@ -150,26 +150,6 @@ GeneTableServer <- function(id,
     ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
     )
     
-    # For the choice in VP, MA and HM
-    sel_genes_names <- eventReactive(
-      sel_genes_table(),
-      {
-        sel_genes_table() %>%
-          filter(!is.na(symbol)) %>%
-          pull(symbol)
-      },
-      ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
-      )
-    
-    # For the choice in VP, MA and HM
-    sel_genes_ids <- eventReactive(
-      sel_genes_table(),
-      {
-        sel_genes_table() %>%
-          pull(Row.names)
-      },
-    ignoreNULL = FALSE # in order not to prevent sel_genes_table to return to NULL if the contrast changes
-      )
     
     output$read_items <- renderUI({
       names <- ids <- NULL
@@ -315,10 +295,7 @@ GeneTableServer <- function(id,
       }
     )
     
-    list(
-      sel_genes_ids = sel_genes_ids,
-      sel_genes_names = sel_genes_names
-    )
+    sel_genes_table
     
   })
 }

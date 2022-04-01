@@ -120,15 +120,13 @@ HeatmapServer <- function(
   res,
   config,
   contrast_act,
-  sel_genes_names,
-  sel_genes_ids
+  sel_genes_table
 ) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
-  stopifnot(is.reactive(sel_genes_ids))
-  stopifnot(is.reactive(sel_genes_names))
+  stopifnot(is.reactive(sel_genes_table))
   
   moduleServer(id, function(input, output, session) {
     iv <- InputValidator$new()
@@ -197,8 +195,7 @@ HeatmapServer <- function(
     genes_selected <- GeneSelectServer(
       id = "gnsel",
       src_table = counts,
-      sel_genes_names = sel_genes_names,
-      sel_genes_ids = sel_genes_ids
+      sel_genes_table = sel_genes_table
     )
     
     res_filtered <- FilterServer("fil", res = res)$res_filtered
@@ -349,8 +346,7 @@ HeatmapApp <- function() {
                   res = list_loaded$res,
                   config = list_loaded$config,
                   contrast_act = reactive("Cond1_vs_Control"),
-                  sel_genes_names = reactive(c()),
-                  sel_genes_ids = reactive(c()))
+                  sel_genes_table = reactive(head(list_loaded$res())))
     
   }
   shinyApp(ui, server)

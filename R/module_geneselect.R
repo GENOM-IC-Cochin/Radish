@@ -24,38 +24,41 @@ GeneSelectUI <- function(id) {
 GeneSelectServer <- function(
   id,
   src_table, # Either counts or res, depending on the plot
-  sel_genes_names,
-  sel_genes_ids
+  sel_genes_table
 ) {
   stopifnot(is.reactive(src_table))
-  stopifnot(is.reactive(sel_genes_ids))
-  stopifnot(is.reactive(sel_genes_names))
+  stopifnot(is.reactive(sel_genes_table))
   
   moduleServer(id, function(input, output, session) {
-     
+    
     observeEvent({
       # Executes, even though no genes is currently selected
-      c(src_table(), sel_genes_names())
+      c(src_table(), sel_genes_table())
     }, {
       updateSelectizeInput(
         inputId = "sel_gene_nm",
         choices = src_table() %>%
           pull(symbol),
         server = TRUE,
-        selected = sel_genes_names()
+        selected = sel_genes_table() %>%
+          filter(!is.na(symbol)) %>%
+          pull(symbol)
       )
     })
     
     observeEvent({
       # Executes, even though no genes is currently selected
-      c(src_table(), sel_genes_ids())
+      c(src_table(), sel_genes_table())
     }, {
       updateSelectizeInput(
         inputId = "sel_gene_id",
         choices = src_table() %>%
+          filter(is.na(symbol)) %>%
           pull(Row.names),
         server = TRUE,
-        selected = sel_genes_ids()
+        selected = sel_genes_table() %>%
+          filter(is.na(symbol)) %>%
+          pull(Row.names)
       )
     })
     
@@ -86,8 +89,7 @@ GeneSelectApp <- function() {
     genes_selected <- GeneSelectServer(
       id = "gs",
       src_table = list_loaded$res,
-      sel_genes_names = reactive(c()),
-      sel_genes_ids = reactive(c())
+      sel_genes_table = reactive(head(list_loaded$res()))
     )
     output$genes <- renderPrint(
       c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids())
