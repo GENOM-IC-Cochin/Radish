@@ -40,7 +40,10 @@ PcaUI <- function(id) {
         label = "Choose the theme for the plot",
         choices = themes_gg,
         selected = "Classic"
-      )
+      ),
+      checkboxInput(ns("labels"),
+                    "Should samples be labeled",
+                    TRUE)
     ),
     box(title = "Download",
         status = "orange",
@@ -86,35 +89,11 @@ PcaServer <- function(id,
           config(),
           txi.rsem())
       ntop <- 500
-      # Exclude samples
-      if(!is.null(input$excl_samp)) {
-        withProgress(message = "Recalculating...",{
-          drop_samp <- which((colnames(txi.rsem()$counts)) %in% input$excl_samp)
-          rld_tr <- recalculate_rld_pca(txi.rsem(), drop_samp, config()) 
-        })
-      } else {
-        rld_tr <- rld()
-      }
-      
-      rv <- rowVars(assay(rld_tr))
-      selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
-      mat <- t(assay(rld_tr)[selected_genes, ])
-      pc <- prcomp(mat)
-      eig <- (pc$sdev)^2
-      variance <- eig*100/sum(eig)
-      
-      PCAdata<-as.data.frame(pc$x)
-      # Join with condition, on name, to be sure of matches between condition and sample
-      PCAdata <- PCAdata %>%
-        rownames_to_column(var = "Name") %>%
-        inner_join(config(), by = "Name") %>%
-        select(-File) %>%
-        column_to_rownames(var = "Name")
-      list("data" = PCAdata, "variance" = variance)
+      rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop)
     })
     
     cur_plot <- reactive(
-      my_pca(data(), theme = input$theme)
+      my_pca(data(), theme = input$theme, show_labels = input$labels)
     )
 
     output$pca <- renderPlot({
