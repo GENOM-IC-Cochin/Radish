@@ -119,6 +119,7 @@ MAplotServer <- function(id,
     
     
     observeEvent(input$reset, {
+      updateColourInput(session = session, "up_col", value = "#fe7f00")
       updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
       updateSliderInput(inputId = "ratio", value = 1)
@@ -135,7 +136,7 @@ MAplotServer <- function(id,
       )
     })
     
-    filter_res <- FilterServer("fil", res)
+    filter_res <- FilterServer("fil", res, list("pval" = 0.05), reactive(input$reset))
     
     cur_plot <- eventReactive(input$draw, {
       req(filter_res$res_filtered())
@@ -148,8 +149,7 @@ MAplotServer <- function(id,
         selected_genes = c(genes_selected$sel_genes_names(),
                            genes_selected$sel_genes_ids()),
         theme = input$theme,
-        label_size = input$lab_size,
-        pval_cutoff = filter_res$pval
+        label_size = input$lab_size
       )
     })
     

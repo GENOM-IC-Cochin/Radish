@@ -102,6 +102,7 @@ VolcanoUI <- function(id) {
   )
 }
 
+
 # Server -----------------------------------------------------------------------
 
 VolcanoServer <- function(id,
@@ -174,7 +175,10 @@ VolcanoServer <- function(id,
       )
     })
     
-    filter_res <- FilterServer("fil", res)
+    filter_res <- FilterServer("fil",
+                               res,
+                               list("pval" = 0.05, "lfc" = 1),
+                               reactive(input$reset))
     
     cur_plot <- eventReactive(input$draw, {
       req(filter_res)

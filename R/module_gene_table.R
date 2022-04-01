@@ -114,7 +114,10 @@ GeneTableServer <- function(id,
         mutate(dplyr::across(where(is.numeric), signif, 3))
     })
     
-    filter_res <- FilterServer("fil", res)
+    filter_res <- FilterServer("fil",
+                               res,
+                               list("pval" = 0.05, "lfc" = 1),
+                               reactive(0))# no reset button here
     
     
     output$down_fil <- downloadHandler(

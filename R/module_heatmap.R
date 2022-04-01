@@ -198,7 +198,10 @@ HeatmapServer <- function(
       sel_genes_table = sel_genes_table
     )
     
-    res_filtered <- FilterServer("fil", res = res)$res_filtered
+    res_filtered <- FilterServer("fil",
+                                 res,
+                                 list("pval" = 0.05, "lfc" = 1),
+                                 reactive(input$reset))$res_filtered
     
     data <- eventReactive(input$draw, {
       req(input$sel_cond,
