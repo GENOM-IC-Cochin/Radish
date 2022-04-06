@@ -2,25 +2,34 @@
 
 # All the objects expected in the input
 expected_data <- c(
-    "dataMerged",
-    "all_results",
-    "configuration",
-    "contrasteList",
-    "rld",
-    "txi.rsem"
+  "dataMerged",
+  "all_results",
+  "configuration",
+  "contrasteList",
+  "rld",
+  "txi.rsem"
 )
 
 # UI ---------------------------------------------------------------------------
 InputUI <- function(id) {
   ns <- NS(id)
-  box(
+  tagList(fluidRow(box(
     title = "Result input",
-    width = 12,
+    width = 6,
+    status = "primary",
     fileInput(ns("res_data"),
               "Results"
     ),
-    actionButton(ns("demo"), "Load demo data"),
-    htmlOutput(ns("check_data"))
+    actionButton(ns("demo"), "Load demo data")
+  ),
+  box(
+    title = "Data loaded",
+    width = 6,
+    status = "primary",
+    valueBoxOutput(ns("samples")),
+    valueBoxOutput(ns("contrastes"))
+  )
+  )
   )
 }
 
@@ -114,18 +123,27 @@ InputServer <- function(id, contrast_act) {
       all_results()[[contrast_act()]]
     })
     
-    output$check_data <- renderUI({
-      req(all_results(),
-          counts(),
-          config()
+    output$contrastes <- renderValueBox({
+      req(all_results())
+      valueBox(
+        subtitle = "Contrastes",
+        value = all_results() %>% length(),
+        icon = icon("list"),
+        color = "light-blue"
       )
-      HTML(paste("<br> Read <b>",
-                 all_results() %>% length(),
-                 "</b> contrasts, and <b>",
-                 config() %>% nrow(),
-                 "</b> samples"))
-      
     })
+    
+    output$samples <- renderValueBox({
+      req(config())
+      valueBox(
+        subtitle = "Samples",
+        value = config() %>% nrow(),
+        icon = icon("list"),
+        color = "light-blue"
+      )
+    })
+     
+    
     list(
       res = res,
       counts = counts,
