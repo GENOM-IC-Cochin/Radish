@@ -222,6 +222,12 @@ GeneTableServer <- function(id,
       proxy %>% selectRows(NULL)
     })
     
+    
+    # To reset selection if res() changes
+    observeEvent(res(), {
+      proxy %>% selectRows(NULL)
+    })
+    
     output$genes <- renderDT(
       expr = {
         genes_table()
