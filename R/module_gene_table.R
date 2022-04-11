@@ -165,7 +165,7 @@ GeneTableServer <- function(id,
                     what = character())
       }
       HTML("<b>",
-           paste(length(ids) + length(names)),
+           length(ids) + length(names),
            "</b>",
            "items were read.",
            "<br>",
@@ -294,7 +294,7 @@ GeneTableServer <- function(id,
         paste("selected_genes_ids", ".txt", sep = "")
       },
       content = function(file) {
-        write(sel_genes_ids(), file)
+        write(sel_genes_table() %>% pull(Row.names), file)
       }
     )
     
