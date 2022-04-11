@@ -26,6 +26,8 @@ HeatmapUI <- function(id) {
     )
   )
   
+  
+  
   tagList(
     fluidRow(
       column(width = 3,
@@ -42,36 +44,6 @@ HeatmapUI <- function(id) {
                    inputId = ns("sel_cond"),
                    label = "Choose the conditions",
                  ),
-                 selectInput(
-                   inputId = ns("palette"),
-                   label = "Choose the color palette of the heatmap",
-                   choices = brewer.pal.info %>%
-                     filter(category == "div" & colorblind == TRUE) %>%
-                     rownames_to_column() %>%
-                     pull(rowname),
-                   selected = "RdYlBu"
-                 ),
-                 checkboxInput(
-                   ns("show_names"),
-                   "Show gene names",
-                   value = FALSE
-                 ),
-                 sliderInput(
-                   ns("fontsize"),
-                   "Choose the row names fontsize",
-                   min = 3,
-                   max = 12,
-                   value = 10,
-                   step = .5
-                 ),
-                 sliderInput(
-                   inputId = ns("ratio"),
-                   label = "Choose the plot aspect ratio",
-                   value = 1,
-                   min = 0.5,
-                   max = 2
-                 ),
-                 
                  parameters_tab,
                  htmlOutput(ns("gene_number")),
                  actionButton(ns("draw"),
@@ -104,6 +76,61 @@ HeatmapUI <- function(id) {
                  downloadButton(
                    outputId = ns("down"),
                    label = "Download plot"
+                 )
+             ),
+             box(title = "Aesthetics",
+                 status = "warning",
+                 width = 6,
+                 selectInput(
+                   inputId = ns("palette"),
+                   label = "Choose the color palette of the heatmap",
+                   choices = brewer.pal.info %>%
+                     filter(category == "div" & colorblind == TRUE) %>%
+                     rownames_to_column() %>%
+                     pull(rowname),
+                   selected = "RdYlBu"
+                 ),
+                 checkboxInput(
+                   ns("show_names"),
+                   "Show gene names",
+                   value = FALSE
+                 ),
+                 sliderInput(
+                   ns("fontsize"),
+                   "Choose the row names fontsize",
+                   min = 3,
+                   max = 12,
+                   value = 10,
+                   step = .5
+                 ),
+                 sliderInput(
+                   inputId = ns("ratio"),
+                   label = "Choose the plot aspect ratio",
+                   value = 1,
+                   min = 0.5,
+                   max = 2
+                 )
+             ),
+             box(title = "Advanced Settings",
+                 status = "warning",
+                 width = 6,
+                 selectInput(ns("cluster_control"),
+                             "Cluster by columns",
+                             choices = c("yes", "no"),
+                             selected = "yes"
+                 ),
+                 tabsetPanel(
+                   id = ns("cluster_switch"),
+                   type = "hidden",
+                   tabPanelBody("no",
+                                selectizeInput(
+                                  inputId = ns("col_order"),
+                                  label = "Choose the columns and their order",
+                                  choices = NULL,
+                                  multiple = TRUE
+                                )
+                   ),
+                   tabPanelBody("yes")
                  )
              )
       )
@@ -138,6 +165,37 @@ HeatmapServer <- function(
     )
     iv$enable()
     
+    # initial Matrix
+    base_data <- reactiveVal()
+    # Reordered Matrix
+    reord_data <- reactiveVal()
+    # Final Matrix
+    data <- reactiveVal()
+    
+    # Switch to the last modified
+    observeEvent({
+      base_data()
+      input$cluster_control
+    },{
+      if(input$cluster_control == "yes")
+        data(base_data())
+    })
+    observeEvent({
+      reord_data()
+      input$cluster_control
+    }, {
+      if(input$cluster_control == "no")
+        data(reord_data())
+    })
+    
+    
+    # Switch cluter columns
+    observeEvent(input$cluster_control,{
+      updateTabsetPanel(inputId = "cluster_switch",
+                        selected = input$cluster_control)
+    })
+    
+    
     condition_possibles <- reactive({
       # Conditions from which choice is possible
       req(
@@ -162,6 +220,8 @@ HeatmapServer <- function(
       updateCheckboxInput(inputId = "show_names", value = FALSE)
       updateSliderInput(inputId = "fontsize", value = 10)
       updateSliderInput(inputId = "ratio", value = 1)
+      updateSelectInput(inputId = "cluster_control", selected = "yes")
+      updateSelectizeInput(inputId = "col_order", selected = NULL)
       updateCheckboxGroupInput(inputId = "sel_cond", selected = req(condition_possibles()))
     })
     
@@ -203,7 +263,33 @@ HeatmapServer <- function(
                                  list("pval" = 0.05, "lfc" = 1),
                                  reactive(input$reset))$res_filtered
     
-    data <- eventReactive(input$draw, {
+    
+    observeEvent(base_data(), {
+      updateSelectizeInput(
+        session = session,
+        "col_order",
+        choices = config() %>%
+          filter(Condition %in% condition_possibles()) %>%
+          pull(Name)
+        )
+    })
+    
+    
+    observeEvent(input$col_order, {
+      reord_data(base_data() %>%
+             as.data.frame() %>%
+             select(all_of(input$col_order)) %>%
+             relocate(all_of(input$col_order)) %>%
+             as.matrix(rownames = TRUE)
+           )
+    })
+    
+    
+    observeEvent({
+      res_filtered()
+      counts()
+      input$sel_cond
+    }, {
       req(input$sel_cond,
           config(),
           counts(),
@@ -219,25 +305,27 @@ HeatmapServer <- function(
       if(input$top_gene == "diff") {
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
-        res_filtered() %>%
-          filter(sig_expr != "ns") %>%
-          slice_min(order_by = padj, n = input$nb_top_gene) %>%
-          mutate(name = coalesce(symbol, Row.names)) %>%
-          remove_rownames() %>%
-          column_to_rownames(var = "name") %>%
-          select(all_of(echantillons)) %>%
-          as.matrix(., rownames = TRUE)
+        base_data(res_filtered() %>%
+               filter(sig_expr != "ns") %>%
+               slice_min(order_by = padj, n = input$nb_top_gene) %>%
+               mutate(name = coalesce(symbol, Row.names)) %>%
+               remove_rownames() %>%
+               column_to_rownames(var = "name") %>%
+               select(all_of(echantillons)) %>%
+               as.matrix(., rownames = TRUE))
       } else {
         # Si l'on veut sélectionner à la main
-        counts() %>%
-          filter(symbol %in% genes_selected$sel_genes_names() |
-                   Row.names %in% genes_selected$sel_genes_ids()) %>%
-          mutate(name = coalesce(symbol, Row.names)) %>%
-          column_to_rownames(var = "name") %>%
-          select(all_of(echantillons)) %>%
-          as.matrix(., rownames = TRUE)
+        base_data(counts() %>%
+               filter(symbol %in% genes_selected$sel_genes_names() |
+                        Row.names %in% genes_selected$sel_genes_ids()) %>%
+               mutate(name = coalesce(symbol, Row.names)) %>%
+               column_to_rownames(var = "name") %>%
+               select(all_of(echantillons)) %>%
+               as.matrix(., rownames = TRUE))
       }
-    })
+    }
+    )
+    
     
     
     # Met en correspondance les conditions choisies et les échantillons
@@ -245,11 +333,12 @@ HeatmapServer <- function(
     # retour : un df avec la correspondance désirée
     annotation_col <- eventReactive({
       config()
+      data()
       input$draw
       input$sel_cond
     },{
-      config() %>%
-        filter(Condition %in% input$sel_cond) %>%
+      data.frame("Name" = colnames(data())) %>%
+        inner_join(config()) %>%
         select(-File) %>%
         column_to_rownames(var = "Name")
     })
@@ -276,8 +365,11 @@ HeatmapServer <- function(
       ret
     })
     
-    cur_plot <- eventReactive(input$draw, {
-      req(data(),
+    cur_plot <- eventReactive({
+      input$draw
+      }, {
+      req(input$draw,
+          data(),
           annotation_col(),
           annotation_colors())
       
@@ -286,6 +378,7 @@ HeatmapServer <- function(
         mat = data(),
         color = rev(brewer.pal(9, input$palette)),
         cluster_rows = TRUE,
+        cluster_cols = ifelse(input$cluster_control == "yes", TRUE, FALSE),
         # No row names if top genes
         show_rownames = input$show_names,
         annotation_col = annotation_col(),
