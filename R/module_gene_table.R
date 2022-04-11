@@ -27,7 +27,9 @@ GeneTableUI <- function(id) {
                actionButton(ns("select_genes"),
                             "Select Genes"),
                actionButton(ns("clear"),
-                            "Clear selection")
+                            "Clear selection"),
+               actionButton(ns("clear_input"),
+                            "Clear Input")
            ),
            box(title = "Selective Download",
                status = "warning",
@@ -205,6 +207,12 @@ GeneTableServer <- function(id,
       }
     }
     )
+    
+    
+    observeEvent(input$clear_input,{
+      my_values$given_genes_rows <- NULL
+    })
+    
     
     cols_to_hide <- eventReactive(res(),{
       # - 1 because JS indices start at 0
