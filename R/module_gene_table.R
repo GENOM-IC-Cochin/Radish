@@ -8,8 +8,8 @@ GeneTableUI <- function(id) {
            box(title = "Genes Information",
                status = "warning",
                width = 12,
-               htmlOutput(ns("outlier")),
-               htmlOutput(ns("sig_genes"))),
+               htmlOutput(ns("outlier"))
+               ),
            box(title = "Row selection",
                status = "warning",
                width = 12,
@@ -35,6 +35,7 @@ GeneTableUI <- function(id) {
                status = "warning",
                width = 12,
                FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+               htmlOutput(ns("sig_genes")),
                downloadButton(ns("down_fil"), "Download the filtered genes")
            ),
     ),
@@ -89,24 +90,14 @@ GeneTableServer <- function(id,
       nb_na <- res() %>% 
         filter(if_any(padj, ~ is.na(.x))) %>%
         nrow()
-      HTML(paste("<b>", 
+      HTML(paste("<p> <b>", 
                  nb_na,
                  "</b>",
                  "genes had their <i> p-values </i> set to NA, as they are deemed outliers.",
-                 "<br>",
-                 "<br>"))
+                 "</p>"))
     })
     
-    output$sig_genes <- renderUI({
-      req(res())
-      n_sig <- res() %>%
-        filter(padj < 0.05, abs(log2FoldChange) > 1) %>%
-        nrow()
-      HTML(paste("<b>", n_sig, "</b>",
-                 "genes are significantly differentially expressed",
-                 "at an adjusted <i> pvalue </i> of 0.05 and a minimum log2(Foldchange) of 1.",
-                 "<br>"))
-    })
+    
     
     genes_table <- eventReactive({
       res()
@@ -116,11 +107,25 @@ GeneTableServer <- function(id,
         mutate(dplyr::across(where(is.numeric), signif, 3))
     })
     
+    
     filter_res <- FilterServer("fil",
                                res,
                                list("pval" = 0.05, "lfc" = 1),
                                reactive(0))# no reset button here
     
+    
+    output$sig_genes <- renderUI({
+      req(res())
+      n_sig <- res() %>%
+        filter(padj < filter_res$pval(), abs(log2FoldChange) > filter_res$lfc()) %>%
+        nrow()
+      HTML(paste("<p> <b>", n_sig, "</b>",
+                 "genes are significantly differentially expressed",
+                 "at an adjusted <i> pvalue </i> of",
+                 filter_res$pval(), "and a minimum log2(Foldchange) of",
+                 filter_res$lfc(),
+                 "</p>"))
+    })
     
     output$down_fil <- downloadHandler(
       filename = function() {
@@ -166,12 +171,11 @@ GeneTableServer <- function(id,
         ids <- scan(input$given_genes_ids$datapath,
                     what = character())
       }
-      HTML("<b>",
+      HTML("<p> <b>",
            length(ids) + length(names),
            "</b>",
            "items were read.",
-           "<br>",
-           "<br>")
+           "</p>")
     })
     
     
@@ -263,8 +267,8 @@ GeneTableServer <- function(id,
     )
     
     output$n_selected <- renderUI({
-      HTML(paste("<b>", length(input$genes_rows_selected), "</b>",
-                 "rows are currently selected. <br> <br>"))
+      HTML(paste("<p> <b>", length(input$genes_rows_selected), "</b>",
+                 "rows are currently selected. </p>"))
     })
     
     output$genes_selected <- renderDT(
