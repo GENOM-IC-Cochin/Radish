@@ -13,7 +13,6 @@ my_volcanoplot <- function(plot_data,
   # Choice of colors/transparency for up/down
   cols <- c(colors, "ns" = "black")
   alphas <- c("up" = 1, "down" = 1, "ns" = 0.3)
-  
   tmp <- plot_data %>%
     ggplot(aes(
       x = log2FoldChange,
@@ -37,7 +36,8 @@ my_volcanoplot <- function(plot_data,
       stroke = 0.1
     ) +
     scale_shape_manual(
-      values = c("in" = 21, "out" = 24)
+      values = c("in" = 21, "out" = 24),
+      guide = "none"
     ) +
     geom_hline(yintercept = -log10(pval_cutoff), linetype = "dashed") +
     geom_vline(xintercept = c(-lfc_cutoff, lfc_cutoff), linetype = "dashed") +
@@ -60,15 +60,15 @@ my_volcanoplot <- function(plot_data,
     switch(theme,
            "Gray" = theme_gray(),
            "Classic" = theme_classic(),
-           "Classic with gridlines" = theme_bw())
-  
+           "Classic with gridlines" = theme_bw()) +
+    guides(fill = guide_legend(override.aes = list(shape = 21)))
+
   tmp <- tmp + theme(
     plot.title = element_text(face = "bold",
                               size = 15,
                               hjust = 0.5),
     aspect.ratio = ratio
-  ) +
-    guides(shape = "none")
+  )
   if (axis_max[2] != y_max(plot_data)) {
     tmp <- tmp + geom_hline(yintercept = axis_max[2], linetype = "dotted")
   }
