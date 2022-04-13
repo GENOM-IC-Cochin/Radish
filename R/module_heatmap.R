@@ -161,12 +161,22 @@ HeatmapServer <- function(
       if (value > 2000) {
         "Maximum : 2000"
       }
-    }
-    )
+    })
+    
+    iv$add_rule("col_order", function(value) {
+      # if no cluster, then all samples are necessary
+      if(length(value) != config() %>% filter(Condition %in% input$sel_cond) %>% nrow &
+         input$cluster_control == "no")
+        "You need to select all samples of available conditions"
+    })
+   
+    iv$add_rule("sel_cond", function(value){
+      if(length(value) < 2)
+        "Need at least two conditions"
+    })
+    
     iv$enable()
     
-    # initial Matrix
-    base_data <- reactiveVal()
     # Reordered Matrix
     reord_data <- reactiveVal()
     # Final Matrix
@@ -196,6 +206,7 @@ HeatmapServer <- function(
     })
     
     
+    
     condition_possibles <- reactive({
       # Conditions from which choice is possible
       req(
@@ -220,8 +231,8 @@ HeatmapServer <- function(
       updateCheckboxInput(inputId = "show_names", value = FALSE)
       updateSliderInput(inputId = "fontsize", value = 10)
       updateSliderInput(inputId = "ratio", value = 1)
-      updateSelectInput(inputId = "cluster_control", selected = "yes")
       updateSelectizeInput(inputId = "col_order", selected = NULL)
+      updateSelectInput(inputId = "cluster_control", selected = "yes")
       updateCheckboxGroupInput(inputId = "sel_cond", selected = req(condition_possibles()))
     })
     
@@ -254,47 +265,58 @@ HeatmapServer <- function(
     
     genes_selected <- GeneSelectServer(
       id = "gnsel",
-      src_table = counts,
+      src_table = counts, # on utilise que counts pour les hm, quand on sélectionne par nom
       sel_genes_table = sel_genes_table
     )
     
-    res_filtered <- FilterServer("fil",
-                                 res,
-                                 list("pval" = 0.05, "lfc" = 1),
-                                 reactive(input$reset))$res_filtered
+    res_filtered <- FilterServer(
+      "fil",
+      res,
+      list("pval" = 0.05, "lfc" = 1),
+      reactive(input$reset)
+    )$res_filtered
     
     
-    observeEvent(base_data(), {
+    observeEvent({
+      input$sel_cond 
+    }, {
+      freezeReactiveValue(input, "col_order")
       updateSelectizeInput(
         session = session,
         "col_order",
         choices = config() %>%
-          filter(Condition %in% condition_possibles()) %>%
-          pull(Name)
-        )
-    })
-    
-    
-    observeEvent(input$col_order, {
-      reord_data(base_data() %>%
-             as.data.frame() %>%
-             select(all_of(input$col_order)) %>%
-             relocate(all_of(input$col_order)) %>%
-             as.matrix(rownames = TRUE)
-           )
+          filter(Condition %in% input$sel_cond) %>%
+          pull(Name),
+        selected = NULL
+      )
     })
     
     
     observeEvent({
+      input$col_order
+      base_data()
+    }, {
+      req(input$col_order)
+      reord_data(base_data() %>%
+                   as.data.frame() %>%
+                   select(all_of(input$col_order)) %>%
+                   relocate(all_of(input$col_order)) %>%
+                   as.matrix(rownames = TRUE)
+      )
+    })
+    
+    
+    base_data <- eventReactive({
       res_filtered()
       counts()
       input$sel_cond
+      genes_selected$sel_genes_ids() # sometimes NULL
+      genes_selected$sel_genes_names()
     }, {
       req(input$sel_cond,
           config(),
           counts(),
           res_filtered())
-      req(iv$is_valid())
       # sélection du nom des échantillons
       # Basé sur les conditions selectionnees
       # Ou par defaut dans le cas top gene
@@ -305,25 +327,26 @@ HeatmapServer <- function(
       if(input$top_gene == "diff") {
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
-        base_data(res_filtered() %>%
+        res_filtered() %>%
                filter(sig_expr != "ns") %>%
                slice_min(order_by = padj, n = input$nb_top_gene) %>%
                mutate(name = coalesce(symbol, Row.names)) %>%
                remove_rownames() %>%
                column_to_rownames(var = "name") %>%
                select(all_of(echantillons)) %>%
-               as.matrix(., rownames = TRUE))
+               as.matrix(., rownames = TRUE)
       } else {
         # Si l'on veut sélectionner à la main
-        base_data(counts() %>%
+        counts() %>%
                filter(symbol %in% genes_selected$sel_genes_names() |
                         Row.names %in% genes_selected$sel_genes_ids()) %>%
                mutate(name = coalesce(symbol, Row.names)) %>%
                column_to_rownames(var = "name") %>%
                select(all_of(echantillons)) %>%
-               as.matrix(., rownames = TRUE))
+               as.matrix(., rownames = TRUE)
       }
-    }
+    },
+    ignoreNULL = FALSE # if the selected genes are NULL, no problem
     )
     
     
@@ -338,7 +361,7 @@ HeatmapServer <- function(
       input$sel_cond
     },{
       data.frame("Name" = colnames(data())) %>%
-        inner_join(config()) %>%
+        inner_join(config(), by = "Name") %>%
         select(-File) %>%
         column_to_rownames(var = "Name")
     })
@@ -372,6 +395,7 @@ HeatmapServer <- function(
           data(),
           annotation_col(),
           annotation_colors())
+      req(iv$is_valid())
       
       pheatmap( # C'est le traducteur de ComplexHeatmap
         name = "z-score",
