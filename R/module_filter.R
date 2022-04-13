@@ -44,6 +44,7 @@ FilterServer <- function(id, res, default, reset) {
     })
     
     res_filtered <- reactive({
+      req(res())
       if(!is.null(input$lfc_filter) & !is.null(input$pval_filter)) {
         res_filter(deseq_results = res(),
                    lfc_filter = input$lfc_filter,
