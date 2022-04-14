@@ -27,7 +27,8 @@ InputUI <- function(id) {
     width = 6,
     status = "primary",
     valueBoxOutput(ns("samples")),
-    valueBoxOutput(ns("contrastes"))
+    valueBoxOutput(ns("contrastes")),
+    valueBoxOutput(ns("conditions"))
   )
   )
   )
@@ -138,6 +139,18 @@ InputServer <- function(id, contrast_act) {
       valueBox(
         subtitle = "Samples",
         value = config() %>% nrow(),
+        icon = icon("list"),
+        color = "light-blue"
+      )
+    })
+    
+    output$conditions <- renderValueBox({
+      req(config())
+      valueBox(
+        subtitle = "Conditions",
+        value = config() %>%
+          pull(Condition) %>%
+          n_distinct(),
         icon = icon("list"),
         color = "light-blue"
       )
