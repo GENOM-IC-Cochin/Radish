@@ -23,8 +23,8 @@ VolcanoUI <- function(id) {
               )
             ),
             fluidRow(
-              box(title = "Aesthetics",
-                  status = "orange",
+              box(title = "Appearence",
+                  status = "warning",
                   width = 4,
                   sliderInput(
                     inputId = ns("x_max"),
@@ -66,7 +66,7 @@ VolcanoUI <- function(id) {
                   )
               ),
               box(title = "Text",
-                  status = "orange",
+                  status = "warning",
                   width = 4,
                   textInput(
                     inputId = ns("plot_title"),
@@ -99,7 +99,7 @@ VolcanoUI <- function(id) {
                   )
               ),
               box(title = "Download",
-                  status = "orange",
+                  status = "warning",
                   width = 4,
                   DownloadUI(ns("dw"))
               )

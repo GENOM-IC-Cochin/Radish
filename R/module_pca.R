@@ -24,7 +24,7 @@ PcaUI <- function(id) {
   fluidRow(
     box(
       title = "Settings",
-      status = "orange",
+      status = "warning",
       width = 4,
       selectizeInput(
         inputId = ns("excl_samp"),
@@ -46,7 +46,7 @@ PcaUI <- function(id) {
                     TRUE)
     ),
     box(title = "Download",
-        status = "orange",
+        status = "warning",
         width = 4,
         DownloadUI(ns("dw"))
     )

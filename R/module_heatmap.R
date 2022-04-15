@@ -1,5 +1,8 @@
 # Heatmap module
 
+# Colors for the condition in the heatmap
+condition_colors <- brewer.pal(8, "Set2")
+
 HeatmapUI <- function(id) {
   ns <- NS(id)
   
@@ -32,7 +35,7 @@ HeatmapUI <- function(id) {
     fluidRow(
       column(width = 3,
              box(title = "Settings",
-                 status = "orange",
+                 status = "warning",
                  width = 12,
                  selectInput(
                    inputId = ns("top_gene"),
@@ -54,7 +57,7 @@ HeatmapUI <- function(id) {
                               class = "btn-warning") 
              ),
              box(title = "Information",
-                 status = "orange",
+                 status = "warning",
                  width = 12,
                  HTML(paste("<p> <strong> Why only 2000 rows maximum? </strong> </p>",
                             "<p> If one goes over 1080, (or 2096 in the case of a 4k screen)",
@@ -78,7 +81,7 @@ HeatmapUI <- function(id) {
                    label = "Download plot"
                  )
              ),
-             box(title = "Aesthetics",
+             box(title = "Appearence",
                  status = "warning",
                  width = 6,
                  selectInput(

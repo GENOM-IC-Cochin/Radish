@@ -33,8 +33,7 @@ themes_gg <- c(
     "Gray",
     "Classic with gridlines"
 )
-# Colors for the condition in the heatmap
-condition_colors <- brewer.pal(8, "Set2")
+
 # Columns always present in the table (to be renamed by DT)
 base_table_columns <- c(
     "Row.names",
@@ -86,16 +85,16 @@ ShareApp <- function() {
     sidebar = dashboardSidebar(
       sidebarMenu(
         menuItem("Home", tabName = "home"),
-        menuItem("Data", tabName = "inp"),
+        menuItem("Input data", tabName = "inp"),
         menuItem("PCA", tabName = "pca"),
         menuItem("Interactive table", tabName = "tabl_gene"),
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
-        menuItem("Heatmap", tabName = "heatmap"),
-        img(src = "www/logo.svg",
-            style="position:fixed;bottom:0;margin:0 0 15px 25px;",
-            alt = "GENOM'IC")
-      )
+        menuItem("Heatmap", tabName = "heatmap")
+      ),
+      tags$img(src = "logo.svg",
+               style="position:fixed;bottom:0;margin:0 0 15px 25px;",
+               alt = "GENOM'IC")
     ),
     body = dashboardBody(
       use_theme(global_theme),
