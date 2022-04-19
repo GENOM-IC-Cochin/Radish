@@ -44,7 +44,7 @@ base_table_columns <- c(
     "description"
 )
 
-ShareApp <- function() {
+ShareApp <- function(...) {
   global_theme <- create_theme( # one day in its own css
     theme = "flatly",
     adminlte_color(
@@ -207,8 +207,5 @@ ShareApp <- function() {
   
   shinyApp(ui,
            server,
-           options = list(
-             port = 3838,
-             host = '0.0.0.0'
-           ))
+           ...)
 }
