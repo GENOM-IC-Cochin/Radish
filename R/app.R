@@ -55,7 +55,8 @@ ShareApp <- function(...) {
       info_box_bg = "#EEF0F6"
     )
   )
-  
+  # Allows one to use the www directory (need to use www in path though)
+  addResourcePath(prefix = "www", directoryPath = "./www")  
 # UI ---------------------------------------------------------------------------
   ui <- dashboardPage(
     header = dashboardHeader(
@@ -92,7 +93,7 @@ ShareApp <- function(...) {
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap")
       ),
-      tags$img(src = "logo.svg",
+      tags$img(src = "www/logo.svg",
                style="position:fixed;bottom:0;margin:0 0 15px 25px;",
                alt = "GENOM'IC")
     ),
