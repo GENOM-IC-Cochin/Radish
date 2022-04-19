@@ -60,39 +60,26 @@ ShareApp <- function(...) {
 # UI ---------------------------------------------------------------------------
   ui <- dashboardPage(
     header = dashboardHeader(
-      title = "SHARE",
-      leftUi = tagList(
-        dropdownBlock(
-          id = "contr",
-          selectInput(
-            inputId = "contrast_act",
-            label = "Select the contrast you want to study",
-            choices = NULL,
-            selected = NULL
-          ),
-          title = "Current contrast :",
-          badgeStatus = NULL
-        ),
-        # afficher le contraste
-        textOutput("disp_contr"),
-        # bricoler son apparence
-        tags$head(tags$style("#disp_contr{
-                                 margin-top: 7.5px;
-                                 color: white;
-                                 }")
-        )
-      )
+      title = div("SHARE", style = "font-weight : bold")
     ),
     sidebar = dashboardSidebar(
       sidebarMenu(
         menuItem("Home", tabName = "home"),
         menuItem("Input data", tabName = "inp"),
         menuItem("PCA", tabName = "pca"),
-        menuItem("Interactive table", tabName = "tabl_gene"),
+        menuItem(div("Table", style = "font-weight : bold;text-decoration: underline;"), 
+                 tabName = "tabl_gene"),
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap")
       ),
+      HTML("<hr>"),
+      selectInput(
+            inputId = "contrast_act",
+            label = "Select the contrast",
+            choices = NULL,
+            selected = NULL
+          ),
       tags$img(src = "www/logo.svg",
                style="position:fixed;bottom:0;margin:0 0 15px 25px;",
                alt = "GENOM'IC")
@@ -104,7 +91,8 @@ ShareApp <- function(...) {
         tabItem(
           tabName = "home",
           tabBox(
-            title = "SHARE : A Shiny app for RNA-Seq Exploration",
+            title = div("SHARE : A Shiny app for RNA-Seq Exploration",
+                        style = "font-weight : bold"),
             width = 12,
             tabPanel(
               "About",

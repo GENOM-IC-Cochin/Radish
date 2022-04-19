@@ -15,7 +15,7 @@ InputUI <- function(id) {
   ns <- NS(id)
   tagList(fluidRow(box(
     title = "Result input",
-    width = 6,
+    width = 4,
     status = "primary",
     fileInput(ns("res_data"),
               "Results"
@@ -24,7 +24,7 @@ InputUI <- function(id) {
   ),
   box(
     title = "Data loaded",
-    width = 6,
+    width = 8,
     status = "primary",
     valueBoxOutput(ns("samples")),
     valueBoxOutput(ns("contrastes")),
