@@ -3,23 +3,7 @@
 #UI ----------------------------------------------------------------------------
 FilterUI <- function(id, default) {
   ns <- NS(id)
-  # If there is no default pval or lfc specified, don't show the input for it
-  # For instance maplot does not need a lfc cut.
-  tagList(
-    if(!is.null(default$pval)) {
-      sliderTextInput(ns("pval_filter"),
-                      "Select the Adjusted p-value filter (padj <= ?)",
-                      choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
-                      selected = default$pval)
-    },
-    if(!is.null(default$lfc)) {
-      numericInput(ns("lfc_filter"),
-                   "Select the log(FoldChange) filter (|lfc| >= ?)",
-                   min = 0,
-                   value = default$lfc,
-                   step = .25)
-    }
-  )
+  uiOutput(ns("filters"))
 }
 
 
@@ -57,6 +41,27 @@ FilterServer <- function(id, res, default, reset) {
                    pval_filter = input$pval_filter)
       }
     })
+    
+    output$filters <- renderUI({
+      # If there is no default pval or lfc specified, don't show the input for it
+      # For instance maplot does not need a lfc cut.
+      tagList(
+        if(!is.null(default$pval)) {
+          sliderTextInput(session$ns("pval_filter"),
+                          "Select the Adjusted p-value filter (padj <= ?)",
+                          choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
+                          selected = default$pval)
+        },
+        if(!is.null(default$lfc)) {
+          numericInput(session$ns("lfc_filter"),
+                       "Select the log(FoldChange) filter (|lfc| >= ?)",
+                       min = 0,
+                       value = default$lfc,
+                       step = .25)
+        }
+      )
+    })
+    
     list(
       res_filtered = res_filtered,
       pval = reactive(input$pval_filter),
@@ -83,6 +88,7 @@ FilterApp <- function() {
     list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     filter_res <- FilterServer("fil", list_loaded$res, list("pval" = 0.05), reactive(input$reset))
     output$nb <- renderUI({
+      req(filter_res$res_filtered())
       HTML(paste0("Found ",
                   filter_res$res_filtered() %>% filter(sig_expr != "ns") %>% nrow(),
                   " significatively differentially expressed genes"))

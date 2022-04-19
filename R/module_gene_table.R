@@ -176,9 +176,11 @@ GeneTableServer <- function(id,
     
     
     output$sig_genes <- renderUI({
-      req(res())
+      req(res(),
+          filter_res$pval(),
+          filter_res$lfc())
       n_sig <- res() %>%
-        filter(padj < filter_res$pval(), abs(log2FoldChange) > filter_res$lfc()) %>%
+        dplyr::filter(padj < filter_res$pval(), abs(log2FoldChange) > filter_res$lfc()) %>%
         nrow()
       HTML(paste("<p> <b>", n_sig, "</b>",
                  "genes are significantly differentially expressed",
