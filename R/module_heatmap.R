@@ -5,32 +5,6 @@ condition_colors <- brewer.pal(8, "Set2")
 
 HeatmapUI <- function(id) {
   ns <- NS(id)
-  
-  # Conditional UI
-  parameters_tab <- tabsetPanel(
-    id = ns("settings"),
-    type = "hidden",
-    tabPanel(
-      "diff",
-      value="diff",
-      FilterUI(ns("fil"), default = list("pval" = 0.05, "lfc" = 1)),
-      numericInput(
-        ns("nb_top_gene"),
-        "Select the number of top differentially expressed genes (max 2000)",
-        value = 100,
-        min = 0,
-        max = 2000
-      ),
-    ),
-    tabPanel(
-      "all",
-      value="all",
-      GeneSelectUI(ns("gnsel"))
-    )
-  )
-  
-  
-  
   tagList(
     fluidRow(
       column(width = 3,
@@ -41,13 +15,29 @@ HeatmapUI <- function(id) {
                    inputId = ns("top_gene"),
                    label = "Choose the Heatmap",
                    choices = c("Top genes from current contrast" = "diff",
-                               "Selected genes" = "all")
+                               "Selected genes" = "sel")
                  ),
                  checkboxGroupInput(
                    inputId = ns("sel_cond"),
                    label = "Choose the conditions",
                  ),
-                 parameters_tab,
+                 conditionalPanel(
+                   condition = "input.top_gene == 'diff'",
+                   FilterUI(ns("fil"), default = list("pval" = 0.05, "lfc" = 1)),
+                   numericInput(
+                     ns("nb_top_gene"),
+                     "Select the number of top differentially expressed genes (max 2000)",
+                     value = 100,
+                     min = 0,
+                     max = 2000
+                   ),
+                   ns = ns,
+                 ),
+                 conditionalPanel(
+                   condition = "input.top_gene == 'sel'",
+                   GeneSelectUI(ns("gnsel")),
+                   ns = ns
+                 ),
                  htmlOutput(ns("gene_number")),
                  actionButton(ns("draw"),
                               "Draw heatmap",
@@ -122,18 +112,15 @@ HeatmapUI <- function(id) {
                              choices = c("yes", "no"),
                              selected = "yes"
                  ),
-                 tabsetPanel(
-                   id = ns("cluster_switch"),
-                   type = "hidden",
-                   tabPanelBody("no",
-                                selectizeInput(
-                                  inputId = ns("col_order"),
-                                  label = "Choose the columns and their order",
-                                  choices = NULL,
-                                  multiple = TRUE
-                                )
+                 conditionalPanel(
+                   condition = "input.cluster_control == 'no'",
+                   selectizeInput(
+                     inputId = ns("col_order"),
+                     label = "Choose the columns and their order",
+                     choices = NULL,
+                     multiple = TRUE
                    ),
-                   tabPanelBody("yes")
+                   ns = ns
                  )
              )
       )
@@ -202,18 +189,11 @@ HeatmapServer <- function(
     })
     
     
-    # Switch cluter columns
-    observeEvent(input$cluster_control,{
-      updateTabsetPanel(inputId = "cluster_switch",
-                        selected = input$cluster_control)
-    })
-    
-    
-    
     condition_possibles <- reactive({
       # Conditions from which choice is possible
       req(
         config(),
+        input$top_gene
       )
       condition <- config()$Condition %>% unique()
       if(input$top_gene == "diff") {
@@ -240,15 +220,6 @@ HeatmapServer <- function(
     })
     
     
-    observeEvent(input$top_gene,{
-      # Switch between top gene heatmap UI and selected genes heatmap UI
-      updateTabsetPanel(
-        session = session,
-        inputId = "settings",
-        selected = input$top_gene
-      )}
-    )
-    
     observeEvent(condition_possibles(),
                  updateCheckboxGroupInput(
                    inputId = "sel_cond",
@@ -262,7 +233,7 @@ HeatmapServer <- function(
     
     output$gene_number <- renderUI({
       req(data())
-      HTML(paste("<p>", nrow(data()), "genes are currently displayed on the heatmap </p>"))
+      HTML(paste("<p>", nrow(data()), "genes are to be displayed on the heatmap </p>"))
     })
     
     
@@ -315,11 +286,13 @@ HeatmapServer <- function(
       input$sel_cond
       genes_selected$sel_genes_ids() # sometimes NULL
       genes_selected$sel_genes_names()
+      input$top_gene
     }, {
       req(input$sel_cond,
           config(),
           counts(),
-          res_filtered())
+          res_filtered(),
+          input$top_gene)
       # sélection du nom des échantillons
       # Basé sur les conditions selectionnees
       # Ou par defaut dans le cas top gene
