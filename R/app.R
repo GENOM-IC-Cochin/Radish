@@ -2,8 +2,7 @@
 
 # Libraries
 library(shiny)
-library(shinydashboard)
-library(shinydashboardPlus)
+library(bs4Dash)
 library(shinyWidgets)
 library(shinyvalidate)
 library(DT)
@@ -45,47 +44,53 @@ base_table_columns <- c(
 )
 
 ShareApp <- function(...) {
-  global_theme <- create_theme( # one day in its own css
-    theme = "flatly",
-    adminlte_color(
-      light_blue = "#006499"
+  global_theme <- create_theme(
+    bs4dash_status(
+      primary = "#006499",
+      secondary = "#009982"
     ),
-    adminlte_global(
-      content_bg = "#FFF",
-      info_box_bg = "#EEF0F6"
+    bs4dash_sidebar_light(
+      bg = "#7e7e7e"
     )
   )
-  # Allows one to use the www directory (need to use www in path though)
+  # Allows use the www directory (need to use www in path though)
   addResourcePath(prefix = "www", directoryPath = "./www")  
 # UI ---------------------------------------------------------------------------
   ui <- dashboardPage(
+    freshTheme = global_theme,
     header = dashboardHeader(
-      title = div("SHARE", style = "font-weight : bold")
+      skin = "light",
+      status = "primary",
+      title = dashboardBrand(
+        title = "SHARE",
+        color = "primary"
+      )
     ),
     sidebar = dashboardSidebar(
+      skin = "light",
       sidebarMenu(
         menuItem("Home", tabName = "home"),
         menuItem("Input data", tabName = "inp"),
         menuItem("PCA", tabName = "pca"),
-        menuItem(div("Table", style = "font-weight : bold;text-decoration: underline;"), 
+        menuItem(p("Table", style = "font-weight : bold; text-decoration: underline;"),
                  tabName = "tabl_gene"),
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap")
       ),
-      HTML("<hr>"),
+      hr(),
       selectInput(
             inputId = "contrast_act",
             label = "Select the contrast",
             choices = NULL,
             selected = NULL
           ),
+      hr(),
       tags$img(src = "www/logo.svg",
                style="position:fixed;bottom:0;margin:0 0 15px 25px;",
                alt = "GENOM'IC")
     ),
     body = dashboardBody(
-      use_theme(global_theme),
       shinyFeedback::useShinyFeedback(),
       tabItems(
         tabItem(

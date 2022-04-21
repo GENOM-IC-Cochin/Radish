@@ -13,22 +13,27 @@ expected_data <- c(
 # UI ---------------------------------------------------------------------------
 InputUI <- function(id) {
   ns <- NS(id)
-  tagList(fluidRow(box(
-    title = "Result input",
-    width = 4,
-    status = "primary",
+  tagList(fluidRow(column(
+    width = 3,
     fileInput(ns("res_data"),
               "Results"
     ),
     actionButton(ns("demo"), "Load demo data")
   ),
-  box(
-    title = "Data loaded",
-    width = 8,
-    status = "primary",
-    valueBoxOutput(ns("samples")),
-    valueBoxOutput(ns("contrastes")),
-    valueBoxOutput(ns("conditions"))
+  column(
+    width = 3,
+    valueBoxOutput(ns("samples"),
+                   width = 12),
+  ),
+  column(
+    width = 3,
+    valueBoxOutput(ns("contrastes"),
+                   width = 12),
+  ),
+  column(
+    width = 3,
+    valueBoxOutput(ns("conditions"),
+                   width = 12)
   )
   )
   )
@@ -130,7 +135,7 @@ InputServer <- function(id, contrast_act) {
         subtitle = "Contrastes",
         value = all_results() %>% length(),
         icon = icon("list"),
-        color = "light-blue"
+        color = "secondary"
       )
     })
     
@@ -140,7 +145,7 @@ InputServer <- function(id, contrast_act) {
         subtitle = "Samples",
         value = config() %>% nrow(),
         icon = icon("list"),
-        color = "light-blue"
+        color = "secondary"
       )
     })
     
@@ -152,7 +157,7 @@ InputServer <- function(id, contrast_act) {
           pull(Condition) %>%
           n_distinct(),
         icon = icon("list"),
-        color = "light-blue"
+        color = "secondary"
       )
     })
      

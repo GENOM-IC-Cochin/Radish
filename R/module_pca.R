@@ -7,12 +7,13 @@ PcaUI <- function(id) {
   tagList(fluidRow(
     tabBox(
       width = 12,
+      status = "primary",
       tabPanel(
         title = "PCA plot",
         plotOutput(ns("pca")),
         actionButton(ns("pca_button"),
                      "Calculate PCA",
-                     class = "btn-warning")
+                     status = "secondary")
         
       ),
       tabPanel(
@@ -24,7 +25,7 @@ PcaUI <- function(id) {
   fluidRow(
     box(
       title = "Settings",
-      status = "warning",
+      status = "secondary",
       width = 4,
       selectizeInput(
         inputId = ns("excl_samp"),
@@ -46,7 +47,7 @@ PcaUI <- function(id) {
                     TRUE)
     ),
     box(title = "Download",
-        status = "warning",
+        status = "secondary",
         width = 4,
         DownloadUI(ns("dw"))
     )

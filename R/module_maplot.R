@@ -9,14 +9,14 @@ MAplotUI <- function(id) {
               width = 12,
               plotOutput(outputId = ns("plot")),
               actionButton(ns("draw"), "Draw MA-Plot",
-                           class = "btn-warning"),
+                           status = "secondary"),
               actionButton(ns("reset"), "Reset defaults",
-                           class = "btn-warning")
+                           status = "secondary")
           )
         ),
         fluidRow(
-          box(title = "Appearence",
-              status = "warning",
+          box(title = "Appearance",
+              status = "secondary",
               width = 4,
               FilterUI(ns("fil"), list("pval" = 0.05)),
               colourInput(
@@ -44,7 +44,7 @@ MAplotUI <- function(id) {
               )
           ),
           box(title = "Text",
-              status = "warning",
+              status = "secondary",
               width = 4,
               textInput(
                 inputId = ns("plot_title"),
@@ -77,7 +77,7 @@ MAplotUI <- function(id) {
               )
           ),
           box(title = "Download",
-              status = "warning",
+              status = "secondary",
               width = 4,
               DownloadUI(ns("dw")) 
           )

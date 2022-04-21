@@ -6,13 +6,13 @@ GeneSelectUI <- function(id) {
   tagList(
     selectizeInput(
       inputId = ns("sel_gene_nm"),
-      label = "Select which significant genes (by name) to highlight :",
+      label = "Select which significant genes (by name) to highlight",
       choices = NULL,
       multiple = TRUE
     ),
     selectizeInput(
       inputId = ns("sel_gene_id"),
-      label = "Select which significant genes (by id) to highlight :",
+      label = "Select which significant genes (by id) to highlight",
       choices = NULL,
       multiple = TRUE
     )

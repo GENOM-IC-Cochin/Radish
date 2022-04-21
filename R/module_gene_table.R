@@ -6,12 +6,12 @@ GeneTableUI <- function(id) {
   fluidRow(
     column(3,
            box(title = "Genes Information",
-               status = "warning",
+               status = "secondary",
                width = 12,
                htmlOutput(ns("outlier"))
                ),
            box(title = "Row selection",
-               status = "warning",
+               status = "secondary",
                width = 12,
                selectInput(ns("input_type"),
                            "Selection based on genes' :",
@@ -26,7 +26,7 @@ GeneTableUI <- function(id) {
                             "Clear Input")
            ),
            box(title = "Selective Download",
-               status = "warning",
+               status = "secondary",
                width = 12,
                FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
                htmlOutput(ns("sig_genes")),
@@ -37,6 +37,7 @@ GeneTableUI <- function(id) {
     column(9,
            tabBox(title = "Genes Tables",
                   width = 12,
+                  status = "primary",
                   tabPanel(
                     "All genes",
                     htmlOutput(ns("n_selected")),

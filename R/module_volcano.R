@@ -16,15 +16,15 @@ VolcanoUI <- function(id) {
                 width = 12,
                 plotOutput(outputId = ns("volcano_plot")),
                 actionButton(ns("draw"), "Draw Volcano Plot",
-                             class = "btn-warning"),
+                             status = "secondary"),
                 actionButton(ns("reset"),
                              "Reset defaults",
-                             class = "btn-warning")
+                             status = "secondary")
               )
             ),
             fluidRow(
-              box(title = "Appearence",
-                  status = "warning",
+              box(title = "Appearance",
+                  status = "secondary",
                   width = 4,
                   sliderInput(
                     inputId = ns("x_max"),
@@ -66,7 +66,7 @@ VolcanoUI <- function(id) {
                   )
               ),
               box(title = "Text",
-                  status = "warning",
+                  status = "secondary",
                   width = 4,
                   textInput(
                     inputId = ns("plot_title"),
@@ -99,7 +99,7 @@ VolcanoUI <- function(id) {
                   )
               ),
               box(title = "Download",
-                  status = "warning",
+                  status = "secondary",
                   width = 4,
                   DownloadUI(ns("dw"))
               )

@@ -9,7 +9,7 @@ HeatmapUI <- function(id) {
     fluidRow(
       column(width = 3,
              box(title = "Settings",
-                 status = "warning",
+                 status = "secondary",
                  width = 12,
                  selectInput(
                    inputId = ns("top_gene"),
@@ -19,7 +19,7 @@ HeatmapUI <- function(id) {
                  ),
                  checkboxGroupInput(
                    inputId = ns("sel_cond"),
-                   label = "Choose the conditions",
+                   label = p("Choose the conditions"), # temporary p(), to space down the conditions
                  ),
                  conditionalPanel(
                    condition = "input.top_gene == 'diff'",
@@ -41,87 +41,91 @@ HeatmapUI <- function(id) {
                  htmlOutput(ns("gene_number")),
                  actionButton(ns("draw"),
                               "Draw heatmap",
-                              class = "btn-warning"),
+                              status = "secondary"),
                  actionButton(ns("reset"),
                               "Reset defaults",
-                              class = "btn-warning") 
+                              status = "secondary")
              ),
              box(title = "Information",
-                 status = "warning",
+                 status = "secondary",
                  width = 12,
                  HTML(paste("<p> <strong> Why only 2000 rows maximum? </strong> </p>",
-                            "<p> If one goes over 1080, (or 2096 in the case of a 4k screen)",
+                            "<p> If one goes over 1080, (or 2160 in the case of a 4k screen)",
                             "genes, then there are less pixels than rows in the matrix",
                             "and the results displayed is a sort of mean of multiple rows.",
                             "It is well explained <a href='https://gdevailly.netlify.app/post/plotting-big-matrices-in-r/'>here</a>.",
                             "If you are still willing to obtain such a matrix, please contact the developpers </p>")))
       ),
       column(width = 9,
-             box(title = "Heatmap",
-                 status = "primary",
-                 width = 12,
-                 plotOutput(ns("heatmap"),
-                            height = "600px"),
-                 selectInput(inputId = ns("format"),
-                             label = "Format of the downloaded plot :",
-                             choices = c("png", "pdf", "svg"),
-                             selected = "pdf"),
-                 downloadButton(
-                   outputId = ns("down"),
-                   label = "Download plot"
-                 )
+             fluidRow(
+               box(title = "Heatmap",
+                   status = "primary",
+                   width = 12,
+                   plotOutput(ns("heatmap"),
+                              height = "600px"),
+                   selectInput(inputId = ns("format"),
+                               label = "Format of the downloaded plot",
+                               choices = c("png", "pdf", "svg"),
+                               selected = "pdf"),
+                   downloadButton(
+                     outputId = ns("down"),
+                     label = "Download plot"
+                   )
+               )
              ),
-             box(title = "Appearence",
-                 status = "warning",
-                 width = 6,
-                 selectInput(
-                   inputId = ns("palette"),
-                   label = "Choose the color palette of the heatmap",
-                   choices = brewer.pal.info %>%
-                     filter(category == "div" & colorblind == TRUE) %>%
-                     rownames_to_column() %>%
-                     pull(rowname),
-                   selected = "RdYlBu"
-                 ),
-                 checkboxInput(
-                   ns("show_names"),
-                   "Show gene names",
-                   value = FALSE
-                 ),
-                 sliderInput(
-                   ns("fontsize"),
-                   "Choose the row names fontsize",
-                   min = 3,
-                   max = 12,
-                   value = 10,
-                   step = .5
-                 ),
-                 sliderInput(
-                   inputId = ns("ratio"),
-                   label = "Choose the plot aspect ratio",
-                   value = 1,
-                   min = 0.5,
-                   max = 2
-                 )
-             ),
-             box(title = "Advanced Settings",
-                 status = "warning",
-                 width = 6,
-                 selectInput(ns("cluster_control"),
-                             "Cluster by columns",
-                             choices = c("yes", "no"),
-                             selected = "yes"
-                 ),
-                 conditionalPanel(
-                   condition = "input.cluster_control == 'no'",
-                   selectizeInput(
-                     inputId = ns("col_order"),
-                     label = "Choose the columns and their order",
-                     choices = NULL,
-                     multiple = TRUE
+             fluidRow(
+               box(title = "Appearance",
+                   status = "secondary",
+                   width = 6,
+                   selectInput(
+                     inputId = ns("palette"),
+                     label = "Choose the color palette of the heatmap",
+                     choices = brewer.pal.info %>%
+                       filter(category == "div" & colorblind == TRUE) %>%
+                       rownames_to_column() %>%
+                       pull(rowname),
+                     selected = "RdYlBu"
                    ),
-                   ns = ns
-                 )
+                   checkboxInput(
+                     ns("show_names"),
+                     "Show gene names",
+                     value = FALSE
+                   ),
+                   sliderInput(
+                     ns("fontsize"),
+                     "Choose the row names fontsize",
+                     min = 3,
+                     max = 12,
+                     value = 10,
+                     step = .5
+                   ),
+                   sliderInput(
+                     inputId = ns("ratio"),
+                     label = "Choose the plot aspect ratio",
+                     value = 1,
+                     min = 0.5,
+                     max = 2
+                   )
+               ),
+               box(title = "Advanced Settings",
+                   status = "secondary",
+                   width = 6,
+                   selectInput(ns("cluster_control"),
+                               "Cluster by columns",
+                               choices = c("yes", "no"),
+                               selected = "yes"
+                   ),
+                   conditionalPanel(
+                     condition = "input.cluster_control == 'no'",
+                     selectizeInput(
+                       inputId = ns("col_order"),
+                       label = "Choose the columns and their order",
+                       choices = NULL,
+                       multiple = TRUE
+                     ),
+                     ns = ns
+                   )
+               )
              )
       )
     )
@@ -372,7 +376,6 @@ HeatmapServer <- function(
           annotation_col(),
           annotation_colors())
       req(iv$is_valid())
-      
       pheatmap( # C'est le traducteur de ComplexHeatmap
         name = "z-score",
         mat = data(),
