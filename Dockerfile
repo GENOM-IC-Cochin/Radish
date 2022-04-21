@@ -1,4 +1,4 @@
-FROM fedora:latest
+FROM fedora:35
 LABEL maintainer="Paul Etheimer <paul.etheimer@inserm.fr>"
 RUN dnf -y upgrade && dnf install -y \
     gcc \
@@ -40,4 +40,4 @@ RUN chown app:app -R /home/app
 USER app
 RUN R -e 'renv::restore()'
 EXPOSE 3838
-CMD ["R", "-e", "pkgload::load_all(".");ShareApp(options = list(port = 3838, host = '0.0.0.0'))"]
+CMD ["R", "-e", "pkgload::load_all('.');ShareApp(options = list(port = 3838, host = '0.0.0.0'))"]
