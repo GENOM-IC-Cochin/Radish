@@ -46,6 +46,11 @@ PcaUI <- function(id) {
                     "Should samples be labeled",
                     TRUE)
     ),
+    box(title = "Colors",
+        status = "secondary",
+        width = 4,
+        uiOutput(ns("colors"))
+        ),
     box(title = "Download",
         status = "secondary",
         width = 4,
@@ -93,14 +98,25 @@ PcaServer <- function(id,
       rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop)
     })
     
-    cur_plot <- reactive(
-      my_pca(data(), theme = input$theme, show_labels = input$labels)
-    )
-
+    cur_plot <- eventReactive(data(), {
+      color_by_cond <- set_names(map_chr(
+        uniq_conds(),
+        ~ input[[.x]] %||% ""
+      ),
+      uniq_conds()
+      )
+      color_by_cond[color_by_cond == ""] <- NA 
+      my_pca(data(),
+             theme = input$theme,
+             show_labels = input$labels,
+             if(anyNA(color_by_cond)) {NULL} else{color_by_cond}
+      )
+    })
+    
     output$pca <- renderPlot({
       cur_plot()
     })
-
+    
     output$scree <- renderPlot({
       req(data())
       data.frame(variance_exp = data()$variance,
@@ -111,6 +127,16 @@ PcaServer <- function(id,
              y = "Percentage of variance") +
         geom_text(aes(label = signif(variance_exp, 3)), vjust = 1.6, colour = "white") +
         theme_bw()
+    })
+    
+    uniq_conds <- reactive(config()$Condition %>% unique %>% as.character)
+    
+    output$colors <- renderUI({
+      map2(uniq_conds(),
+            hue_pal()(length(uniq_conds())),
+           ~ colourInput(inputId = session$ns(.x),
+                         paste("Choose the color of : ", .x),
+                         value = .y))
     })
     
     DownloadServer(
