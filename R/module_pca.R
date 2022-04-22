@@ -66,12 +66,10 @@ PcaUI <- function(id) {
 PcaServer <- function(id,
                       counts,
                       config,
-                      contrastes,
                       txi.rsem,
                       rld) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(txi.rsem))
   stopifnot(is.reactive(rld))
   moduleServer(id, function(input, output, session) {
@@ -164,7 +162,6 @@ PcaApp <- function() {
       id = "pca1",
       counts = list_loaded$counts,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       txi.rsem = list_loaded$txi.rsem,
       rld = list_loaded$rld
     )

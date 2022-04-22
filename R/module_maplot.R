@@ -88,16 +88,12 @@ MAplotUI <- function(id) {
 
 # Server -----------------------------------------------------------------------
 MAplotServer <- function(id,
-                         counts,
                          res,
                          config,
-                         contrastes,
                          contrast_act,
                          sel_genes_table) {
-  stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(contrast_act))
   stopifnot(is.reactive(sel_genes_table))
   moduleServer(id, function(input, output, session){
@@ -179,10 +175,8 @@ MAplotApp <- function() {
   server <- function(input, output, session) {
     list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     MAplotServer(id = "maplot1",
-                  counts = list_loaded$counts,
                   res = list_loaded$res,
                   config = list_loaded$config,
-                  contrastes = list_loaded$contrastes,
                   contrast_act = reactive("Cond1_vs_Control"),
                   sel_genes_table = reactive(data.frame(head(list_loaded$res()))))
     

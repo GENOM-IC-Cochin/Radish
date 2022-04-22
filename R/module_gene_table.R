@@ -68,12 +68,10 @@ GeneTableServer <- function(id,
                             counts,
                             res,
                             config,
-                            contrastes,
                             contrast_act) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(contrast_act))
   moduleServer(id, function(input, output, session){
     
@@ -216,7 +214,7 @@ GeneTableServer <- function(id,
       res()
     },{
       res() %>%
-        # Significant digits
+        # Significant digits (DT function somewhere?)
         mutate(dplyr::across(where(is.numeric), signif, 3))
     })
     
@@ -367,7 +365,6 @@ GeneTableApp <- function() {
       counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       contrast_act = reactive("Cond1_vs_Control")
     )
   }

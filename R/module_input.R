@@ -165,7 +165,6 @@ InputServer <- function(id, contrast_act) {
     list(
       res = res,
       counts = counts,
-      contrastes = contrastes,
       rld = rld,
       config = config,
       txi.rsem = txi.rsem,

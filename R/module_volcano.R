@@ -118,16 +118,12 @@ VolcanoUI <- function(id) {
 # Server -----------------------------------------------------------------------
 
 VolcanoServer <- function(id,
-                          counts,
                           res,
                           config,
-                          contrastes,
                           contrast_act,
                           sel_genes_table) {
-  stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(contrast_act))
   stopifnot(is.reactive(sel_genes_table))
   moduleServer(id, function(input, output, session){
@@ -267,10 +263,8 @@ VolcanoApp <- function() {
   server <- function(input, output, session) {
     list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
     VolcanoServer(id = "v1",
-                  counts = list_loaded$counts,
                   res = list_loaded$res,
                   config = list_loaded$config,
-                  contrastes = list_loaded$contrastes,
                   contrast_act = reactive("Cond1_vs_Control"),
                   sel_genes_table = reactive(head(list_loaded$res())))
     

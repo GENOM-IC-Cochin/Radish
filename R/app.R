@@ -163,7 +163,6 @@ ShareApp <- function(...) {
       id = "pca",
       counts = list_loaded$counts,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       txi.rsem = list_loaded$txi.rsem,
       rld = list_loaded$rld
     )
@@ -172,24 +171,19 @@ ShareApp <- function(...) {
       counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act) #should be recalculated with change
     )
     MAplotServer(
       id = "ma",
-      counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
       sel_genes_table = sel_table
     )
     VolcanoServer(
       id = "vp",
-      counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
-      contrastes = list_loaded$contrastes,
       contrast_act = reactive(input$contrast_act),
       sel_genes_table = sel_table
     )
