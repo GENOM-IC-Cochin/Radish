@@ -88,9 +88,12 @@ ShareApp <- function(...) {
             selected = NULL
           ),
       hr(),
-      tags$img(src = "www/logo.svg",
+      tags$a(tags$img(src = "www/logo.svg",
                style="position:fixed;bottom:0;margin:0 0 15px 25px;",
-               alt = "GENOM'IC")
+               alt = "GENOM'IC"),
+             href = "https://institutcochin.fr/genomic",
+             target = "_blank"
+      )
     ),
     body = dashboardBody(
       shinyFeedback::useShinyFeedback(),
