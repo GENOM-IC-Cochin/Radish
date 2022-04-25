@@ -20,8 +20,10 @@ GeneTableUI <- function(id) {
                htmlOutput(ns("read_items")),
                actionButton(ns("select_genes"),
                             "Select Genes"),
+               br(),
                actionButton(ns("clear"),
                             "Clear selection"),
+               br(),
                actionButton(ns("clear_input"),
                             "Clear Input")
            ),

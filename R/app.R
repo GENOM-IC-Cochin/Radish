@@ -54,7 +54,8 @@ ShareApp <- function(...) {
       secondary = "#009982"
     ),
     bs4dash_sidebar_light(
-      bg = "#7e7e7e"
+      bg = "#404040",
+      color = "#FFF"
     )
   )
   # Allows use the www directory (need to use www in path though)
@@ -86,7 +87,7 @@ ShareApp <- function(...) {
       hr(),
       selectInput(
             inputId = "contrast_act",
-            label = "Select the contrast",
+            label = div("Select the contrast", style = "color : white"),
             choices = NULL,
             selected = NULL
           ),
