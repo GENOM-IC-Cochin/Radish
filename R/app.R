@@ -45,6 +45,8 @@ base_table_columns <- c(
     "description"
 )
 
+video_width <- 320
+
 ShareApp <- function(...) {
   global_theme <- create_theme(
     bs4dash_status(
@@ -72,6 +74,7 @@ ShareApp <- function(...) {
       skin = "light",
       sidebarMenu(
         menuItem("Home", tabName = "home"),
+        menuItem("Tutorial", tabName = "tut"),
         menuItem("Input data", tabName = "inp"),
         menuItem("PCA", tabName = "pca"),
         menuItem(p("Table", style = "font-weight : bold; text-decoration: underline;"),
@@ -111,6 +114,90 @@ ShareApp <- function(...) {
             tabPanel(
               "Authors",
               includeMarkdown("www/authors.md")
+            )
+          )
+        ),
+        tabItem(
+          tabName = "tut",
+          tabBox(
+              width = 12,
+            tabPanel(
+              "PCA",
+              includeMarkdown("www/tutorials/pca.md"),
+              tags$video(src = "www/videos/pca_plot.webm",
+                         width = video_width,
+                         controls = NA)
+            ),
+            tabPanel(
+              "Table",
+              includeMarkdown("www/tutorials/table_selection.md"),
+              tags$b("Selection in the table :"),
+              br(),
+              tags$video(src = "www/videos/table_selection.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              tags$b("App-wide impacts of the selection :"),
+              br(),
+              tags$video(src = "www/videos/app_wide_select.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              includeMarkdown("www/tutorials/table_contrasts.md"),
+              tags$b("Contrasts :"),
+              br(),
+              tags$video(src = "www/videos/table_contrast.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              includeMarkdown("www/tutorials/table_search.md"),
+              tags$b("Searching :"),
+              br(),
+              tags$video(src = "www/videos/table_search.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              includeMarkdown("www/tutorials/table_columns.md"),
+              tags$b("Columns selection :"),
+              br(),
+              tags$video(src = "www/videos/table_columns.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              includeMarkdown("www/tutorials/table_selec_dl.md"),
+              tags$b("Filtered download :"),
+              br(),
+              tags$video(src = "www/videos/table_selec_dl.webm",
+                         width = video_width,
+                         controls = NA),
+              br(),
+              includeMarkdown("www/tutorials/table_upload.md"),
+              tags$b("Upload :"),
+              br(),
+              tags$video(src = "www/videos/table_upload.webm",
+                         width = video_width,
+                         controls = NA)
+            ),
+            tabPanel(
+              "MA-plot",
+              includeMarkdown("www/tutorials/maplot.md"),
+              tags$video(src = "www/videos/ma_basics.webm",
+                         width = video_width,
+                         controls = NA)
+            ),
+            tabPanel(
+              "Volcano Plot",
+              withMathJax(includeMarkdown("www/tutorials/volcano.md")),
+              tags$video(src = "www/videos/vp_basics.webm",
+                         width = video_width,
+                         controls = NA)
+            ),
+            tabPanel(
+              "Heatmap",
+              includeMarkdown("www/tutorials/heatmap.md"),
+              tags$video(src = "www/videos/hm_basics.webm",
+                         width = video_width,
+                         controls = NA)
             )
           )
         ),

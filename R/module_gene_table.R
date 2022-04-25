@@ -25,7 +25,7 @@ GeneTableUI <- function(id) {
                actionButton(ns("clear_input"),
                             "Clear Input")
            ),
-           box(title = "Selective Download",
+           box(title = "Filtered Download",
                status = "secondary",
                width = 12,
                FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
@@ -90,7 +90,7 @@ GeneTableServer <- function(id,
       HTML(paste("<p> <b>", 
                  nb_na,
                  "</b>",
-                 "genes had their <i> p-values </i> set to NA, as they are deemed outliers.",
+                 "genes have their <i> p-values </i> set to NA, as one sample has an extreme count outlier, or the gene has not passed independent filtering.",
                  "</p>"))
     })
     

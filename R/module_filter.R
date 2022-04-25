@@ -48,13 +48,13 @@ FilterServer <- function(id, res, default, reset) {
       tagList(
         if(!is.null(default$pval)) {
           sliderTextInput(session$ns("pval_filter"),
-                          "Select the Adjusted p-value filter (padj <= ?)",
+                          "Select the Adjusted p-value threshold (padj <= ?)",
                           choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
                           selected = default$pval)
         },
         if(!is.null(default$lfc)) {
           numericInput(session$ns("lfc_filter"),
-                       "Select the log(FoldChange) filter (|lfc| >= ?)",
+                       "Select the log(FoldChange) threshold (|lfc| >= ?)",
                        min = 0,
                        value = default$lfc,
                        step = .25)
