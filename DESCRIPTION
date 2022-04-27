@@ -1,12 +1,9 @@
 Package: SHARE
-Title: What the Package Does (One Line, Title Case)
+Title: Shiny App for Rna-seq Exploration
 Version: 0.0.0.9000
-Authors@R: c(
- .
-   )
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: person("Paul", "Etheimer", email = "paul.etheimer@inserm.fr", role = c("aut", "cre"))
+Description: This application is a natural follow up of the GENOM\'IC RNA-seq pipeline, and allows user to explore its results and produce figures.
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
