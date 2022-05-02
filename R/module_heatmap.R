@@ -1,5 +1,24 @@
 # Heatmap module
 
+# Color brewer palette
+brew_vec <- brewer.pal.info %>%
+                       filter(category == "div" & colorblind == TRUE) %>%
+                       rownames_to_column() %>%
+                       pull(rowname)
+  
+# viridis palette
+vir_vec <- setNames(
+  LETTERS[1:8],
+  c("magma",
+    "inferno",
+    "plasma",
+    "viridis",
+    "cividis",
+    "rocket",
+    "mako",
+    "turbo"
+  )
+)
 # Colors for the condition in the heatmap
 condition_colors <- brewer.pal(8, "Set2")
 
@@ -80,10 +99,7 @@ HeatmapUI <- function(id) {
                    selectInput(
                      inputId = ns("palette"),
                      label = "Choose the color palette of the heatmap",
-                     choices = brewer.pal.info %>%
-                       filter(category == "div" & colorblind == TRUE) %>%
-                       rownames_to_column() %>%
-                       pull(rowname),
+                     choices = c(brew_vec), #, names(vir_vec)), deactivated bc not div with white in middle
                      selected = "RdYlBu"
                    ),
                    checkboxInput(
@@ -379,7 +395,7 @@ HeatmapServer <- function(
       pheatmap( # C'est le traducteur de ComplexHeatmap
         name = "z-score",
         mat = data(),
-        color = rev(brewer.pal(9, input$palette)),
+        color = palette_hm(input$palette),
         cluster_rows = TRUE,
         cluster_cols = ifelse(input$cluster_control == "yes", TRUE, FALSE),
         # No row names if top genes

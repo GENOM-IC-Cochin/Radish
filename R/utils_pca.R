@@ -29,6 +29,8 @@ my_pca <- function(pca_data,
   }
   plot_res
 }
+
+
 rld_pca <- function(rld, config, txi.rsem, excl_samp_names, ntop) {
   if (!is.null(excl_samp_names)) {
     drop_samp <- which((colnames(txi.rsem$counts)) %in% excl_samp_names)

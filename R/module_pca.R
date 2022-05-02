@@ -4,63 +4,66 @@
 # UI ---------------------------------------------------------------------------
 PcaUI <- function(id) {
   ns <- NS(id)
-  tagList(
-    fluidRow(
-      tabBox(
-        width = 12,
-        status = "primary",
-        tabPanel(
-          title = "PCA plot",
-          plotOutput(ns("pca")),
-          actionButton(ns("pca_button"),
-            "Calculate PCA",
-            status = "secondary"
-          )
-        ),
-        tabPanel(
-          title = "Screeplot",
-          plotOutput(ns("scree"))
-        )
-      )
-    ),
-    fluidRow(
-      box(
-        title = "Settings",
-        status = "secondary",
-        width = 4,
-        selectizeInput(
-          inputId = ns("excl_samp"),
-          label = "Select outliers to exclude (quite slow)",
-          multiple = TRUE,
-          choices = NULL,
-          selected = NULL,
-          options = NULL
-        ),
-        selectInput(
-          inputId = ns("theme"),
-          label = "Choose the theme for the plot",
-          choices = themes_gg,
-          selected = "Classic"
-        ),
-        checkboxInput(
-          ns("labels"),
-          "Should samples be labeled",
-          TRUE
-        )
+  tagList(fluidRow(
+    tabBox(
+      width = 12,
+      status = "primary",
+      tabPanel(
+        title = "PCA plot",
+        plotOutput(ns("pca")),
+        actionButton(ns("draw"),
+                     "Draw PCA",
+                     status = "secondary")
+        
       ),
-      box(
-        title = "Colors",
-        status = "secondary",
-        width = 4,
-        uiOutput(ns("colors"))
-      ),
-      box(
-        title = "Download",
-        status = "secondary",
-        width = 4,
-        DownloadUI(ns("dw"))
+      tabPanel(
+        title = "Screeplot",
+        plotOutput(ns("scree"))
       )
     )
+  ),
+  fluidRow(
+    box(
+      title = "Settings",
+      status = "secondary",
+      width = 4,
+      selectizeInput(
+        inputId = ns("excl_samp"),
+        label = "Select outliers to exclude (quite slow)",
+        multiple = TRUE,
+        choices = NULL,
+        selected = NULL,
+        options = NULL
+      ),
+      actionButton(
+        inputId = ns("recomp_pca"),
+        label = "Recompute PCA",
+        status = "secondary"
+      ),
+      br(),
+      selectInput(
+        inputId = ns("theme"),
+        label = "Choose the theme for the plot",
+        choices = themes_gg,
+        selected = "Classic"
+      ),
+      checkboxInput(ns("labels"),
+                    "Should samples be labeled",
+                    TRUE)
+    ),
+    box(
+      title = "Colors",
+      status = "secondary",
+      width = 4,
+      uiOutput(ns("colors"))
+    ),
+    box(
+      title = "Download",
+      status = "secondary",
+      width = 4,
+      DownloadUI(ns("dw"))
+    )
+  )
   )
 }
 
@@ -77,6 +80,9 @@ PcaServer <- function(id,
   stopifnot(is.reactive(txi.rsem))
   stopifnot(is.reactive(rld))
   moduleServer(id, function(input, output, session) {
+
+    data <- reactiveVal()
+
     observeEvent(config(), {
       updateSelectizeInput(
         inputId = "excl_samp",
@@ -86,12 +92,12 @@ PcaServer <- function(id,
       )
     })
 
-    data <- eventReactive(
+    observeEvent(
       {
         rld()
         txi.rsem()
         config()
-        input$pca_button
+        input$recomp_pca
       },
       {
         req(
@@ -100,11 +106,12 @@ PcaServer <- function(id,
           txi.rsem()
         )
         ntop <- 500
-        rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop)
-      }
+        data(rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop))
+      },
+      ignoreNULL = FALSE
     )
 
-    cur_plot <- eventReactive(data(), {
+    cur_plot <- eventReactive(input$draw, {
       color_by_cond <- set_names(
         map_chr(
           uniq_conds(),

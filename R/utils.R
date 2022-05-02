@@ -48,3 +48,12 @@ res_filter <- function(deseq_results,
         ))) %>%
         mutate(sig_expr = relevel(sig_expr, "up"))
 }
+
+
+palette_hm <- function(color_name) {
+  if(color_name %in% brew_vec) {
+    colorRampPalette(rev(brewer.pal(n = 9, name = color_name)))(256)
+  } else {
+    c(viridis::viridis(256, option = vir_vec[color_name]), use.names = FALSE)
+  }
+}
