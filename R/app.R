@@ -26,7 +26,8 @@ library(markdown)
 
 # Preliminary code
 # update max upload size to 1000mB
-options(shiny.maxRequestSize = 1000 * 1024^2)
+options(shiny.maxRequestSize = 1000 * 1024^2,
+        shiny.useragg = TRUE)
 
 # The ggplot themes from which to choose
 themes_gg <- c(
