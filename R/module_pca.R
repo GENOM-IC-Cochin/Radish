@@ -49,7 +49,11 @@ PcaUI <- function(id) {
       ),
       checkboxInput(ns("labels"),
                     "Should samples be labeled",
-                    TRUE)
+                    TRUE),
+      selectInput(ns("color_by"),
+                  "Color samples by",
+                  choices = NULL),
+      uiOutput(ns("shape"))
     ),
     box(
       title = "Colors",
@@ -92,6 +96,37 @@ PcaServer <- function(id,
       )
     })
 
+    observeEvent(config(), {
+      updateSelectInput(
+        inputId = "color_by",
+        choices = config() %>%
+          select(-File, -Name) %>%
+          colnames()
+      )
+    })
+
+
+    output$shape <- renderUI({
+      #if there is more than 1 variable
+      req(config(),
+          input$color_by)
+      if(ncol(config()) > 3){
+        tagList(
+          checkboxInput(
+            session$ns("shape"),
+            "Use shape to display second variable",
+            FALSE),
+          selectInput(
+            session$ns("shape_by"),
+            "Shape samples by",
+            choices = config() %>%
+              select(-all_of(c("File", "Name", input$color_by))) %>%
+              colnames()
+          )
+        )
+      }
+    })
+
     observeEvent(
       {
         rld()
@@ -111,24 +146,37 @@ PcaServer <- function(id,
       ignoreNULL = FALSE
     )
 
+
+    levels <- eventReactive(input$color_by, {
+      req(input$color_by)
+      config() %>%
+        pull(all_of(input$color_by)) %>%
+        unique() %>%
+        as.character()
+    })
+
+
     cur_plot <- eventReactive(input$draw, {
-      color_by_cond <- set_names(
+      req(levels())
+      req(map_chr(
+          levels(),
+          ~ input[[.x]] %||% ""
+        ))
+      color_by_level <- set_names(
         map_chr(
-          uniq_conds(),
+          levels(),
           ~ input[[.x]] %||% ""
         ),
-        uniq_conds()
+        levels()
       )
-      color_by_cond[color_by_cond == ""] <- NA
-      cur_conds <- color_by_cond[data()$data$Condition %>% unique]
+      color_by_level[color_by_level == ""] <- NA
+      cur_levels <- color_by_level[data()$data %>% pull(input$color_by) %>% unique]
       my_pca(data(),
         theme = input$theme,
         show_labels = input$labels,
-        if (anyNA(cur_conds)) {
-          NULL
-        } else {
-          cur_conds
-        }
+        color_by_level = if (anyNA(cur_levels)) {NULL} else {cur_levels},
+        color_by = input$color_by,
+        shape_by = if(!is.null(input$shape)) {if(input$shape) {input$shape_by} else {"none"}} else {"none"}
       )
     })
 
@@ -152,12 +200,12 @@ PcaServer <- function(id,
         theme_bw()
     })
 
-    uniq_conds <- reactive(config()$Condition %>% unique() %>% as.character())
 
     output$colors <- renderUI({
+      req(levels)
       map2(
-        uniq_conds(),
-        hue_pal()(length(uniq_conds())),
+        levels(),
+        hue_pal()(length(levels())),
         ~ colourInput(
           inputId = session$ns(.x),
           paste("Choose the color of : ", .x),
