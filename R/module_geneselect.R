@@ -35,14 +35,18 @@ GeneSelectServer <- function(
       # Executes, even though no genes is currently selected
       c(src_table(), sel_genes_table())
     }, {
+      req(src_table())
       updateSelectizeInput(
         inputId = "sel_gene_nm",
         choices = src_table() %>%
           pull(symbol),
         server = TRUE,
-        selected = sel_genes_table() %>%
-          filter(!is.na(symbol)) %>%
-          pull(symbol)
+        selected = if(is.null(sel_genes_table())) {NULL}
+                   else {
+                     sel_genes_table() %>%
+                       filter(!is.na(symbol)) %>%
+                       pull(symbol)
+        }
       )
     })
     
@@ -50,15 +54,19 @@ GeneSelectServer <- function(
       # Executes, even though no genes is currently selected
       c(src_table(), sel_genes_table())
     }, {
+      req(src_table())
       updateSelectizeInput(
         inputId = "sel_gene_id",
         choices = src_table() %>%
           filter(is.na(symbol)) %>%
           pull(Row.names),
         server = TRUE,
-        selected = sel_genes_table() %>%
-          filter(is.na(symbol)) %>%
-          pull(Row.names)
+        selected = if(is.null(sel_genes_table())) {NULL}
+                   else {
+                     sel_genes_table() %>%
+                     filter(is.na(symbol)) %>%
+                       pull(Row.names)
+        }
       )
     })
     
