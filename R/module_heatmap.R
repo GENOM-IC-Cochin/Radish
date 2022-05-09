@@ -307,6 +307,7 @@ HeatmapServer <- function(
       genes_selected$sel_genes_ids() # sometimes NULL
       genes_selected$sel_genes_names()
       input$top_gene
+      input$nb_top_gene
     }, {
       req(input$sel_cond,
           config(),
