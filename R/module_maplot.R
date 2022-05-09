@@ -91,10 +91,12 @@ MAplotServer <- function(id,
                          res,
                          config,
                          contrast_act,
+                         contrastes,
                          sel_genes_table) {
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
+  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(sel_genes_table))
   moduleServer(id, function(input, output, session){
     
@@ -104,12 +106,14 @@ MAplotServer <- function(id,
       sel_genes_table = sel_genes_table
     )
     
-    observeEvent(res(), {
-      contr <- strsplit(contrast_act(), "_") %>% unlist()
+    observeEvent({
+      contrast_act()
+      contrastes()
+    }, {
       updateTextInput(
         inputId = "plot_title",
-        value = paste(c("Gene expression change in", contr),
-                      collapse = " ")
+        value = paste(" Gene expression change in",
+                      contr_str(contrastes(), contrast_act(), sep = " vs "))
       )
     })
     
@@ -124,11 +128,10 @@ MAplotServer <- function(id,
       updateTextInput(inputId = "ns_leg", value = "ns")
       updateSliderInput(inputId = "lab_size", value = 3)
       req(contrast_act())
-      contr <- strsplit(contrast_act(), "_") %>% unlist()
       updateTextInput(
         inputId = "plot_title",
-        value = paste(c("Gene expression change in", contr),
-                      collapse = " ")
+        value = paste(" Gene expression change in",
+                      contr_str(contrastes(), contrast_act(), sep = " vs "))
       )
     })
     
@@ -173,11 +176,12 @@ MAplotApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     MAplotServer(id = "maplot1",
                   res = list_loaded$res,
                   config = list_loaded$config,
-                  contrast_act = reactive("Cond1_vs_Control"),
+                  contrast_act = reactive("1"),
+                 contrastes = list_loaded$contrastes,
                   sel_genes_table = reactive(data.frame(head(list_loaded$res()))))
     
   }

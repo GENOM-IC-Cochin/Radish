@@ -85,7 +85,7 @@ FilterApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     filter_res <- FilterServer("fil", list_loaded$res, list("pval" = 0.05), reactive(input$reset))
     output$nb <- renderUI({
       req(filter_res$res_filtered())

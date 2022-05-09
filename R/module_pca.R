@@ -186,7 +186,7 @@ PcaApp <- function() {
   )
 
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     PcaServer(
       id = "pca1",
       counts = list_loaded$counts,

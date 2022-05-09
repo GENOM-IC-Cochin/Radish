@@ -121,10 +121,12 @@ VolcanoServer <- function(id,
                           res,
                           config,
                           contrast_act,
+                          contrastes,
                           sel_genes_table) {
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
+  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(sel_genes_table))
   moduleServer(id, function(input, output, session){
     
@@ -165,21 +167,22 @@ VolcanoServer <- function(id,
       updateSliderInput(inputId = "y_max", value = y_max(donnees = res()))
       updateSliderInput(inputId = "x_max", value = x_max_abs(donnees = res()))
       req(contrast_act())
-      contr <- strsplit(contrast_act(), "_") %>% unlist()
       updateTextInput(
         inputId = "plot_title",
-        value = paste(c("Gene expression change in", contr),
-                      collapse = " ")
+        value = paste(" Gene expression change in",
+                      contr_str(contrastes(), contrast_act(), sep = " vs "))
       )
     })
     
     
-    observeEvent(contrast_act(), {
-      contr <- strsplit(contrast_act(), "_") %>% unlist()
+    observeEvent({
+      contrast_act()
+      contrastes()
+    }, {
       updateTextInput(
         inputId = "plot_title",
-        value = paste(c("Gene expression change in", contr),
-                      collapse = " ")
+        value = paste(" Gene expression change in",
+                      contr_str(contrastes(), contrast_act(), sep = " vs "))
       )
     })
     
@@ -261,11 +264,12 @@ VolcanoApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     VolcanoServer(id = "v1",
                   res = list_loaded$res,
                   config = list_loaded$config,
-                  contrast_act = reactive("Cond1_vs_Control"),
+                  contrast_act = reactive("1"),
+                  contrastes = list_loaded$contrastes,
                   sel_genes_table = reactive(head(list_loaded$res())))
     
   }

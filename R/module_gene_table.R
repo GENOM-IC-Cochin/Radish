@@ -361,13 +361,13 @@ GeneTableApp <- function() {
   )
   
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     GeneTableServer(
       id = "tab",
       counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
-      contrast_act = reactive("Cond1_vs_Control")
+      contrast_act = reactive("1")
     )
   }
   shinyApp(ui, server)

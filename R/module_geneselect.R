@@ -85,7 +85,7 @@ GeneSelectApp <- function() {
   )
   
   server <- function(input, output, server) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     genes_selected <- GeneSelectServer(
       id = "gs",
       src_table = list_loaded$res,

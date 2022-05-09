@@ -157,12 +157,14 @@ HeatmapServer <- function(
   res,
   config,
   contrast_act,
+  contrastes,
   sel_genes_table
 ) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
+  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(sel_genes_table))
   
   moduleServer(id, function(input, output, session) {
@@ -213,13 +215,13 @@ HeatmapServer <- function(
       # Conditions from which choice is possible
       req(
         config(),
-        input$top_gene
+        input$top_gene,
+        contrastes(),
+        contrast_act()
       )
       condition <- config()$Condition %>% unique()
       if(input$top_gene == "diff") {
-        cond_act <- contrast_act() %>%
-          strsplit(., split = "_vs_") %>%
-          unlist()
+        cond_act <- c(contrastes()[strtoi(contrast_act()), 2], contrastes()[strtoi(contrast_act()), 3])
         condition[condition %in% cond_act]
       } else {
         condition
@@ -456,12 +458,13 @@ HeatmapApp <- function() {
     )
   )
   server <- function(input, output, session) {
-    list_loaded <- InputServer("inp", reactive("Cond1_vs_Control"))
+    list_loaded <- InputServer("inp", reactive("1"))
     HeatmapServer(id = "hm",
                   counts = list_loaded$counts,
                   res = list_loaded$res,
                   config = list_loaded$config,
-                  contrast_act = reactive("Cond1_vs_Control"),
+                  contrast_act = reactive("1"),
+                  contrastes = list_loaded$contrastes,
                   sel_genes_table = reactive(head(list_loaded$res())))
     
   }

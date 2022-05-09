@@ -179,17 +179,16 @@ ShareApp <- function(...) {
     my_values <- reactiveValues(
       given_genes_rows = NULL
     )
-    observeEvent(list_loaded$all_results_names(), {
+    observeEvent(list_loaded$all_results_choice(), {
       updateSelectInput(
         inputId = "contrast_act",
-        choices = list_loaded$all_results_names()
+        choices = list_loaded$all_results_choice()
       )
     })
-    
-    output$disp_contr <- renderText({
-      input$contrast_act
-    })
-    list_loaded <- InputServer("inp", reactive(input$contrast_act)) 
+
+
+    list_loaded <- InputServer("inp", reactive(input$contrast_act))
+
     PcaServer(
       id = "pca",
       counts = list_loaded$counts,
@@ -209,6 +208,7 @@ ShareApp <- function(...) {
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act),
+      contrastes = list_loaded$contrastes,
       sel_genes_table = sel_table
     )
     VolcanoServer(
@@ -216,6 +216,7 @@ ShareApp <- function(...) {
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act),
+      contrastes = list_loaded$contrastes,
       sel_genes_table = sel_table
     )
     HeatmapServer(
@@ -224,6 +225,7 @@ ShareApp <- function(...) {
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act),
+      contrastes = list_loaded$contrastes,
       sel_genes_table = sel_table
     )
   }

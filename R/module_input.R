@@ -88,8 +88,7 @@ InputServer <- function(id, contrast_act) {
     all_results <- eventReactive(data(),{
       req(data())
       tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
-      names(tmp) <- names(data()[["all_results"]]) 
-      for (contraste in names(data()[["all_results"]])) {
+      for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]] %<>%
@@ -111,7 +110,7 @@ InputServer <- function(id, contrast_act) {
       data()[["configuration"]]
     })
     
-    contrastes <- eventReactive(data(), {
+    contrastes_df <- eventReactive(data(), {
       req(data())
       data()[["contrasteList"]]
     })
@@ -126,7 +125,7 @@ InputServer <- function(id, contrast_act) {
       contrast_act()
       all_results()
     }, {
-      all_results()[[contrast_act()]]
+      all_results()[[strtoi(contrast_act())]]
     })
     
     output$contrastes <- renderValueBox({
@@ -160,15 +159,24 @@ InputServer <- function(id, contrast_act) {
         color = "secondary"
       )
     })
-     
+
+
+    all_results_choice <- reactive({
+      names_ch <- map2_chr(
+        contrastes_df()[, 2],
+        contrastes_df()[, 3],
+        ~ paste(.x, .y, sep = " vs "))
+      set_names(seq_len(nrow(contrastes_df())), names_ch)
+    })
     
     list(
       res = res,
+      contrastes = contrastes_df,
       counts = counts,
       rld = rld,
       config = config,
       txi.rsem = txi.rsem,
-      all_results_names = reactive(names(all_results()))
+      all_results_choice = all_results_choice
     )
   })
 }
@@ -179,7 +187,7 @@ InputApp <- function() {
   ui <- fluidPage(InputUI("test"))
   
   server <- function(input, output, session) {
-    InputServer("test", reactive("Cond1_vs_Control"))
+    InputServer("test", reactive("1"))
   }
   shinyApp(ui, server)
 }
