@@ -36,10 +36,11 @@ HeatmapUI <- function(id) {
                    choices = c("Top genes from current contrast" = "diff",
                                "Selected genes" = "sel")
                  ),
-                 checkboxGroupInput(
-                   inputId = ns("sel_cond"),
-                   label = p("Choose the conditions"), # temporary p(), to space down the conditions
-                 ),
+                 uiOutput(ns("samp_choice")),
+                 checkboxGroupInput(ns("variables"),
+                                     "Choose the variables to display on the heatmap",
+                                    choices = NULL,
+                                    selected = NULL),
                  conditionalPanel(
                    condition = "input.top_gene == 'diff'",
                    FilterUI(ns("fil"), default = list("pval" = 0.05, "lfc" = 1)),
@@ -122,7 +123,8 @@ HeatmapUI <- function(id) {
                      min = 0.5,
                      max = 2
                    )
-               ),
+
+                   ),
                box(title = "Advanced Settings",
                    status = "secondary",
                    width = 6,
@@ -130,7 +132,7 @@ HeatmapUI <- function(id) {
                                "Cluster by columns",
                                choices = c("yes", "no"),
                                selected = "yes"
-                   ),
+                               ),
                    conditionalPanel(
                      condition = "input.cluster_control == 'no'",
                      selectizeInput(
@@ -181,12 +183,7 @@ HeatmapServer <- function(
          input$cluster_control == "no")
         "You need to select all samples of available conditions"
     })
-   
-    iv$add_rule("sel_cond", function(value){
-      if(length(value) < 2)
-        "Need at least two conditions"
-    })
-    
+
     iv$enable()
     
     # Reordered Matrix
@@ -209,25 +206,48 @@ HeatmapServer <- function(
       if(input$cluster_control == "no")
         data(reord_data())
     })
-    
-    
-    condition_possibles <- reactive({
-      # Conditions from which choice is possible
-      req(
-        config(),
-        input$top_gene,
-        contrastes(),
-        contrast_act()
-      )
-      condition <- config()$Condition %>% unique()
-      if(input$top_gene == "diff") {
-        cond_act <- c(contrastes()[strtoi(contrast_act()), 2], contrastes()[strtoi(contrast_act()), 3])
-        condition[condition %in% cond_act]
-      } else {
-        condition
-      }
+
+
+    observeEvent(config(), {
+      updateCheckboxGroupInput(inputId = "variables",
+                               label = "Choose the variables to display on the heatmap",
+                               choices = config() %>%
+                                 select(-File, -Name) %>%
+                                 colnames,
+                               selected = config() %>%
+                                 select(-File, -Name) %>%
+                                 colnames)
     })
-    
+
+    observeEvent(input$top_gene, {
+      output$samp_choice <- renderUI({
+        if(input$top_gene == "sel") {
+          tagList(selectizeInput(session$ns("samples"),
+                                 "Select the samples to display",
+                                 choices = config() %>% pull(Name),
+                                 multiple = TRUE)
+                  )
+
+        }
+      })
+    })
+
+    samples_selected <- reactive({
+      if(!is.null(input$samples) & input$top_gene == "sel") {
+        input$samples
+      } else if (input$top_gene == "diff") {
+        req(config(),
+            contrastes(),
+            contrast_act())
+        concerned_variable <- contrastes()[strtoi(contrast_act()), 1]
+        concerned_levels <- c(contrastes()[strtoi(contrast_act()), 2], contrastes()[strtoi(contrast_act()), 3])
+        config() %>%
+          select(all_of(c("Name", concerned_variable))) %>%
+          filter(.data[[concerned_variable]] %in% concerned_levels) %>%
+          pull(Name)
+      }
+      })
+
     
     observeEvent(input$reset, {
       updateNumericInput(inputId = "nb_top_gene", value = 100)
@@ -238,21 +258,17 @@ HeatmapServer <- function(
       updateSliderInput(inputId = "ratio", value = 1)
       updateSelectizeInput(inputId = "col_order", selected = NULL)
       updateSelectInput(inputId = "cluster_control", selected = "yes")
-      updateCheckboxGroupInput(inputId = "sel_cond", selected = req(condition_possibles()))
+      updateCheckboxGroupInput(inputId = "variables",
+                               label = "Choose the variables to display on the heatmap",
+                               choices = config() %>%
+                                 select(-File, -Name) %>%
+                                 colnames,
+                               selected = config() %>%
+                                 select(-File, -Name) %>%
+                                 colnames)
     })
     
-    
-    observeEvent(condition_possibles(),
-                 updateCheckboxGroupInput(
-                   inputId = "sel_cond",
-                   choices = condition_possibles(),
-                   # Selected, tout, car si ce Checkbox... est pas affiché (top genes)
-                   # il doit alors contenir les deux conditions en contraste
-                   selected = condition_possibles(),
-                 )
-    )
-    
-    
+
     output$gene_number <- renderUI({
       req(data())
       HTML(paste("<p>", nrow(data()), "genes are to be displayed on the heatmap </p>"))
@@ -274,15 +290,13 @@ HeatmapServer <- function(
     
     
     observeEvent({
-      input$sel_cond 
+      samples_selected()
     }, {
       freezeReactiveValue(input, "col_order")
       updateSelectizeInput(
         session = session,
         "col_order",
-        choices = config() %>%
-          filter(Condition %in% input$sel_cond) %>%
-          pull(Name),
+        choices = samples_selected(),
         selected = NULL
       )
     })
@@ -305,24 +319,18 @@ HeatmapServer <- function(
     base_data <- eventReactive({
       res_filtered()
       counts()
-      input$sel_cond
+      samples_selected()
       genes_selected$sel_genes_ids() # sometimes NULL
       genes_selected$sel_genes_names()
       input$top_gene
       input$nb_top_gene
     }, {
-      req(input$sel_cond,
+      req(samples_selected(),
           config(),
           counts(),
           res_filtered(),
           input$top_gene)
-      # sélection du nom des échantillons
-      # Basé sur les conditions selectionnees
-      # Ou par defaut dans le cas top gene
-      echantillons <- config() %>%
-        filter(Condition %in% input$sel_cond) %>%
-        pull(Name)
-      
+
       if(input$top_gene == "diff") {
         req(input$nb_top_gene)
         # Si l'on veut que les plus différentiellement exprimés
@@ -332,7 +340,7 @@ HeatmapServer <- function(
                mutate(name = coalesce(symbol, Row.names)) %>%
                remove_rownames() %>%
                column_to_rownames(var = "name") %>%
-               select(all_of(echantillons)) %>%
+               select(all_of(samples_selected())) %>%
                as.matrix(., rownames = TRUE)
       } else {
         # Si l'on veut sélectionner à la main
@@ -341,29 +349,33 @@ HeatmapServer <- function(
                         Row.names %in% genes_selected$sel_genes_ids()) %>%
                mutate(name = coalesce(symbol, Row.names)) %>%
                column_to_rownames(var = "name") %>%
-               select(all_of(echantillons)) %>%
+               select(all_of(samples_selected())) %>%
                as.matrix(., rownames = TRUE)
       }
     },
     ignoreNULL = FALSE # if the selected genes are NULL, no problem
     )
     
-    
-    
+
     # Met en correspondance les conditions choisies et les échantillons
     # (Pour les couleurs de la heatmap)
     # retour : un df avec la correspondance désirée
     annotation_col <- eventReactive({
       config()
       data()
-      input$draw
-      input$sel_cond
+      samples_selected()
+      input$variables
     },{
-      data.frame("Name" = colnames(data())) %>%
-        inner_join(config(), by = "Name") %>%
-        select(-File) %>%
-        column_to_rownames(var = "Name")
-    })
+      ## if(!is.null(input$variables) & input$top_gene == "sel") {
+      if(!is.null(input$variables)){
+        data.frame("Name" = samples_selected()) %>%
+          inner_join(config(), by = "Name") %>%
+          select(all_of(c("Name", input$variables))) %>%
+          column_to_rownames(var = "Name")
+      } else {
+        return(NULL)
+      }
+    }, ignoreNULL = FALSE)
     
     
     # A partir des annotations, leur affecte une couleur
@@ -373,27 +385,36 @@ HeatmapServer <- function(
       config()
       annotation_col()
     }, {
-      # Au cas où il y ait un jour plusieurs catégories (malade, traitement ...)
-      # Aujourd'hui de longueur 1
+      if(is.null(annotation_col())) {
+        return(NULL)
+      }
       ret <- vector(mode = "list", length = ncol(annotation_col()))
-      # on y met le nom des échantillons
+      # one variable = one list element
       names(ret) <- colnames(annotation_col())
-      for (name in names(ret)) {
+      # The number of levels across all variables
+      diff_levels <- annotation_col() %>%
+        unlist() %>%
+        n_distinct()
+      condition_colors  <- hue_pal()(diff_levels)
+      # current color number
+      cur_nb_col <- 1
+      for (i in seq_along(ret)) {
         # quelle condition correspond à ces ech
-        quels_cond <- unique(annotation_col()[, name]) 
+        quels_cond <- unique(annotation_col()[, i]) %>% as.character
         # condition_colors : variable globale
-        ret[[name]] <- setNames(condition_colors[1:length(quels_cond)], quels_cond)
+        ret[[i]] <- setNames(condition_colors[cur_nb_col:(cur_nb_col + length(quels_cond) - 1)], quels_cond)
+        cur_nb_col <- cur_nb_col + length(quels_cond)
       }
       ret
-    })
-    
+    },
+    ignoreNULL = FALSE)
+
+
     cur_plot <- eventReactive({
       input$draw
       }, {
       req(input$draw,
-          data(),
-          annotation_col(),
-          annotation_colors())
+          data())
       req(iv$is_valid())
       pheatmap( # C'est le traducteur de ComplexHeatmap
         name = "z-score",
@@ -403,8 +424,8 @@ HeatmapServer <- function(
         cluster_cols = ifelse(input$cluster_control == "yes", TRUE, FALSE),
         # No row names if top genes
         show_rownames = input$show_names,
-        annotation_col = annotation_col(),
-        annotation_colors = annotation_colors(),
+        annotation_col = if(is.null(annotation_col())) {NA} else {annotation_col()},
+        annotation_colors = if(is.null(annotation_colors())) {NA} else {annotation_colors()},
         border_color = NA,
         fontsize = 10,
         fontsize_row = input$fontsize,
@@ -413,7 +434,7 @@ HeatmapServer <- function(
         heatmap_width = unit(5/(input$ratio^0.5), "in")
       )
     })
-    
+
     output$heatmap <- renderPlot({
       cur_plot()
     })
