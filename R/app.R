@@ -9,6 +9,7 @@ library(DT)
 library(fresh)
 library(plotly)
 library(magrittr)
+library(waiter)
 library(purrr)
 library(dplyr)
 library(tibble)
@@ -102,6 +103,7 @@ ShareApp <- function(...) {
     ),
     body = dashboardBody(
       shinyFeedback::useShinyFeedback(),
+      useWaiter(),
       tabItems(
         tabItem(
           tabName = "home",

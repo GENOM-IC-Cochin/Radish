@@ -65,3 +65,9 @@ palette_hm <- function(color_name) {
 contr_str <- function(contrastes, contrast_act, ...) {
   paste(contrastes[strtoi(contrast_act), 2], contrastes[strtoi(contrast_act), 3], ...)
 }
+
+
+waiting_screen <- tagList(
+  spin_folding_cube(),
+  h3("Importing data...")
+)

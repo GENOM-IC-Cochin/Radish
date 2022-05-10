@@ -88,15 +88,17 @@ InputServer <- function(id, contrast_act) {
     all_results <- eventReactive(data(),{
       req(data())
       tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
+      waiter_show(html = waiting_screen, color = "#009982")
       for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]] %<>%
-        # Noms de gènes "" -> NA
+          # Noms de gènes "" -> NA
           mutate(across(everything(), na_if, "")) 
         tmp[[contraste]]$symbol %<>% 
           tidy_symbols()
       }
+      waiter_hide()
       tmp
     })
     
