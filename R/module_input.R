@@ -13,29 +13,40 @@ expected_data <- c(
 # UI ---------------------------------------------------------------------------
 InputUI <- function(id) {
   ns <- NS(id)
-  tagList(fluidRow(column(
-    width = 3,
-    fileInput(ns("res_data"),
-              "Results"
+  tagList(
+    fluidRow(
+      box(
+        title = "Input",
+        status = "secondary",
+        width = 3,
+        fileInput(ns("res_data"),
+                  "Results"
+        ),
+        actionButton(ns("demo"), "Load demo data")
+      ),
+      box(
+        title = "Contents",
+        width = 9,
+        status = "secondary",
+        fluidRow(
+          valueBoxOutput(ns("samples"),
+                         width = 4),
+          valueBoxOutput(ns("contrastes"),
+                         width = 4),
+          valueBoxOutput(ns("conditions"),
+                         width = 4)
+        )
+      )
     ),
-    actionButton(ns("demo"), "Load demo data")
-  ),
-  column(
-    width = 3,
-    valueBoxOutput(ns("samples"),
-                   width = 12),
-  ),
-  column(
-    width = 3,
-    valueBoxOutput(ns("contrastes"),
-                   width = 12),
-  ),
-  column(
-    width = 3,
-    valueBoxOutput(ns("conditions"),
-                   width = 12)
-  )
-  )
+    fluidRow(
+      box(
+        title = "Configuration Table",
+        status = "secondary",
+        width = 12,
+        collapsed = TRUE,
+        tableOutput(ns("config_table"))
+      )
+    )
   )
 }
 
@@ -52,7 +63,7 @@ InputServer <- function(id, contrast_act) {
       validate(need(all(expected_data == names(tmp)), "Missing objects in loaded file"))
       tmp
     })
-   
+    
     
     data_loaded <- eventReactive({
       input$res_data
@@ -109,6 +120,7 @@ InputServer <- function(id, contrast_act) {
     
     config <- eventReactive(data(), {
       req(data())
+      browser()
       data()[["configuration"]]
     })
     
@@ -161,8 +173,17 @@ InputServer <- function(id, contrast_act) {
         color = "secondary"
       )
     })
-
-
+    
+    
+    output$config_table <- renderTable(
+      config() %>% select(-File),
+      striped = TRUE,
+      bordered = TRUE,
+      spacing = "m",
+    )
+    
+    
+    
     all_results_choice <- reactive({
       names_ch <- map2_chr(
         contrastes_df()[, 2],
