@@ -37,16 +37,20 @@ tidy_symbols <- function(symbols) {
 
 
 res_filter <- function(deseq_results,
-                     lfc_filter = 0,
-                     pval_filter = 1) {
-    #Ajoute la colonne sur l'expression significative
-    deseq_results %>%
-        mutate(sig_expr = factor(case_when(
-            log2FoldChange >= lfc_filter & padj <= pval_filter ~ "up",
-            log2FoldChange <= -lfc_filter & padj <= pval_filter ~ "down",
-            TRUE ~ "ns"
-        ))) %>%
-        mutate(sig_expr = relevel(sig_expr, "up"))
+                       lfc_filter = 0,
+                       pval_filter = 1) {
+  #Ajoute la colonne sur l'expression significative
+  res <- deseq_results %>%
+    mutate(sig_expr = factor(case_when(
+      log2FoldChange >= lfc_filter & padj <= pval_filter ~ "up",
+      log2FoldChange <= -lfc_filter & padj <= pval_filter ~ "down",
+      TRUE ~ "ns"
+    ))) 
+  if("up" %in% res$sig_expr) {
+    res %>%
+      mutate(sig_expr = relevel(sig_expr, "up"))
+  }
+  res
 }
 
 
