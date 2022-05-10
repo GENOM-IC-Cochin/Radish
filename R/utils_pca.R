@@ -4,6 +4,7 @@ my_pca <- function(pca_data,
                    color_by_level,
                    color_by = "Condition",
                    shape_by = "none") {
+  pca_data$data %<>% mutate(across(where(is.factor), as.character))
   plot_res <- ggplot(
     pca_data$data,
     aes(
@@ -22,19 +23,18 @@ my_pca <- function(pca_data,
            )
   if(shape_by != "none") {
     plot_res <- plot_res +
-      geom_point(aes_string(col = color_by, shape = shape_by), size = 5)
+      geom_point(aes_string(color = color_by, shape = shape_by), size = 5)
   } else {
     plot_res <- plot_res +
-      geom_point(aes_string(col = color_by), size = 5)
+      geom_point(aes_string(color = color_by), size = 5)
   }
   if (show_labels) {
     plot_res <- plot_res +
-      geom_label_repel(aes_string(col = color_by), show.legend = FALSE)
+      geom_label_repel(aes_string(color = color_by), show.legend = FALSE)
   }
-  if (!is.null(color_by_level)) {
-    plot_res <- plot_res + scale_color_manual(values = color_by_level)
-  }
-  plot_res
+plot_res + scale_color_manual(values = color_by_level)
+plot_res
+
 }
 
 
