@@ -19,6 +19,7 @@ InputUI <- function(id) {
         title = "Input",
         status = "secondary",
         width = 3,
+        p("A page refresh is necessary before changing the input data"),
         fileInput(ns("res_data"),
                   "Results"
         ),
@@ -57,6 +58,7 @@ InputServer <- function(id, contrast_act) {
   moduleServer(id, function(input, output, session) {
     # rds-sourced list, inpendent of demo or user-loaded data
     data <- reactiveVal()
+    
     
     demo_data <- eventReactive(input$demo, {
       tmp <- readRDS("./data/demo_data.rds")
@@ -120,7 +122,6 @@ InputServer <- function(id, contrast_act) {
     
     config <- eventReactive(data(), {
       req(data())
-      browser()
       data()[["configuration"]]
     })
     
