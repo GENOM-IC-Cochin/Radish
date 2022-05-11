@@ -32,7 +32,7 @@ my_pca <- function(pca_data,
     plot_res <- plot_res +
       geom_label_repel(aes_string(color = color_by), show.legend = FALSE)
   }
-plot_res + scale_color_manual(values = color_by_level)
+plot_res <- plot_res + scale_color_manual(values = color_by_level)
 plot_res
 
 }

@@ -127,12 +127,11 @@ PcaServer <- function(id,
       }
     })
 
+    
+    # Observer to get the data for the first draw click
     observeEvent(
       {
-        rld()
-        txi.rsem()
-        config()
-        input$recomp_pca
+        input$draw
       },
       {
         req(
@@ -143,12 +142,46 @@ PcaServer <- function(id,
         ntop <- 500
         data(rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop))
       },
-      ignoreNULL = FALSE
+      once = TRUE
+    )
+    
+    # Observer to get the data on input change
+    observeEvent(
+      {
+        config()
+      },
+      {
+        req(
+          rld(),
+          config(),
+          txi.rsem()
+        )
+        ntop <- 500
+        # No sample is excluded on input change
+        data(rld_pca(rld(), config(), txi.rsem(), NULL, ntop))
+      }
+    )
+    
+    # Observer for recomputation
+    observeEvent(
+      {
+        input$recomp_pca
+      },
+      {
+        req(
+          rld(),
+          config(),
+          txi.rsem()
+        )
+        ntop <- 500
+        data(rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop))
+      }
     )
 
 
     levels <- eventReactive(input$color_by, {
-      req(input$color_by)
+      req(input$color_by,
+          config())
       config() %>%
         pull(all_of(input$color_by)) %>%
         unique() %>%
@@ -157,7 +190,9 @@ PcaServer <- function(id,
 
 
     cur_plot <- eventReactive(input$draw, {
-      req(levels())
+      req(levels(),
+          data())
+      
       req(map_chr(
           levels(),
           ~ input[[.x]] %||% ""
@@ -176,6 +211,7 @@ PcaServer <- function(id,
         show_labels = input$labels,
         color_by_level = if (anyNA(cur_levels)) {NULL} else {cur_levels},
         color_by = input$color_by,
+        # "none" if input$shape does not exist OR if input$shape_by is not checked
         shape_by = if(!is.null(input$shape)) {if(input$shape) {input$shape_by} else {"none"}} else {"none"}
       )
     })
@@ -202,7 +238,7 @@ PcaServer <- function(id,
 
 
     output$colors <- renderUI({
-      req(levels)
+      req(levels())
       map2(
         levels(),
         hue_pal()(length(levels())),
