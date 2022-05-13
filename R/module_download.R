@@ -32,8 +32,8 @@ DownloadServer <- function(id, cur_plot, plotname, ratio) {
       content = function(file) {
         ggsave(file, plot = cur_plot(),
                device = req(input$format),
-               height = (7 * (ratio())^0.5),
-               width = (7 / (ratio())^0.5),
+               height = (10 * (ratio())^0.5),
+               width = (10 / (ratio())^0.5),
                dpi = 600)
       }
     )
