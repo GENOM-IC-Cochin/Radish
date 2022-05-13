@@ -200,7 +200,6 @@ ShareApp <- function(...) {
     )
     sel_table <- GeneTableServer(
       id = "gntab",
-      counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act) #should be recalculated with change

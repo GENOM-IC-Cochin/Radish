@@ -67,11 +67,9 @@ GeneTableUI <- function(id) {
 
 
 GeneTableServer <- function(id,
-                            counts,
                             res,
                             config,
                             contrast_act) {
-  stopifnot(is.reactive(counts))
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
@@ -226,9 +224,9 @@ GeneTableServer <- function(id,
       # Fourni par DT
       input$genes_rows_selected
     },{
-      # res, pour avoir tous les chiffres significatifs
+      # res, pour avoir tous les chiffres significatifs?
         genes_rows <- input$genes_rows_selected
-        genes_table()[genes_rows, ] %>%
+        res()[genes_rows, ] %>%
           select(Row.names) %>%
           inner_join(res(), by = "Row.names")
     },
@@ -364,7 +362,6 @@ GeneTableApp <- function() {
     list_loaded <- InputServer("inp", reactive("1"))
     GeneTableServer(
       id = "tab",
-      counts = list_loaded$counts,
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive("1")
