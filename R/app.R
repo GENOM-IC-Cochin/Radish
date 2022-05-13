@@ -9,6 +9,7 @@ library(DT)
 library(fresh)
 library(plotly)
 library(magrittr)
+library(tidyr)
 library(waiter)
 library(purrr)
 library(dplyr)
@@ -86,14 +87,12 @@ ShareApp <- function(...) {
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap")
       ),
-      hr(),
       selectInput(
             inputId = "contrast_act",
             label = div("Select the contrast", style = "color : white"),
             choices = NULL,
             selected = NULL
           ),
-      hr(),
       tags$a(tags$img(src = "www/logo.svg",
                style="position:fixed;bottom:0;margin:0 0 15px 25px;",
                alt = "GENOM'IC"),
