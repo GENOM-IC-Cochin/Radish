@@ -71,3 +71,8 @@ waiting_screen <- tagList(
   spin_folding_cube(),
   h3("Importing data...")
 )
+
+recalc_pca <- tagList(
+  spin_folding_cube(),
+  h3("Recomputing PCA...")
+)
