@@ -19,7 +19,6 @@ InputUI <- function(id) {
         title = "Input",
         status = "secondary",
         width = 3,
-        p("A page refresh is necessary before changing the input data"),
         fileInput(ns("res_data"),
                   "Results"
         ),

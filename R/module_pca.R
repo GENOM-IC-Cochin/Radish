@@ -97,6 +97,7 @@ PcaServer <- function(id,
     })
 
     observeEvent(config(), {
+      freezeReactiveValue(input, "color_by")
       updateSelectInput(
         inputId = "color_by",
         choices = config() %>%
