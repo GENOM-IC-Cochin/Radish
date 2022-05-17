@@ -26,6 +26,11 @@ CountsUI <- function(id) {
                     choices = NULL),
         GeneSelectUI(ns("gnsel")),
         selectInput(
+          inputId = ns("log"),
+          label = "Log10 y-axis",
+          choices = c("Yes" = TRUE, "No" = FALSE)
+        ),
+        selectInput(
                     inputId = ns("theme"),
                     label = "Choose the theme for the plot",
                     choices = themes_gg,
@@ -100,6 +105,7 @@ CountsServer <- function(id,
       my_counts_plot(
         plot_data = plot_data,
         variable = input$variable,
+        logy = input$log,
         levels = input$levels,
         config = config(),
         ratio = input$ratio,
