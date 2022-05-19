@@ -416,6 +416,10 @@ HeatmapServer <- function(
       req(input$draw,
           data())
       req(iv$is_valid())
+      if(input$top_gene == "sel") {
+        # I need at least some samples to plot
+        validate(need(length(input$samples) > 1, "Need at least two samples"))
+      }
       pheatmap( # C'est le traducteur de ComplexHeatmap
         name = "z-score",
         mat = data(),
