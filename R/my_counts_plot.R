@@ -3,6 +3,7 @@ my_counts_plot <- function(plot_data,
                            logy = TRUE,
                            levels,
                            config,
+                           zero,
                            ratio = 1,
                            theme = "Classic with gridlines") {
   samples_to_var <- config %>%
@@ -29,7 +30,10 @@ my_counts_plot <- function(plot_data,
     )
   if(logy) {
     res <- res +
-    scale_y_log10()
+      scale_y_log10(limits = c(ifelse(zero, 0.5, NA), NA))
+  } else {
+    res <- res +
+      scale_y_continuous(limits = c(ifelse(zero, 0, NA), NA))
   }
   res
 }

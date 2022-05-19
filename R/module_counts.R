@@ -5,6 +5,7 @@
 CountsUI <- function(id) {
   ns <- NS(id)
   tagList(
+    fluidRow(
     box(title = "Counts",
         width = 12,
         status = "primary",
@@ -12,11 +13,12 @@ CountsUI <- function(id) {
         actionButton(ns("draw"), "Draw Plot",
                      status = "secondary")
         ),
+    ),
     fluidRow(
       box(
         title = "Settings",
         status = "secondary",
-        widht = 6,
+        width = 4,
         selectInput(ns("variable"),
                     "Select the variable to display",
                     choices = NULL),
@@ -30,11 +32,21 @@ CountsUI <- function(id) {
           label = "Log10 y-axis",
           choices = c("Yes" = TRUE, "No" = FALSE)
         ),
+        checkboxInput(
+          inputId = ns("zero"),
+          label = NULL,
+          value = FALSE
+        )
+      ),
+      box(
+        title = "Appearance",
+        status = "secondary",
+        width = 4,
         selectInput(
                     inputId = ns("theme"),
                     label = "Choose the theme for the plot",
                     choices = themes_gg,
-                    selected = "Classic"
+                    selected = "Classic with gridlines"
         ),
         sliderInput(
                 inputId = ns("ratio"),
@@ -87,6 +99,22 @@ CountsServer <- function(id,
                         )
     })
 
+    observeEvent(input$log, {
+      if(input$log) {
+        updateCheckboxInput(
+          inputId = "zero",
+          label = "Include 0.5 in the y scale",
+          value = FALSE
+        )
+      } else {
+      updateCheckboxInput(
+          inputId = "zero",
+          label = "Include 0 in the y scale",
+          value = FALSE
+      )
+      }
+    })
+
     genes_selected <- GeneSelectServer(
       id = "gnsel",
       src_table = counts,
@@ -102,12 +130,14 @@ CountsServer <- function(id,
         filter(symbol %in% genes_selected$sel_genes_names() | Row.names %in% genes_selected$sel_genes_ids()) %>%
         mutate(Row.names = coalesce(symbol, Row.names)) %>%
         select(all_of(c("Row.names", config()[, "Name"])))
+      validate(need(nrow(plot_data) > 0, "Select at least one gene"))
       my_counts_plot(
         plot_data = plot_data,
         variable = input$variable,
         logy = input$log,
         levels = input$levels,
         config = config(),
+        zero = input$zero,
         ratio = input$ratio,
         theme = input$theme
         )

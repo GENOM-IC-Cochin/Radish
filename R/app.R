@@ -77,12 +77,14 @@ ShareApp <- function(...) {
     sidebar = dashboardSidebar(
       skin = "light",
       sidebarMenu(
+        id = "sidebar_tab",
         menuItem("Home", tabName = "home"),
         menuItem("Tutorial", tabName = "tut"),
         menuItem("Input data", tabName = "inp"),
         menuItem("PCA", tabName = "pca"),
         menuItem(p("Table", style = "font-weight : bold; text-decoration: underline;"),
                  tabName = "tabl_gene"),
+        menuItem("Counts plot", tabName = "countsplot"),
         menuItem("MA-plot", tabName = "maplot"),
         menuItem("Volcano plot", tabName = "volcano"),
         menuItem("Heatmap", tabName = "heatmap")
@@ -159,6 +161,10 @@ ShareApp <- function(...) {
           GeneTableUI("gntab")
         ),
         tabItem(
+          tabName = "countsplot",
+          CountsUI("cnts")
+        ),
+        tabItem(
           tabName = "maplot",
           MAplotUI("ma")
         ),
@@ -177,6 +183,8 @@ ShareApp <- function(...) {
   
   # Server ---------------------------------------------------------------------
   server <- function(input, output, session) {
+
+
     my_values <- reactiveValues(
       given_genes_rows = NULL
     )
@@ -202,6 +210,13 @@ ShareApp <- function(...) {
       res = list_loaded$res,
       config = list_loaded$config,
       contrast_act = reactive(input$contrast_act) #should be recalculated with change
+    )
+    CountsServer(
+      id = "cnts",
+      counts = list_loaded$counts,
+      config = list_loaded$config,
+      contrastes = list_loaded$contrastes,
+      sel_genes_table = sel_table
     )
     MAplotServer(
       id = "ma",
