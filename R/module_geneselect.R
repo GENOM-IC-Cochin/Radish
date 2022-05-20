@@ -81,11 +81,11 @@ GeneSelectServer <- function(
 # TestApp ----------------------------------------------------------------------
 GeneSelectApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(
+    bs4Dash::tabsetPanel(
       tabPanel("Input", InputUI("inp")),
       tabPanel("Gene Select",
                GeneSelectUI("gs"),
-               box(title = "Output",
+               bs4Dash::box(title = "Output",
                    width = 12,
                    verbatimTextOutput("genes"))
       )

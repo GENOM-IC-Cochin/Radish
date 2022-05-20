@@ -15,16 +15,16 @@ InputUI <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      box(
+      bs4Dash::box(
         title = "Input",
         status = "secondary",
         width = 3,
         fileInput(ns("res_data"),
                   "Results"
         ),
-        actionButton(ns("demo"), "Load demo data")
+        bs4Dash::actionButton(ns("demo"), "Load demo data")
       ),
-      box(
+      bs4Dash::box(
         title = "Contents",
         width = 9,
         status = "secondary",
@@ -39,7 +39,7 @@ InputUI <- function(id) {
       )
     ),
     fluidRow(
-      box(
+      bs4Dash::box(
         title = "Configuration Table",
         status = "secondary",
         width = 12,
@@ -60,7 +60,7 @@ InputServer <- function(id, contrast_act) {
     
     
     demo_data <- eventReactive(input$demo, {
-      tmp <- readRDS("./data/demo_data.rds")
+      tmp <- readRDS("../../data/demo_data.rds")
       validate(need(all(expected_data == names(tmp)), "Missing objects in loaded file"))
       tmp
     })
@@ -100,7 +100,7 @@ InputServer <- function(id, contrast_act) {
     all_results <- eventReactive(data(),{
       req(data())
       tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
-      waiter_show(html = waiting_screen, color = "#009982")
+      waiter::waiter_show(html = waiting_screen, color = "#009982")
       for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
@@ -110,7 +110,7 @@ InputServer <- function(id, contrast_act) {
         tmp[[contraste]]$symbol %<>% 
           tidy_symbols()
       }
-      waiter_hide()
+      waiter::waiter_hide()
       tmp
     })
     
@@ -185,11 +185,11 @@ InputServer <- function(id, contrast_act) {
     
     
     all_results_choice <- reactive({
-      names_ch <- map2_chr(
+      names_ch <- purrr::map2_chr(
         contrastes_df()[, 2],
         contrastes_df()[, 3],
         ~ paste(.x, .y, sep = " vs "))
-      set_names(seq_len(nrow(contrastes_df())), names_ch)
+      magrittr::set_names(seq_len(nrow(contrastes_df())), names_ch)
     })
     
     list(

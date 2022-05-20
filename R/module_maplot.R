@@ -4,27 +4,27 @@
 MAplotUI <- function(id) {
   ns <- NS(id)
   tagList(fluidRow(
-          box(title = "MA-Plot",
+          bs4Dash::box(title = "MA-Plot",
               status = "primary",
               width = 12,
               plotOutput(outputId = ns("plot")),
-              actionButton(ns("draw"), "Draw MA-Plot",
+              bs4Dash::actionButton(ns("draw"), "Draw MA-Plot",
                            status = "secondary"),
-              actionButton(ns("reset"), "Reset defaults",
+              bs4Dash::actionButton(ns("reset"), "Reset defaults",
                            status = "secondary")
           )
         ),
         fluidRow(
-          box(title = "Appearance",
+          bs4Dash::box(title = "Appearance",
               status = "secondary",
               width = 4,
               FilterUI(ns("fil"), list("pval" = 0.05)),
-              colourInput(
+              colourpicker::colourInput(
                 inputId = ns("up_col"),
                 label = "Choose the color of the upregulated genes",
                 value = "#fe7f00"
               ),
-              colourInput(
+              colourpicker::colourInput(
                 inputId = ns("down_col"),
                 label = "Choose the color of the downregulated genes",
                 value = "#007ffe"
@@ -43,7 +43,7 @@ MAplotUI <- function(id) {
                 max = 2
               )
           ),
-          box(title = "Text",
+          bs4Dash::box(title = "Text",
               status = "secondary",
               width = 4,
               textInput(
@@ -76,7 +76,7 @@ MAplotUI <- function(id) {
                 step = .25
               )
           ),
-          box(title = "Download",
+          bs4Dash::box(title = "Download",
               status = "secondary",
               width = 4,
               DownloadUI(ns("dw")) 
@@ -119,8 +119,8 @@ MAplotServer <- function(id,
     
     
     observeEvent(input$reset, {
-      updateColourInput(session = session, "up_col", value = "#fe7f00")
-      updateColourInput(session = session, "down_col", value = "#007ffe")
+      colourpicker::updateColourInput(session = session, "up_col", value = "#fe7f00")
+      colourpicker::updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
       updateSliderInput(inputId = "ratio", value = 1)
       updateTextInput(inputId = "up_leg", value = "up")
@@ -170,7 +170,7 @@ MAplotServer <- function(id,
 # Test App ---------------------------------------------------------------------
 MAplotApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(type = "tabs",
+    bs4Dash::tabsetPanel(type = "tabs",
     tabPanel("input", InputUI("inp")),
     tabPanel("Maplot", MAplotUI("maplot1"))
     )

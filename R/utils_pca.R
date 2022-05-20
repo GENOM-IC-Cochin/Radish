@@ -30,7 +30,7 @@ my_pca <- function(pca_data,
   }
   if (show_labels) {
     plot_res <- plot_res +
-      geom_label_repel(aes_string(color = color_by), show.legend = FALSE)
+      ggrepel::geom_label_repel(aes_string(color = color_by), show.legend = FALSE)
   }
 plot_res <- plot_res + scale_color_manual(values = color_by_level)
 plot_res
@@ -46,7 +46,7 @@ rld_pca <- function(rld, config, txi.rsem, excl_samp_names, ntop) {
     rld_tr <- rld
   }
 
-  rv <- rowVars(assay(rld_tr))
+  rv <- genefilter::rowVars(assay(rld_tr))
   selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
   mat <- t(assay(rld_tr)[selected_genes, ])
   pc <- prcomp(mat)
@@ -56,10 +56,10 @@ rld_pca <- function(rld, config, txi.rsem, excl_samp_names, ntop) {
   PCAdata <- as.data.frame(pc$x)
                                         # Join with condition, on name, to be sure of matches between condition and sample
   PCAdata <- PCAdata %>%
-    rownames_to_column(var = "Name") %>%
+    tibble::rownames_to_column(var = "Name") %>%
     inner_join(config, by = "Name") %>%
     select(-File) %>%
-    column_to_rownames(var = "Name")
+    tibble::column_to_rownames(var = "Name")
   list("data" = PCAdata, "variance" = variance)
 }
 
@@ -68,19 +68,19 @@ recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
                                         # Fonction qui recalcule la normalisation DESeq2, puis le rlog/vst pour la PCA
                                         # Nécéssaire si on élimine un échantillon considéré comme outlier
 
-  waiter_show(html = recalc_pca, color = "#009982")
-  dds <- DESeqDataSetFromTximport(txi.rsem, configuration, ~1)
+  waiter::waiter_show(html = recalc_pca, color = "#009982")
+  dds <- DESeq2::DESeqDataSetFromTximport(txi.rsem, configuration, ~1)
   dds <- dds[, -drop_samp]
-  dds <- estimateSizeFactors(dds)
+  dds <- DESeq2::estimateSizeFactors(dds)
                                         # filter out genes where there are less than 3 samples with normalized counts greater than or equal to 10.
   idx <- rowSums(DESeq2::counts(dds, normalized = TRUE) >= 10) >= 3
   dds <- dds[idx, ]
-  dds <- estimateDispersions(dds) # Pas de DESeq(), car le nombre d'ech peut alors être insuffisant
+  dds <- DESeq2::estimateDispersions(dds) # Pas de DESeq(), car le nombre d'ech peut alors être insuffisant
   if (ncol(dds) <= 30) {
-    res <- rlog(dds, blind = TRUE)
+    res <- DESeq2::rlog(dds, blind = TRUE)
   } else {
-    res <- vst(dds, blind = TRUE)
+    res <- DESeq2::vst(dds, blind = TRUE)
   }
-  waiter_hide()
+  waiter::waiter_hide()
   res
 }

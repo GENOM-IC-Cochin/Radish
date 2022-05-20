@@ -83,7 +83,7 @@ my_volcanoplot <- function(plot_data,
     # Shows gene names if there is one
     genes_to_highlight <- which((plot_data$symbol %in% selected_genes |
                                    plot_data$Row.names %in% selected_genes))
-    tmp <- tmp + geom_label_repel(
+    tmp <- tmp + ggrepel::geom_label_repel(
       data = plot_data[genes_to_highlight, ],
       size = label_size,
       aes(label = coalesce(symbol, Row.names)),

@@ -6,16 +6,16 @@ CountsUI <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-    box(title = "Counts",
+    bs4Dash::box(title = "Counts",
         width = 12,
         status = "primary",
         plotOutput(ns("counts_plot")),
-        actionButton(ns("draw"), "Draw Plot",
+        bs4Dash::actionButton(ns("draw"), "Draw Plot",
                      status = "secondary")
         ),
     ),
     fluidRow(
-      box(
+      bs4Dash::box(
         title = "Settings",
         status = "secondary",
         width = 4,
@@ -38,7 +38,7 @@ CountsUI <- function(id) {
           value = FALSE
         )
       ),
-      box(
+      bs4Dash::box(
         title = "Appearance",
         status = "secondary",
         width = 4,
@@ -56,7 +56,7 @@ CountsUI <- function(id) {
                 max = 2
               )
       ),
-      box(
+      bs4Dash::box(
         title = "Download",
         status = "secondary",
         width = 4,
@@ -164,7 +164,7 @@ CountsServer <- function(id,
 
 CountsApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(type = "tabs",
+    bs4Dash::tabsetPanel(type = "tabs",
                 tabPanel("input", InputUI("inp")),
                 tabPanel("Volcano Plot", CountsUI("counts"))
     )

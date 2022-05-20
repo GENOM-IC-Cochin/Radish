@@ -10,7 +10,7 @@ my_counts_plot <- function(plot_data,
     select(all_of(c("Name", variable)))
 
   res <- plot_data %>%
-    pivot_longer(!Row.names, names_to = "Name") %>%
+    tidyr::pivot_longer(!Row.names, names_to = "Name") %>%
     inner_join(samples_to_var, by = "Name") %>%
     filter(.data[[variable]] %in% levels) %>%
     mutate(value = value + ifelse(logy, 0.5, 0)) %>%

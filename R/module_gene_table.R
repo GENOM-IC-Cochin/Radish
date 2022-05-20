@@ -4,13 +4,13 @@
 GeneTableUI <- function(id) {
   ns <- NS(id)
   fluidRow(
-    column(3,
-           box(title = "Genes Information",
+    bs4Dash::column(3,
+           bs4Dash::box(title = "Genes Information",
                status = "secondary",
                width = 12,
                htmlOutput(ns("outlier"))
                ),
-           box(title = "Row selection",
+           bs4Dash::box(title = "Row selection",
                status = "secondary",
                width = 12,
                selectInput(ns("input_type"),
@@ -18,16 +18,16 @@ GeneTableUI <- function(id) {
                            c("IDs", "Names")),
                uiOutput(ns("given_genes")),
                htmlOutput(ns("read_items")),
-               actionButton(ns("select_genes"),
+               bs4Dash::actionButton(ns("select_genes"),
                             "Select Genes"),
                br(),
-               actionButton(ns("clear"),
+               bs4Dash::actionButton(ns("clear"),
                             "Clear selection"),
                br(),
-               actionButton(ns("clear_input"),
+               bs4Dash::actionButton(ns("clear_input"),
                             "Clear Input")
            ),
-           box(title = "Filtered Download",
+           bs4Dash::box(title = "Filtered Download",
                status = "secondary",
                width = 12,
                FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
@@ -36,18 +36,18 @@ GeneTableUI <- function(id) {
            ),
     ),
            
-    column(9,
+    bs4Dash::column(9,
            tabBox(title = "Genes Tables",
                   width = 12,
                   status = "primary",
                   tabPanel(
                     "All genes",
                     htmlOutput(ns("n_selected")),
-                    DTOutput(outputId = ns("genes"))
+                    DT::DTOutput(outputId = ns("genes"))
                     ),
                   tabPanel(
                     "Selected genes",
-                    DTOutput(ns("genes_selected")),
+                    DT::DTOutput(ns("genes_selected")),
                     downloadButton(
                       outputId = ns("download_sel_genes"),
                       label = "Download selected genes"
@@ -242,26 +242,26 @@ GeneTableServer <- function(id,
     
     
     # Row selection in the DT table
-    proxy <- dataTableProxy("genes")
+    proxy <- DT::dataTableProxy("genes")
     
     
     observeEvent(input$select_genes, {
-      proxy %>% selectRows(my_values$given_genes_rows)
+      proxy %>% DT::selectRows(my_values$given_genes_rows)
     })
     
     
     observeEvent(input$clear, {
-      proxy %>% selectRows(NULL)
+      proxy %>% DT::selectRows(NULL)
     })
     
     
     # To reset selection if contrast_act() changes
     observeEvent(contrast_act(), {
-      proxy %>% selectRows(NULL)
+      proxy %>% DT::selectRows(NULL)
     })
     
     
-    output$genes <- renderDT(
+    output$genes <- DT::renderDT(
       expr = {
         genes_table()
       },
@@ -294,7 +294,7 @@ GeneTableServer <- function(id,
     })
     
     
-    output$genes_selected <- renderDT(
+    output$genes_selected <- DT::renderDT(
       expr = {
         req(sel_genes_table())
         sel_genes_table() %>%
@@ -352,7 +352,7 @@ GeneTableServer <- function(id,
 # Test App ---------------------------------------------------------------------
 GeneTableApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(type = "tabs",
+    bs4Dash::tabsetPanel(type = "tabs",
                 tabPanel("Input", InputUI("inp")),
                 tabPanel("Table", GeneTableUI("tab"))
     )

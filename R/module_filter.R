@@ -16,7 +16,7 @@ FilterServer <- function(id, res, default, reset) {
     
     observeEvent(reset(), {
       if(!is.null(default$pval)) {
-        updateSliderTextInput(session = session,
+        shinyWidgets::updateSliderTextInput(session = session,
                         inputId = "pval_filter",
                         selected = default$pval)
       }
@@ -47,7 +47,7 @@ FilterServer <- function(id, res, default, reset) {
       # For instance maplot does not need a lfc cut.
       tagList(
         if(!is.null(default$pval)) {
-          sliderTextInput(session$ns("pval_filter"),
+          shinyWidgets::sliderTextInput(session$ns("pval_filter"),
                           "Select the Adjusted p-value threshold (padj <= ?)",
                           choices = c(0.0001, 0.001, 0.01, 0.05, 0.1, 1),
                           selected = default$pval)
@@ -74,12 +74,12 @@ FilterServer <- function(id, res, default, reset) {
 # TestApp ----------------------------------------------------------------------
 FilterApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(
+    bs4Dash::tabsetPanel(
       tabPanel("Input",
                InputUI("inp")),
       tabPanel("Filter",
                FilterUI("fil", list("pval" = 0.05)),
-               actionButton("reset", "Reset"),
+               bs4Dash::actionButton("reset", "Reset"),
                htmlOutput("nb")
       )
     )

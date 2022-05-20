@@ -5,25 +5,25 @@ VolcanoUI <- function(id) {
   # Pour rendre un peu plus court
   ns <- NS(id)
   tagList(
-    box(title = "Volcano Plot",
+    bs4Dash::box(title = "Volcano Plot",
         width = 12,
         status = "primary",
-        tabsetPanel(
+        bs4Dash::tabsetPanel(
           tabPanel(
             title = "Static",
             fluidRow(
-              box(
+              bs4Dash::box(
                 width = 12,
                 plotOutput(outputId = ns("volcano_plot")),
-                actionButton(ns("draw"), "Draw Volcano Plot",
+                bs4Dash::actionButton(ns("draw"), "Draw Volcano Plot",
                              status = "secondary"),
-                actionButton(ns("reset"),
+                bs4Dash::actionButton(ns("reset"),
                              "Reset defaults",
                              status = "secondary")
               )
             ),
             fluidRow(
-              box(title = "Appearance",
+              bs4Dash::box(title = "Appearance",
                   status = "secondary",
                   width = 4,
                   sliderInput(
@@ -41,12 +41,12 @@ VolcanoUI <- function(id) {
                     value = 10
                   ),
                   FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
-                  colourInput(
+                  colourpicker::colourInput(
                     inputId = ns("up_col"),
                     label = "Choose the color of the upregulated genes",
                     value = "#fe7f00"
                   ),
-                  colourInput(
+                  colourpicker::colourInput(
                     inputId = ns("down_col"),
                     label = "Choose the color of the downregulated genes",
                     value = "#007ffe"
@@ -65,7 +65,7 @@ VolcanoUI <- function(id) {
                     max = 2
                   )
               ),
-              box(title = "Text",
+              bs4Dash::box(title = "Text",
                   status = "secondary",
                   width = 4,
                   textInput(
@@ -98,7 +98,7 @@ VolcanoUI <- function(id) {
                     step = .25
                   )
               ),
-              box(title = "Download",
+              bs4Dash::box(title = "Download",
                   status = "secondary",
                   width = 4,
                   DownloadUI(ns("dw"))
@@ -107,7 +107,7 @@ VolcanoUI <- function(id) {
           ),
           tabPanel(
             title = "Interactive",
-            plotlyOutput(outputId = ns("plotly_vp"))
+            plotly::plotlyOutput(outputId = ns("plotly_vp"))
           )
         )
     )
@@ -155,8 +155,8 @@ VolcanoServer <- function(id,
     
     
     observeEvent(input$reset, {
-      updateColourInput(session = session, "up_col", value = "#fe7f00")
-      updateColourInput(session = session, "down_col", value = "#007ffe")
+      colourpicker::updateColourInput(session = session, "up_col", value = "#fe7f00")
+      colourpicker::updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
       updateSliderInput(inputId = "ratio", value = 1)
       updateTextInput(inputId = "up_leg", value = "up")
@@ -225,7 +225,7 @@ VolcanoServer <- function(id,
       cur_plot()
     })
     
-    output$plotly_vp <- renderPlotly({
+    output$plotly_vp <- plotly::renderPlotly({
       req(filter_res)
       gg_vp <- my_volcanoplot(
         plot_data = plot_data(),
@@ -238,7 +238,7 @@ VolcanoServer <- function(id,
         pval_cutoff = filter_res$pval()
       )
       
-      ggplotly(p = gg_vp,
+      plotly::ggplotly(p = gg_vp,
                tooltip = c("text"),
                dynamicTicks = TRUE,
                height = 600,
@@ -258,7 +258,7 @@ VolcanoServer <- function(id,
 # Test App ---------------------------------------------------------------------
 VolcanoApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(type = "tabs",
+    bs4Dash::tabsetPanel(type = "tabs",
                 tabPanel("input", InputUI("inp")),
                 tabPanel("Volcano Plot", VolcanoUI("v1"))
     )

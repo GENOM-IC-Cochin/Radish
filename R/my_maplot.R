@@ -49,7 +49,7 @@ my_maplot <- function(plot_data,
     # Shows gene names if there is one
     genes_to_highlight <- which((plot_data$symbol %in% selected_genes |
                                    plot_data$Row.names %in% selected_genes))
-    plot_res <- plot_res + geom_label_repel(
+    plot_res <- plot_res + ggrepel::geom_label_repel(
       data = plot_data[genes_to_highlight, ],
       size = label_size,
       aes(label = coalesce(symbol, Row.names)),

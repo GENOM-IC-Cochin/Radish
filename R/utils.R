@@ -56,7 +56,7 @@ res_filter <- function(deseq_results,
 
 palette_hm <- function(color_name) {
   if(color_name %in% brew_vec) {
-    colorRampPalette(rev(brewer.pal(n = 9, name = color_name)))(256)
+    colorRampPalette(rev(RColorBrewer::brewer.pal(n = 9, name = color_name)))(256)
   } else {
     c(viridis::viridis(256, option = vir_vec[color_name]), use.names = FALSE)
   }
@@ -68,11 +68,14 @@ contr_str <- function(contrastes, contrast_act, ...) {
 
 
 waiting_screen <- tagList(
-  spin_folding_cube(),
+  waiter::spin_folding_cube(),
   h3("Importing data...")
 )
 
 recalc_pca <- tagList(
-  spin_folding_cube(),
+  waiter::spin_folding_cube(),
   h3("Recomputing PCA...")
 )
+
+# Defaults for NULL values
+`%||%` <- function(a, b) if (is.null(a)) b else a

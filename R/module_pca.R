@@ -11,7 +11,7 @@ PcaUI <- function(id) {
       tabPanel(
         title = "PCA plot",
         plotOutput(ns("pca")),
-        actionButton(ns("draw"),
+        bs4Dash::actionButton(ns("draw"),
                      "Draw PCA",
                      status = "secondary")
         
@@ -23,7 +23,7 @@ PcaUI <- function(id) {
     )
   ),
   fluidRow(
-    box(
+    bs4Dash::box(
       title = "Settings",
       status = "secondary",
       width = 4,
@@ -35,7 +35,7 @@ PcaUI <- function(id) {
         selected = NULL,
         options = NULL
       ),
-      actionButton(
+      bs4Dash::actionButton(
         inputId = ns("recomp_pca"),
         label = "Recompute PCA",
         status = "secondary"
@@ -55,13 +55,13 @@ PcaUI <- function(id) {
                   choices = NULL),
       uiOutput(ns("shape"))
     ),
-    box(
+    bs4Dash::box(
       title = "Colors",
       status = "secondary",
       width = 4,
       uiOutput(ns("colors"))
     ),
-    box(
+    bs4Dash::box(
       title = "Download",
       status = "secondary",
       width = 4,
@@ -194,12 +194,12 @@ PcaServer <- function(id,
       req(levels(),
           data())
       
-      req(map_chr(
+      req(purrr::map_chr(
           levels(),
           ~ input[[.x]] %||% ""
         ))
-      color_by_level <- set_names(
-        map_chr(
+      color_by_level <- magrittr::set_names(
+        purrr::map_chr(
           levels(),
           ~ input[[.x]] %||% ""
         ),
@@ -240,10 +240,10 @@ PcaServer <- function(id,
 
     output$colors <- renderUI({
       req(levels())
-      map2(
+      purrr::map2(
         levels(),
-        hue_pal()(length(levels())),
-        ~ colourInput(
+        scales::hue_pal()(length(levels())),
+        ~ colourpicker::colourInput(
           inputId = session$ns(.x),
           paste("Choose the color of : ", .x),
           value = .y
@@ -263,7 +263,7 @@ PcaServer <- function(id,
 # Test App ---------------------------------------------------------------------
 PcaApp <- function() {
   ui <- fluidPage(
-    tabsetPanel(
+    bs4Dash::tabsetPanel(
       type = "tabs",
       tabPanel("Input", InputUI("inp")),
       tabPanel("PCA", PcaUI("pca1"))

@@ -49,7 +49,7 @@ DownloadApp <- function() {
   )
   server <- function(input, output, session) {
     plot_iris <- reactive(
-       ggplot(iris, aes(x = Sepal.Length, y = Sepal.Width)) +
+       ggplot(datasets::iris, aes(x = Sepal.Length, y = Sepal.Width)) +
          geom_point()
     )
     output$plot <- renderPlot(
