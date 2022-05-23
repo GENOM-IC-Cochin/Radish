@@ -33,4 +33,6 @@ Imports:
     svglite,
     ragg,
     markdown,
-    RColorBrewer
+    RColorBrewer,
+    BiocGenerics,
+    SummarizedExperiment

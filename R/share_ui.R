@@ -36,7 +36,11 @@ global_theme <- fresh::create_theme(
 )
 
 
-
+##' The UI of tjhe Share application
+##'
+##' @title Share UI
+##' @author Paul
+##' @export
 share_ui <- function() {
   ui <- dashboardPage(
     freshTheme = global_theme,
