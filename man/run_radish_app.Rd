@@ -8,7 +8,7 @@ Interactively or not, dependending on the context.}
 run_radish_app(...)
 }
 \arguments{
-\item{...}{parameters passed to runApp}
+\item{...}{parameters passed to runApp and shinyAppDir}
 }
 \description{
 Runs the Radish application

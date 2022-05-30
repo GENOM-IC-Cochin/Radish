@@ -1,6 +1,6 @@
 #' Runs the Radish application
 #' Interactively or not, dependending on the context.
-#' @param ... parameters passed to runApp
+#' @param ... parameters passed to runApp and shinyAppDir
 #' @import shiny
 #' @importFrom magrittr %>%
 #' @importFrom magrittr %<>%
@@ -15,8 +15,8 @@
 #' @export
 run_radish_app <- function(...) {
   if(interactive()) {
-    runApp(appDir = system.file("app", package = "Radish"), ...)
+    runApp(appDir = system.file("app", package = "Radish"))
   } else {
-    shinyAppDir(appDir = system.file("app", package = "Radish"))
+    shinyAppDir(appDir = system.file("app", package = "Radish"), ...)
   }
 }

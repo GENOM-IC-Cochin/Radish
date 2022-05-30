@@ -35,4 +35,5 @@ Imports:
     markdown,
     RColorBrewer,
     BiocGenerics,
-    SummarizedExperiment
+    SummarizedExperiment,
+    pkgload
