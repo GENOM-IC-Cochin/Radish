@@ -6,12 +6,12 @@ GeneTableUI <- function(id) {
   fluidRow(
     bs4Dash::column(3,
            bs4Dash::box(title = "Genes Information",
-               status = "secondary",
+               status = "info",
                width = 12,
                htmlOutput(ns("outlier"))
                ),
            bs4Dash::box(title = "Row selection",
-               status = "secondary",
+               status = "info",
                width = 12,
                selectInput(ns("input_type"),
                            "Selection based on genes' :",
@@ -28,7 +28,7 @@ GeneTableUI <- function(id) {
                             "Clear Input")
            ),
            bs4Dash::box(title = "Filtered Download",
-               status = "secondary",
+               status = "info",
                width = 12,
                FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
                htmlOutput(ns("sig_genes")),
@@ -39,7 +39,6 @@ GeneTableUI <- function(id) {
     bs4Dash::column(9,
            tabBox(title = "Genes Tables",
                   width = 12,
-                  status = "primary",
                   tabPanel(
                     "All genes",
                     htmlOutput(ns("n_selected")),

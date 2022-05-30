@@ -1,11 +1,11 @@
-##' Server of the Share application
+##' Server of the Radish application
 ##'
-##' @title Share server
+##' @title Radish server
 ##' @param input ui input
 ##' @param output ui output
 ##' @param session shiny session
 ##' @export
-share_server <- function(input, output, session) {
+radish_server <- function(input, output, session) {
   my_values <- reactiveValues(
     given_genes_rows = NULL
   )

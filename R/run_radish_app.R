@@ -1,4 +1,4 @@
-#' Runs the Share application
+#' Runs the Radish application
 #' Interactively or not, dependending on the context.
 #' @param ... parameters passed to runApp
 #' @import shiny
@@ -13,10 +13,10 @@
 #' @importFrom utils head write.csv
 #' @importFrom grDevices colorRampPalette dev.off pdf
 #' @export
-run_share_app <- function(...) {
+run_radish_app <- function(...) {
   if(interactive()) {
-    runApp(appDir = system.file("app", package = "Share"), ...)
+    runApp(appDir = system.file("app", package = "Radish"), ...)
   } else {
-    shinyAppDir(appDir = system.file("app", package = "Share"))
+    shinyAppDir(appDir = system.file("app", package = "Radish"))
   }
 }

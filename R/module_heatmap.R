@@ -31,7 +31,7 @@ HeatmapUI <- function(id) {
         width = 3,
         bs4Dash::box(
           title = "Settings",
-          status = "secondary",
+          status = "info",
           width = 12,
           selectInput(
             inputId = ns("top_gene"),
@@ -76,7 +76,7 @@ HeatmapUI <- function(id) {
         ),
         bs4Dash::box(
           title = "Information",
-          status = "secondary",
+          status = "info",
           width = 12,
           HTML(paste(
             "<p> <strong> Why only 2000 rows maximum? </strong> </p>",
@@ -113,7 +113,7 @@ HeatmapUI <- function(id) {
         fluidRow(
           bs4Dash::box(
             title = "Appearance",
-            status = "secondary",
+            status = "info",
             width = 6,
             selectInput(
               inputId = ns("palette"),
@@ -144,7 +144,7 @@ HeatmapUI <- function(id) {
           ),
           bs4Dash::box(
             title = "Advanced Settings",
-            status = "secondary",
+            status = "info",
             width = 6,
             selectInput(ns("cluster_control"),
               "Cluster by columns",
@@ -248,10 +248,15 @@ HeatmapServer <- function(id,
       )
     })
 
-    observeEvent(input$top_gene, {
+    observeEvent({
+      input$top_gene
+      config()
+    }, {
       output$samp_choice <- renderUI({
         if (input$top_gene == "sel") {
-          tagList(selectizeInput(session$ns("samples"),
+          tagList(
+            selectizeInput(
+              session$ns("samples"),
             "Select the samples to display",
             choices = config() %>% pull(Name),
             multiple = TRUE
@@ -270,7 +275,8 @@ HeatmapServer <- function(id,
           contrast_act()
         )
         concerned_variable <- contrastes()[strtoi(contrast_act()), 1]
-        concerned_levels <- c(contrastes()[strtoi(contrast_act()), 2], contrastes()[strtoi(contrast_act()), 3])
+        concerned_levels <- c(contrastes()[strtoi(contrast_act()), 2],
+                              contrastes()[strtoi(contrast_act()), 3])
         config() %>%
           select(all_of(c("Name", concerned_variable))) %>%
           filter(.data[[concerned_variable]] %in% concerned_levels) %>%
@@ -303,7 +309,8 @@ HeatmapServer <- function(id,
 
     output$gene_number <- renderUI({
       req(data())
-      HTML(paste("<p>", nrow(data()), "genes are to be displayed on the heatmap </p>"))
+      HTML(paste("<p>", nrow(data()),
+                 "genes are to be displayed on the heatmap </p>"))
     })
 
 
@@ -401,14 +408,12 @@ HeatmapServer <- function(id,
     # Met en correspondance les conditions choisies et les échantillons
     # (Pour les couleurs de la heatmap)
     # retour : un df avec la correspondance désirée
-    annotation_col <- eventReactive(
-      {
+    annotation_col <- eventReactive({
         config()
         data()
         samples_selected()
         input$variables
-      },
-      {
+      }, {
         ## if(!is.null(input$variables) & input$top_gene == "sel") {
         if (!is.null(input$variables)) {
           data.frame("Name" = samples_selected()) %>%
@@ -426,12 +431,10 @@ HeatmapServer <- function(id,
     # A partir des annotations, leur affecte une couleur
     # retour : une liste avec la correspondance selon le format de pheatmap
     # pour le paramètre annotation_colors
-    annotation_colors <- eventReactive(
-      {
+    annotation_colors <- eventReactive({
         config()
         annotation_col()
-      },
-      {
+      }, {
         if (is.null(annotation_col())) {
           return(NULL)
         }

@@ -7,7 +7,6 @@ PcaUI <- function(id) {
   tagList(fluidRow(
     tabBox(
       width = 12,
-      status = "primary",
       tabPanel(
         title = "PCA plot",
         plotOutput(ns("pca")),
@@ -25,7 +24,7 @@ PcaUI <- function(id) {
   fluidRow(
     bs4Dash::box(
       title = "Settings",
-      status = "secondary",
+      status = "info",
       width = 4,
       selectizeInput(
         inputId = ns("excl_samp"),
@@ -57,13 +56,13 @@ PcaUI <- function(id) {
     ),
     bs4Dash::box(
       title = "Colors",
-      status = "secondary",
+      status = "info",
       width = 4,
       uiOutput(ns("colors"))
     ),
     bs4Dash::box(
       title = "Download",
-      status = "secondary",
+      status = "info",
       width = 4,
       DownloadUI(ns("dw"))
     )

@@ -27,7 +27,8 @@ video_width <- 320
 global_theme <- fresh::create_theme(
   fresh::bs4dash_status(
     primary = "#006499",
-    secondary = "#009982"
+    secondary = "#91730F",
+    info = "#07856E"
   ),
   fresh::bs4dash_sidebar_light(
     bg = "#404040",
@@ -36,21 +37,24 @@ global_theme <- fresh::create_theme(
 )
 
 
-##' The UI of tjhe Share application
+##' The UI of the Radish application
 ##'
-##' @title Share UI
+##' @title Radish UI
 ##' @author Paul
 ##' @export
-share_ui <- function() {
+radish_ui <- function() {
   ui <- dashboardPage(
     freshTheme = global_theme,
     header = dashboardHeader(
+      title = tags$img(src = "logo_app_3.svg",
+               style = "width:100%"),
       skin = "light",
-      status = "primary",
-      title = dashboardBrand(
-        title = "SHARE",
-        color = "primary"
-      )
+      status = "primary"
+      ## title = dashboardBrand(
+      ##   title = "RADISH",
+      ##   color = "primary",
+      ##   image = "logo_app_3.svg"
+      ## )
     ),
     sidebar = dashboardSidebar(
       skin = "light",
@@ -89,7 +93,7 @@ share_ui <- function() {
         tabItem(
           tabName = "home",
           tabBox(
-            title = div("SHARE : A Shiny app for RNA-Seq Exploration",
+            title = div("RADISH : a RNA-Seq Analysis Dashboard In Shiny",
               style = "font-weight : bold"
             ),
             width = 12,

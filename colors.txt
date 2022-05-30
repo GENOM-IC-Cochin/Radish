@@ -1,0 +1,5 @@
+primary blue : #006499
+secondary (sable) : #91730F
+red : #99350F
+blue-green : #07856E
+deep blue : #081A99

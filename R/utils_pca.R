@@ -68,7 +68,7 @@ recalculate_rld_pca <- function(txi.rsem, drop_samp, configuration) {
                                         # Fonction qui recalcule la normalisation DESeq2, puis le rlog/vst pour la PCA
                                         # Nécéssaire si on élimine un échantillon considéré comme outlier
 
-  waiter::waiter_show(html = recalc_pca, color = "#009982")
+  waiter::waiter_show(html = recalc_pca, color = "#07856E")
   dds <- DESeq2::DESeqDataSetFromTximport(txi.rsem, configuration, ~1)
   dds <- dds[, -drop_samp]
   dds <- DESeq2::estimateSizeFactors(dds)

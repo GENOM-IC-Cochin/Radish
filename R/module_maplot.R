@@ -16,7 +16,7 @@ MAplotUI <- function(id) {
         ),
         fluidRow(
           bs4Dash::box(title = "Appearance",
-              status = "secondary",
+              status = "info",
               width = 4,
               FilterUI(ns("fil"), list("pval" = 0.05)),
               colourpicker::colourInput(
@@ -44,7 +44,7 @@ MAplotUI <- function(id) {
               )
           ),
           bs4Dash::box(title = "Text",
-              status = "secondary",
+              status = "info",
               width = 4,
               textInput(
                 inputId = ns("plot_title"),
@@ -77,7 +77,7 @@ MAplotUI <- function(id) {
               )
           ),
           bs4Dash::box(title = "Download",
-              status = "secondary",
+              status = "info",
               width = 4,
               DownloadUI(ns("dw")) 
           )

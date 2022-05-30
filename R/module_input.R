@@ -17,7 +17,7 @@ InputUI <- function(id) {
     fluidRow(
       bs4Dash::box(
         title = "Input",
-        status = "secondary",
+        status = "info",
         width = 3,
         fileInput(ns("res_data"),
                   "Results"
@@ -27,7 +27,7 @@ InputUI <- function(id) {
       bs4Dash::box(
         title = "Contents",
         width = 9,
-        status = "secondary",
+        status = "info",
         fluidRow(
           valueBoxOutput(ns("samples"),
                          width = 4),
@@ -41,7 +41,7 @@ InputUI <- function(id) {
     fluidRow(
       bs4Dash::box(
         title = "Configuration Table",
-        status = "secondary",
+        status = "info",
         width = 12,
         collapsed = TRUE,
         tableOutput(ns("config_table"))
@@ -100,7 +100,7 @@ InputServer <- function(id, contrast_act) {
     all_results <- eventReactive(data(),{
       req(data())
       tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
-      waiter::waiter_show(html = waiting_screen, color = "#009982")
+      waiter::waiter_show(html = waiting_screen, color = "#07856E")
       for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
@@ -148,7 +148,7 @@ InputServer <- function(id, contrast_act) {
         subtitle = "Contrastes",
         value = all_results() %>% length(),
         icon = icon("list"),
-        color = "secondary"
+        color = "info"
       )
     })
     
@@ -158,7 +158,7 @@ InputServer <- function(id, contrast_act) {
         subtitle = "Samples",
         value = config() %>% nrow(),
         icon = icon("list"),
-        color = "secondary"
+        color = "info"
       )
     })
     
@@ -170,7 +170,7 @@ InputServer <- function(id, contrast_act) {
           pull(Condition) %>%
           n_distinct(),
         icon = icon("list"),
-        color = "secondary"
+        color = "info"
       )
     })
     

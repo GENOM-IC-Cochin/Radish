@@ -40,4 +40,4 @@ RUN chown app:app -R /home/app
 USER app
 RUN R -e 'renv::restore()'
 EXPOSE 3838
-CMD ["R", "-e", "pkgload::load_all('.');ShareApp(options = list(port = 3838, host = '0.0.0.0'))"]
+CMD ["R", "-e", "pkgload::load_all('.');run_radish_app(options = list(port = 3838, host = '0.0.0.0'))"]

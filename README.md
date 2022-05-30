@@ -15,9 +15,9 @@
 
 # Introduction
 
-SHARE is a shiny application for the visualisation and analysis of pre-processed RNA-seq data, specifically differential expression analysis. Given data processed with GENOM'IC's pipeline, it is able to produce customisable plots, such as PCA plots, Volcano plots and Heatmaps. It also allows one to explore the counts and results table interactively.
+Radish is a shiny application for the visualisation and analysis of pre-processed RNA-seq data, specifically differential expression analysis. Given data processed with GENOM'IC's pipeline, it is able to produce customisable plots, such as PCA plots, Volcano plots and Heatmaps. It also allows one to explore the counts and results table interactively.
 
-SHARE is an exploration tool, it relies on data already processed from raw reads, following a STAR -> RSEM -> DESeq2 pipeline, with gene name annotation with Biomart.
+Radish is an exploration tool, it relies on data already processed from raw reads, following a STAR -> RSEM -> DESeq2 pipeline, with gene name annotation with Biomart.
 
 
 <a id="org7ffbcd4"></a>
