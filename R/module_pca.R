@@ -47,7 +47,7 @@ PcaUI <- function(id) {
         selected = "Classic"
       ),
       checkboxInput(ns("labels"),
-                    "Samples labels",
+                    "Label samples",
                     TRUE),
       selectInput(ns("color_by"),
                   "Color samples by",
