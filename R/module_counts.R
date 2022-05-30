@@ -17,7 +17,7 @@ CountsUI <- function(id) {
     fluidRow(
       bs4Dash::box(
         title = "Settings",
-        status = "secondary",
+        status = "info",
         width = 4,
         selectInput(ns("variable"),
                     "Select the variable to display",
@@ -36,11 +36,12 @@ CountsUI <- function(id) {
           inputId = ns("zero"),
           label = NULL,
           value = FALSE
-        )
+        ),
+        uiOutput(ns("boxplot"))
       ),
       bs4Dash::box(
         title = "Appearance",
-        status = "secondary",
+        status = "info",
         width = 4,
         selectInput(
                     inputId = ns("theme"),
@@ -58,7 +59,7 @@ CountsUI <- function(id) {
       ),
       bs4Dash::box(
         title = "Download",
-        status = "secondary",
+        status = "info",
         width = 4,
         DownloadUI(ns("dl"))
       )
@@ -92,6 +93,7 @@ CountsServer <- function(id,
       pos_levels <- config() %>%
                           pull(all_of(input$variable)) %>%
                           unique()
+      freezeReactiveValue(input, "levels")
       updateSelectInput(inputId = "levels",
                         label = paste("Select the levels of", input$variable, "to display"),
                         choices = pos_levels,
@@ -115,26 +117,72 @@ CountsServer <- function(id,
       }
     })
 
+    observeEvent(
+      {
+        config()
+        input$variable
+        input$levels
+      },
+      {
+        req(
+          input$variable,
+          input$levels
+        )
+        # minimum number of sample in any level
+        min_nb_sample <- config() %>%
+          filter(.data[[input$variable]] %in% input$levels) %>%
+          count(.data[[input$variable]]) %>%
+          pull(n) %>%
+          min()
+        if (min_nb_sample > 5) {
+          geom_choice <- c("point", "boxplot")
+          label_geom <- "Choose the data mapping"
+        } else {
+          geom_choice <- c("point")
+          label_geom <- "Choose the data mapping (not enough points to display as boxplots)"
+        }
+        output$boxplot <- renderUI({
+          freezeReactiveValue(input, "geom")
+          tagList(
+            selectInput(
+              inputId = session$ns("geom"),
+              label = label_geom,
+              choices = geom_choice
+            )
+          )
+        })
+      },
+      ignoreNULL = FALSE
+    )
+
     genes_selected <- GeneSelectServer(
       id = "gnsel",
       src_table = counts,
       sel_genes_table = sel_genes_table
     )
 
+    plot_data <- eventReactive({
+        genes_selected$sel_genes_names()
+        genes_selected$sel_genes_ids()
+        counts()
+      }, {
+        counts() %>%
+          filter(symbol %in% genes_selected$sel_genes_names() | Row.names %in% genes_selected$sel_genes_ids()) %>%
+          mutate(Row.names = coalesce(symbol, Row.names)) %>%
+          select(all_of(c("Row.names", config()[, "Name"])))
+      }
+    )
+
     cur_plot <- eventReactive(input$draw, {
-      req(counts(),
-          config(),
+      req(plot_data(),
           input$levels,
           input$variable)
-      plot_data <- counts() %>%
-        filter(symbol %in% genes_selected$sel_genes_names() | Row.names %in% genes_selected$sel_genes_ids()) %>%
-        mutate(Row.names = coalesce(symbol, Row.names)) %>%
-        select(all_of(c("Row.names", config()[, "Name"])))
-      validate(need(nrow(plot_data) > 0, "Select at least one gene"))
+      validate(need(nrow(plot_data()) > 0, "Select at least one gene"))
       my_counts_plot(
-        plot_data = plot_data,
+        plot_data = plot_data(),
         variable = input$variable,
         logy = input$log,
+        boxplot = ifelse(input$geom == "point", FALSE, TRUE),
         levels = input$levels,
         config = config(),
         zero = input$zero,
