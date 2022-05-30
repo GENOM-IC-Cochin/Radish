@@ -127,24 +127,7 @@ PcaServer <- function(id,
       }
     })
 
-    
-    # Observer to get the data for the first draw click
-    observeEvent(
-      {
-        input$draw
-      },
-      {
-        req(
-          rld(),
-          config(),
-          txi.rsem()
-        )
-        ntop <- 500
-        data(rld_pca(rld(), config(), txi.rsem(), input$excl_samp, ntop))
-      },
-      once = TRUE
-    )
-    
+
     # Observer to get the data on input change
     observeEvent(
       {
