@@ -5,111 +5,106 @@ VolcanoUI <- function(id) {
   # Pour rendre un peu plus court
   ns <- NS(id)
   tagList(
-    bs4Dash::box(title = "Volcano Plot",
-        width = 12,
-        status = "primary",
-        bs4Dash::tabsetPanel(
-          tabPanel(
-            title = "Static",
-            fluidRow(
-              bs4Dash::box(
-                width = 12,
-                plotOutput(outputId = ns("volcano_plot")),
-                bs4Dash::actionButton(ns("draw"), "Draw Volcano Plot",
-                             status = "secondary"),
-                bs4Dash::actionButton(ns("reset"),
-                             "Reset defaults",
-                             status = "secondary")
+    fluidRow(
+      bs4Dash::tabBox(
+                 width = 12,
+                 tabPanel(
+                   title = "Static",
+                   plotOutput(outputId = ns("volcano_plot")),
+                   bs4Dash::actionButton(ns("draw"), "Draw Volcano Plot",
+                                         status = "secondary"),
+                   bs4Dash::actionButton(ns("reset"),
+                                         "Reset defaults",
+                                         status = "secondary")
+                 ),
+                 tabPanel(
+                   title = "Interactive",
+                   plotly::plotlyOutput(ns("plotly_vp"),
+                                        height = "600px")
+                 )
               )
-            ),
-            fluidRow(
-              bs4Dash::box(title = "Appearance",
-                  status = "secondary",
-                  width = 4,
-                  sliderInput(
-                    inputId = ns("x_max"),
-                    label = "Maximum value of the x axis",
-                    min = 0,
-                    max = 100,
-                    value = 10
-                  ),
-                  sliderInput(
-                    inputId = ns("y_max"),
-                    label = "Maximum value of the y axis",
-                    min = 0,
-                    max = 100,
-                    value = 10
-                  ),
-                  FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
-                  colourpicker::colourInput(
-                    inputId = ns("up_col"),
-                    label = "Choose the color of the upregulated genes",
-                    value = "#fe7f00"
-                  ),
-                  colourpicker::colourInput(
-                    inputId = ns("down_col"),
-                    label = "Choose the color of the downregulated genes",
-                    value = "#007ffe"
-                  ),
-                  selectInput(
-                    inputId = ns("theme"),
-                    label = "Choose the theme for the plot",
-                    choices = themes_gg,
-                    selected = "Classic"
-                  ),
-                  sliderInput(
-                    inputId = ns("ratio"),
-                    label = "Choose the plot aspect ratio",
-                    value = 1,
-                    min = 0.5,
-                    max = 2
-                  )
-              ),
-              bs4Dash::box(title = "Text",
-                  status = "secondary",
-                  width = 4,
-                  textInput(
-                    inputId = ns("plot_title"),
-                    label = "Title of the plot",
-                    value = "Gene expression change"
-                  ),
-                  textInput(
-                    inputId = ns("up_leg"),
-                    label = "Choose the upregulated legend name",
-                    value = "up"
-                  ),
-                  textInput(
-                    inputId = ns("down_leg"),
-                    label = "Choose the downregulated legend name",
-                    value = "down"
-                  ),
-                  textInput(
-                    inputId = ns("ns_leg"),
-                    label = "Choose the nonsignificant legend name",
-                    value = "ns"
-                  ),
-                  GeneSelectUI(ns("gnsel")),
-                  sliderInput(
-                    inputId = ns("lab_size"),
-                    label = "Choose the size of the labels",
-                    value = 3,
-                    min = 1,
-                    max = 4,
-                    step = .25
-                  )
-              ),
-              bs4Dash::box(title = "Download",
-                  status = "secondary",
-                  width = 4,
-                  DownloadUI(ns("dw"))
-              )
-            )
-          ),
-          tabPanel(
-            title = "Interactive",
-            plotly::plotlyOutput(outputId = ns("plotly_vp"))
-          )
-        )
+    ),
+    fluidRow(
+      bs4Dash::box(title = "Appearance",
+                   status = "info",
+                   width = 4,
+                   sliderInput(
+                     inputId = ns("x_max"),
+                     label = "Maximum value of the x axis",
+                     min = 0,
+                     max = 100,
+                     value = 10
+                   ),
+                   sliderInput(
+                     inputId = ns("y_max"),
+                     label = "Maximum value of the y axis",
+                     min = 0,
+                     max = 100,
+                     value = 10
+                   ),
+                   FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+                   colourpicker::colourInput(
+                                   inputId = ns("up_col"),
+                                   label = "Choose the color of the upregulated genes",
+                                   value = "#fe7f00"
+                                 ),
+                   colourpicker::colourInput(
+                                   inputId = ns("down_col"),
+                                   label = "Choose the color of the downregulated genes",
+                                   value = "#007ffe"
+                                 ),
+                   selectInput(
+                     inputId = ns("theme"),
+                     label = "Choose the theme for the plot",
+                     choices = themes_gg,
+                     selected = "Classic"
+                   ),
+                   sliderInput(
+                     inputId = ns("ratio"),
+                     label = "Choose the plot aspect ratio",
+                     value = 1,
+                     min = 0.5,
+                     max = 2
+                   )
+                   ),
+      bs4Dash::box(title = "Text",
+                   status = "info",
+                   width = 4,
+                   textInput(
+                     inputId = ns("plot_title"),
+                     label = "Title of the plot",
+                     value = "Gene expression change"
+                   ),
+                   textInput(
+                     inputId = ns("up_leg"),
+                     label = "Choose the upregulated legend name",
+                     value = "up"
+                   ),
+                   textInput(
+                     inputId = ns("down_leg"),
+                     label = "Choose the downregulated legend name",
+                     value = "down"
+                   ),
+                   textInput(
+                     inputId = ns("ns_leg"),
+                     label = "Choose the nonsignificant legend name",
+                     value = "ns"
+                   ),
+                   GeneSelectUI(ns("gnsel")),
+                   sliderInput(
+                     inputId = ns("lab_size"),
+                     label = "Choose the size of the labels",
+                     value = 3,
+                     min = 1,
+                     max = 4,
+                     step = .25
+                   )
+                   ),
+      bs4Dash::box(title = "Download",
+                   status = "info",
+                   width = 4,
+                   DownloadUI(ns("dw"))
+                   )
     )
   )
 }
@@ -238,11 +233,13 @@ VolcanoServer <- function(id,
         pval_cutoff = filter_res$pval()
       )
       
-      plotly::ggplotly(p = gg_vp,
+      gply <- plotly::ggplotly(p = gg_vp,
                tooltip = c("text"),
                dynamicTicks = TRUE,
                height = 600,
                width = 600)
+      # Tentative improvements
+      plotly::toWebGL(gply)
     })
     
     DownloadServer(

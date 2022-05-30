@@ -21,14 +21,16 @@ my_volcanoplot <- function(plot_data,
       fill = sig_expr,
       shape = outside,
       # for ggplotly
-      text = paste0("log2(FoldChange) : ",
-                    signif(log2FoldChange, 2),
-                    "<br>",
-                    "-log10(pval) : ",
-                    signif(-log10(padj), 2),
-                    "<br>",
-                    "Name : ",
-                    coalesce(symbol, Row.names))
+      text = paste0(
+        "<b>Gene Name : ",
+        coalesce(symbol, Row.names),
+        "</b><br>",
+        "log2(FoldChange) : ",
+        signif(log2FoldChange, 2),
+        "<br>",
+        "-log10(pval) : ",
+        signif(-log10(padj), 2)
+        )
     )) +
     geom_point(
       na.rm = TRUE,

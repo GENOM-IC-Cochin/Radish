@@ -4,16 +4,24 @@
 MAplotUI <- function(id) {
   ns <- NS(id)
   tagList(fluidRow(
-          bs4Dash::box(title = "MA-Plot",
-              status = "primary",
-              width = 12,
-              plotOutput(outputId = ns("plot")),
-              bs4Dash::actionButton(ns("draw"), "Draw MA-Plot",
-                           status = "secondary"),
-              bs4Dash::actionButton(ns("reset"), "Reset defaults",
-                           status = "secondary")
-          )
-        ),
+    bs4Dash::tabBox(
+               width = 12,
+               tabPanel(title = "Static",
+                        status = "primary",
+                        width = 12,
+                        plotOutput(outputId = ns("plot")),
+                        bs4Dash::actionButton(ns("draw"), "Draw MA-Plot",
+                                              status = "secondary"),
+                        bs4Dash::actionButton(ns("reset"), "Reset defaults",
+                                              status = "secondary")
+                        ),
+               tabPanel(title = "Interactive",
+                        width = 12,
+                        plotly::plotlyOutput(ns("plotly"),
+                                             height = "600px")
+                        )
+               )
+             ),
         fluidRow(
           bs4Dash::box(title = "Appearance",
               status = "info",
@@ -154,6 +162,25 @@ MAplotServer <- function(id,
     
     output$plot <- renderPlot({
       cur_plot()
+    })
+
+    output$plotly <- plotly::renderPlotly({
+      req(filter_res$res_filtered())
+      ggpl <- my_maplot(
+        plot_data = filter_res$res_filtered(),
+        colors = c("up" = input$up_col, "down" = input$down_col),
+        legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
+        ratio = input$ratio,
+        theme = input$theme
+      )
+
+      ggply <- plotly::ggplotly(p = ggpl,
+                                tooltip = c("text"),
+                                dynamicTicks = TRUE,
+                                height = 600,
+                                width = 600
+                                )
+      plotly::toWebGL(ggply)
     })
     
     DownloadServer(

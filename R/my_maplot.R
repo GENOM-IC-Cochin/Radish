@@ -13,8 +13,17 @@ my_maplot <- function(plot_data,
     x = baseMean,
     y = log2FoldChange,
     fill = sig_expr,
-    alpha = sig_expr#,
-    # text = paste("Gene: ", coalesce(symbol, Row.names))
+    alpha = sig_expr,
+    text = paste0(
+      "<b>Gene Name : ",
+      coalesce(symbol, Row.names),
+      "</b><br>",
+      "Mean Expression : ",
+      signif(baseMean, 3),
+      "<br>",
+      "log2(FoldChange) : ",
+      signif(log2FoldChange, 3)
+      )
   )) +
     geom_point(
       color = "black",
