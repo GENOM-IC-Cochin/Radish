@@ -195,9 +195,8 @@ HeatmapServer <- function(id,
 
     iv$add_rule("col_order", function(value) {
       # if no cluster, then all samples are necessary
-      if (length(value) != config() %>%
-        filter(Condition %in% input$sel_cond) %>%
-        nrow() &
+      req(samples_selected())
+      if (length(value) != length(samples_selected()) &
         input$cluster_control == "no") {
         "You need to select all samples of available conditions"
       }
