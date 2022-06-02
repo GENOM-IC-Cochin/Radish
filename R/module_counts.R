@@ -82,22 +82,24 @@ CountsServer <- function(id,
   moduleServer(id, function(input, output, session){
 
     observeEvent(config(), {
+      freezeReactiveValue(input, "variable")
       updateSelectInput(inputId = "variable",
                         choices = config() %>%
                           select(-File, -Name) %>%
                           colnames
                         )
+      freezeReactiveValue(input, "levels")
     })
 
     observeEvent(input$variable, {
-      pos_levels <- config() %>%
-                          pull(all_of(input$variable)) %>%
-                          unique()
-      freezeReactiveValue(input, "levels")
       updateSelectInput(inputId = "levels",
                         label = paste("Select the levels of", input$variable, "to display"),
-                        choices = pos_levels,
-                        selected = pos_levels
+                        choices = config() %>%
+                          pull(all_of(input$variable)) %>%
+                          unique(),
+                        selected = config() %>%
+                          pull(all_of(input$variable)) %>%
+                          unique()
                         )
     })
 

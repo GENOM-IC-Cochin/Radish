@@ -50,11 +50,6 @@ radish_ui <- function() {
                style = "width:100%"),
       skin = "light",
       status = "primary"
-      ## title = dashboardBrand(
-      ##   title = "RADISH",
-      ##   color = "primary",
-      ##   image = "logo_app_3.svg"
-      ## )
     ),
     sidebar = dashboardSidebar(
       skin = "light",
