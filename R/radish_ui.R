@@ -28,7 +28,8 @@ global_theme <- fresh::create_theme(
   fresh::bs4dash_status(
     primary = "#006499",
     secondary = "#91730F",
-    info = "#07856E"
+    info = "#07856E",
+    danger = "#99350F"
   ),
   fresh::bs4dash_sidebar_light(
     bg = "#404040",

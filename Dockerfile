@@ -1,4 +1,4 @@
-FROM registry.fedoraproject.org/fedora:35
+FROM registry.fedoraproject.org/fedora:36
 LABEL maintainer="Paul Etheimer <paul.etheimer@inserm.fr>"
 RUN dnf -y upgrade && dnf install -y \
     gcc \

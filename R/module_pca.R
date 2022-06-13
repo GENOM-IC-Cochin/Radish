@@ -4,69 +4,90 @@
 # UI ---------------------------------------------------------------------------
 PcaUI <- function(id) {
   ns <- NS(id)
-  tagList(fluidRow(
-    tabBox(
-      width = 12,
-      tabPanel(
-        title = "PCA plot",
-        plotOutput(ns("pca")),
-        bs4Dash::actionButton(ns("draw"),
-                     "Draw PCA",
-                     status = "secondary")
-        
+  tagList(
+    fluidRow(
+      tabBox(
+        width = 12,
+        tabPanel(
+          title = "PCA plot",
+          plotOutput(ns("pca")),
+          bs4Dash::actionButton(ns("draw"),
+            "Draw PCA",
+            status = "secondary"
+          )
+        ),
+        tabPanel(
+          title = "Screeplot",
+          plotOutput(ns("scree"))
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 4,
+        bs4Dash::box(
+          title = "Settings",
+          status = "info",
+          width = 12,
+          selectInput(
+            inputId = ns("theme"),
+            label = "Choose the theme for the plot",
+            choices = themes_gg,
+            selected = "Classic"
+          ),
+          checkboxInput(
+            ns("labels"),
+            "Label samples",
+            TRUE
+          ),
+          selectInput(ns("color_by"),
+            "Color samples by",
+            choices = NULL
+          ),
+          uiOutput(ns("shape")),
+          selectizeInput(
+            inputId = ns("excl_samp"),
+            label = "Select outliers to exclude (quite slow)",
+            multiple = TRUE,
+            choices = NULL,
+            selected = NULL,
+            options = NULL
+          ),
+          bs4Dash::actionButton(
+            inputId = ns("recomp_pca"),
+            label = "Recompute PCA",
+            status = "secondary"
+          )
+        ),
+        bs4Dash::box(
+          title = "Warning",
+          status = "danger",
+          width = 12,
+          HTML(paste(
+            "<p> <strong> About excluding outliers </strong> </p>",
+            "<p> Removing outliers can be useful to examine how remaining samples are distributed on a PCA plot.",
+            "However, this does not impact the rest of the analysis : if you want to remove a sample from the whole analysis",
+            "please <a href='benjamin.saintpierre@inserm.fr'> contact our bioinformatician</a>. </p>",
+            "<p>Moreover, please <strong> do not use this feature </strong> to produce plots",
+            "contrasting only parts of the experiment <strong> for publication </strong> (to compare two conditions, for instance,",
+            "as the counts used for this plot would not match the ones used in the rest of the analysis).",
+            "It is possible to examine a subset of the samples in an exploratory fashion.</p>"
+          ))
+        )
       ),
-      tabPanel(
-        title = "Screeplot",
-        plotOutput(ns("scree"))
+      bs4Dash::box(
+        title = "Colors",
+        status = "info",
+        width = 4,
+        uiOutput(ns("colors"))
+      ),
+      bs4Dash::box(
+        title = "Download",
+        status = "info",
+        width = 4,
+        DownloadUI(ns("dw"))
       )
     )
-  ),
-  fluidRow(
-    bs4Dash::box(
-      title = "Settings",
-      status = "info",
-      width = 4,
-      selectizeInput(
-        inputId = ns("excl_samp"),
-        label = "Select outliers to exclude (quite slow)",
-        multiple = TRUE,
-        choices = NULL,
-        selected = NULL,
-        options = NULL
-      ),
-      bs4Dash::actionButton(
-        inputId = ns("recomp_pca"),
-        label = "Recompute PCA",
-        status = "secondary"
-      ),
-      br(),
-      selectInput(
-        inputId = ns("theme"),
-        label = "Choose the theme for the plot",
-        choices = themes_gg,
-        selected = "Classic"
-      ),
-      checkboxInput(ns("labels"),
-                    "Label samples",
-                    TRUE),
-      selectInput(ns("color_by"),
-                  "Color samples by",
-                  choices = NULL),
-      uiOutput(ns("shape"))
-    ),
-    bs4Dash::box(
-      title = "Colors",
-      status = "info",
-      width = 4,
-      uiOutput(ns("colors"))
-    ),
-    bs4Dash::box(
-      title = "Download",
-      status = "info",
-      width = 4,
-      DownloadUI(ns("dw"))
-    )
-  )
   )
 }
 
@@ -83,7 +104,6 @@ PcaServer <- function(id,
   stopifnot(is.reactive(txi.rsem))
   stopifnot(is.reactive(rld))
   moduleServer(id, function(input, output, session) {
-
     data <- reactiveVal()
 
     observeEvent(config(), {
@@ -107,15 +127,18 @@ PcaServer <- function(id,
 
 
     output$shape <- renderUI({
-      #if there is more than 1 variable
-      req(config(),
-          input$color_by)
-      if(ncol(config()) > 3){
+      # if there is more than 1 variable
+      req(
+        config(),
+        input$color_by
+      )
+      if (ncol(config()) > 3) {
         tagList(
           checkboxInput(
             session$ns("shape"),
             "Use shape to display second variable",
-            FALSE),
+            FALSE
+          ),
           selectInput(
             session$ns("shape_by"),
             "Shape samples by",
@@ -144,7 +167,7 @@ PcaServer <- function(id,
         data(rld_pca(rld(), config(), txi.rsem(), NULL, ntop))
       }
     )
-    
+
     # Observer for recomputation
     observeEvent(
       {
@@ -163,8 +186,10 @@ PcaServer <- function(id,
 
 
     levels <- eventReactive(input$color_by, {
-      req(input$color_by,
-          config())
+      req(
+        input$color_by,
+        config()
+      )
       config() %>%
         pull(all_of(input$color_by)) %>%
         unique() %>%
@@ -173,13 +198,15 @@ PcaServer <- function(id,
 
 
     cur_plot <- eventReactive(input$draw, {
-      req(levels(),
-          data())
-      
+      req(
+        levels(),
+        data()
+      )
+
       req(purrr::map_chr(
-          levels(),
-          ~ input[[.x]] %||% ""
-        ))
+        levels(),
+        ~ input[[.x]] %||% ""
+      ))
       color_by_level <- magrittr::set_names(
         purrr::map_chr(
           levels(),
@@ -188,14 +215,28 @@ PcaServer <- function(id,
         levels()
       )
       color_by_level[color_by_level == ""] <- NA
-      cur_levels <- color_by_level[data()$data %>% pull(input$color_by) %>% unique]
+      cur_levels <- color_by_level[data()$data %>%
+        pull(input$color_by) %>%
+        unique()]
       my_pca(data(),
         theme = input$theme,
         show_labels = input$labels,
-        color_by_level = if (anyNA(cur_levels)) {NULL} else {cur_levels},
+        color_by_level = if (anyNA(cur_levels)) {
+          NULL
+        } else {
+          cur_levels
+        },
         color_by = input$color_by,
         # "none" if input$shape does not exist OR if input$shape_by is not checked
-        shape_by = if(!is.null(input$shape)) {if(input$shape) {input$shape_by} else {"none"}} else {"none"}
+        shape_by = if (!is.null(input$shape)) {
+          if (input$shape) {
+            input$shape_by
+          } else {
+            "none"
+          }
+        } else {
+          "none"
+        }
       )
     })
 
