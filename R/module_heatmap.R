@@ -251,7 +251,8 @@ HeatmapServer <- function(id,
       input$top_gene
       config()
     }, {
-      freezeReactiveValue(input, "samples")
+      if(input$top_gene == "sel")
+        freezeReactiveValue(input, "samples")
       output$samp_choice <- renderUI({
         if (input$top_gene == "sel") {
           tagList(
