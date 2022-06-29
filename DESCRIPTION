@@ -37,3 +37,5 @@ Imports:
     BiocGenerics,
     SummarizedExperiment,
     pkgload
+Suggests: 
+    shinytest2

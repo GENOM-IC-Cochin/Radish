@@ -202,7 +202,6 @@ PcaServer <- function(id,
         levels(),
         data()
       )
-
       req(purrr::map_chr(
         levels(),
         ~ input[[.x]] %||% ""
@@ -279,6 +278,11 @@ PcaServer <- function(id,
       cur_plot = cur_plot,
       plotname = reactive("pcaplot"),
       ratio = reactive(1)
+    )
+
+    exportTestValues(
+      pcadata = data(),
+      levels = levels()
     )
   })
 }

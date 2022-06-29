@@ -1,2 +1,2 @@
-if (isTRUE(getOption("shiny.testmode"))) devtools::load_all("../../")
+if (isTRUE(getOption("shiny.testmode"))) pkgload::load_all("../../")
 ui <- Radish::radish_ui()

@@ -340,6 +340,9 @@ GeneTableServer <- function(id,
       }
     )
     
+    shiny::exportTestValues(
+      sel_genes_table = sel_genes_table()
+    )
     
     # Module output
     sel_genes_table

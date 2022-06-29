@@ -205,6 +205,9 @@ CountsServer <- function(id,
       ratio = reactive(1)
     )
 
+    exportTestValues(
+      countsdata = plot_data()
+    )
   })
 }
 

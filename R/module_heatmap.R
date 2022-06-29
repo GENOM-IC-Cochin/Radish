@@ -536,6 +536,11 @@ HeatmapServer <- function(id,
         dev.off()
       }
     )
+
+    exportTestValues(
+      hmdata = head(data(), n = 50)
+    )
+
   })
 }
 
