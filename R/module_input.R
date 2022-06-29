@@ -60,7 +60,7 @@ InputServer <- function(id, contrast_act) {
     
     
     demo_data <- eventReactive(input$demo, {
-      tmp <- readRDS("../../data/demo_data.rds")
+      tmp <- readRDS("../exdata/demo_data.rds")
       validate(need(all(expected_data == names(tmp)), "Missing objects in loaded file"))
       tmp
     })
