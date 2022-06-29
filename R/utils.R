@@ -54,14 +54,6 @@ res_filter <- function(deseq_results,
 }
 
 
-palette_hm <- function(color_name) {
-  if (color_name %in% brew_vec) {
-    colorRampPalette(rev(RColorBrewer::brewer.pal(n = 9, name = color_name)))(256)
-  } else {
-    c(viridis::viridis(256, option = vir_vec[color_name]), use.names = FALSE)
-  }
-}
-
 
 contr_str <- function(contrastes, contrast_act, ...) {
   paste(contrastes[strtoi(contrast_act), 2],

@@ -6,20 +6,6 @@ brew_vec <- RColorBrewer::brewer.pal.info %>%
   tibble::rownames_to_column() %>%
   pull(rowname)
 
-# viridis palette
-vir_vec <- setNames(
-  LETTERS[1:8],
-  c(
-    "magma",
-    "inferno",
-    "plasma",
-    "viridis",
-    "cividis",
-    "rocket",
-    "mako",
-    "turbo"
-  )
-)
 # Colors for the condition in the heatmap
 condition_colors <- RColorBrewer::brewer.pal(8, "Set2")
 
@@ -118,7 +104,7 @@ HeatmapUI <- function(id) {
             selectInput(
               inputId = ns("palette"),
               label = "Choose the color palette of the heatmap",
-              choices = c(brew_vec), # , names(vir_vec)), deactivated bc not div with white in middle
+              choices = c(brew_vec),
               selected = "RdYlBu"
             ),
             checkboxInput(
@@ -479,7 +465,7 @@ HeatmapServer <- function(id,
         ComplexHeatmap::pheatmap(
           name = "z-score",
           mat = data(),
-          color = palette_hm(input$palette),
+          color = colorRampPalette(rev(RColorBrewer::brewer.pal(n = 9, name = input$palette)))(256),
           cluster_rows = TRUE,
           cluster_cols = ifelse(input$cluster_control == "yes", TRUE, FALSE),
           # No row names if top genes
