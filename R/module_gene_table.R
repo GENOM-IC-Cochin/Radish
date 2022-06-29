@@ -37,7 +37,7 @@ GeneTableUI <- function(id) {
     ),
            
     bs4Dash::column(9,
-           tabBox(title = "Genes Tables",
+           bs4Dash::tabBox(title = "Genes Tables",
                   width = 12,
                   tabPanel(
                     "All genes",

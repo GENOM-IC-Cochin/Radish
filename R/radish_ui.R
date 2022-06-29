@@ -44,29 +44,29 @@ global_theme <- fresh::create_theme(
 ##' @author Paul
 ##' @export
 radish_ui <- function() {
-  ui <- dashboardPage(
+  ui <- bs4Dash::dashboardPage(
     freshTheme = global_theme,
-    header = dashboardHeader(
+    header = bs4Dash::dashboardHeader(
       title = tags$img(src = "logo_app_3.svg",
                style = "width:100%"),
       skin = "light",
       status = "primary"
     ),
-    sidebar = dashboardSidebar(
+    sidebar = bs4Dash::dashboardSidebar(
       skin = "light",
-      sidebarMenu(
+      bs4Dash::sidebarMenu(
         id = "sidebar_tab",
-        menuItem("Home", tabName = "home"),
-        menuItem("Tutorial", tabName = "tut"),
-        menuItem("Input data", tabName = "inp"),
-        menuItem("PCA", tabName = "pca"),
-        menuItem(p("Table", style = "font-weight : bold; text-decoration: underline;"),
+        bs4Dash::menuItem("Home", tabName = "home"),
+        bs4Dash::menuItem("Tutorial", tabName = "tut"),
+        bs4Dash::menuItem("Input data", tabName = "inp"),
+        bs4Dash::menuItem("PCA", tabName = "pca"),
+        bs4Dash::menuItem(p("Table", style = "font-weight : bold; text-decoration: underline;"),
           tabName = "tabl_gene"
         ),
-        menuItem("Counts plot", tabName = "countsplot"),
-        menuItem("MA-plot", tabName = "maplot"),
-        menuItem("Volcano plot", tabName = "volcano"),
-        menuItem("Heatmap", tabName = "heatmap")
+        bs4Dash::menuItem("Counts plot", tabName = "countsplot"),
+        bs4Dash::menuItem("MA-plot", tabName = "maplot"),
+        bs4Dash::menuItem("Volcano plot", tabName = "volcano"),
+        bs4Dash::menuItem("Heatmap", tabName = "heatmap")
       ),
       selectInput(
         inputId = "contrast_act",
@@ -83,12 +83,12 @@ radish_ui <- function() {
       target = "_blank"
       )
     ),
-    body = dashboardBody(
+    body = bs4Dash::dashboardBody(
       waiter::useWaiter(),
-      tabItems(
-        tabItem(
+      bs4Dash::tabItems(
+        bs4Dash::tabItem(
           tabName = "home",
-          tabBox(
+          bs4Dash::tabBox(
             title = div("RADISH : a RNA-Seq Analysis Dashboard In Shiny",
               style = "font-weight : bold"
             ),
@@ -103,9 +103,9 @@ radish_ui <- function() {
             )
           )
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "tut",
-          tabBox(
+          bs4Dash::tabBox(
             width = 12,
             tabPanel(
               "PCA",
@@ -129,31 +129,31 @@ radish_ui <- function() {
             )
           )
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "inp",
           InputUI("inp")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "pca",
           PcaUI("pca")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "tabl_gene",
           GeneTableUI("gntab")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "countsplot",
           CountsUI("cnts")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "maplot",
           MAplotUI("ma")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "volcano",
           VolcanoUI("vp")
         ),
-        tabItem(
+        bs4Dash::tabItem(
           tabName = "heatmap",
           HeatmapUI("hm")
         )

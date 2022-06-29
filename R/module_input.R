@@ -29,11 +29,11 @@ InputUI <- function(id) {
         width = 9,
         status = "info",
         fluidRow(
-          valueBoxOutput(ns("samples"),
+          bs4Dash::valueBoxOutput(ns("samples"),
                          width = 4),
-          valueBoxOutput(ns("contrastes"),
+          bs4Dash::valueBoxOutput(ns("contrastes"),
                          width = 4),
-          valueBoxOutput(ns("conditions"),
+          bs4Dash::valueBoxOutput(ns("conditions"),
                          width = 4)
         )
       )
@@ -142,9 +142,9 @@ InputServer <- function(id, contrast_act) {
       all_results()[[strtoi(contrast_act())]]
     })
     
-    output$contrastes <- renderValueBox({
+    output$contrastes <- bs4Dash::renderValueBox({
       req(all_results())
-      valueBox(
+      bs4Dash::valueBox(
         subtitle = "Contrastes",
         value = all_results() %>% length(),
         icon = icon("list"),
@@ -152,9 +152,9 @@ InputServer <- function(id, contrast_act) {
       )
     })
     
-    output$samples <- renderValueBox({
+    output$samples <- bs4Dash::renderValueBox({
       req(config())
-      valueBox(
+      bs4Dash::valueBox(
         subtitle = "Samples",
         value = config() %>% nrow(),
         icon = icon("list"),
@@ -162,9 +162,9 @@ InputServer <- function(id, contrast_act) {
       )
     })
     
-    output$conditions <- renderValueBox({
+    output$conditions <- bs4Dash::renderValueBox({
       req(config())
-      valueBox(
+      bs4Dash::valueBox(
         subtitle = "Conditions",
         value = config() %>%
           pull(Condition) %>%

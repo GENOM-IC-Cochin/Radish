@@ -6,7 +6,6 @@
 #' @importFrom magrittr %<>%
 #' @import ggplot2
 #' @import dplyr
-#' @import bs4Dash
 #' @importFrom BiocGenerics rowSums
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats na.omit prcomp relevel setNames

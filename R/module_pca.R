@@ -6,7 +6,7 @@ PcaUI <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      tabBox(
+      bs4Dash::tabBox(
         width = 12,
         tabPanel(
           title = "PCA plot",
