@@ -6,7 +6,10 @@ my_counts_plot <- function(plot_data,
                            config,
                            zero,
                            ratio = 1,
-                           theme = "Classic with gridlines") {
+                           theme = "Classic with gridlines",
+                           angle_x = 0,
+                           hjust = 0.5,
+                           vjust = 0.5) {
   samples_to_var <- config %>%
     select(all_of(c("Name", variable)))
 
@@ -32,7 +35,12 @@ my_counts_plot <- function(plot_data,
       "Classic with gridlines" = theme_bw()
     ) +
     theme(
-      aspect.ratio = ratio
+      aspect.ratio = ratio,
+      axis.text.x = element_text(
+        angle = angle_x,
+        hjust = hjust,
+        vjust = vjust
+      )
     )
   if (logy) {
     res <- res +

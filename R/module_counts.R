@@ -55,7 +55,26 @@ CountsUI <- function(id) {
                 value = 1,
                 min = 0.5,
                 max = 2
-              )
+        ),
+        selectInput(
+          inputId = ns("angle"),
+          label = "X axis text angle",
+          choices = c(0, 45, 90)
+        ),
+        sliderInput(
+          inputId = ns("hjust"),
+          label = "X axis labels horizontal justification",
+          min = 0,
+          max = 1,
+          value = 0.5
+        ),
+        sliderInput(
+          inputId = ns("vjust"),
+          label = "X axis labels vertical justification",
+          min = 0,
+          max = 1,
+          value = 0.5
+        )
       ),
       bs4Dash::box(
         title = "Download",
@@ -189,7 +208,10 @@ CountsServer <- function(id,
         config = config(),
         zero = input$zero,
         ratio = input$ratio,
-        theme = input$theme
+        theme = input$theme,
+        angle_x = input$angle %>% as.numeric,
+        hjust = input$hjust,
+        vjust = input$vjust
         )
     })
 
