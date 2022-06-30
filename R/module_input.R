@@ -98,14 +98,12 @@ InputServer <- function(id, contrast_act) {
     all_results <- eventReactive(data(),{
       req(data())
       tmp <- vector(mode = "list", length = length(data()[["all_results"]]))
-      waiter::waiter_show(html = waiting_screen, color = "#07856E")
       for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]]$symbol %<>%
           tidy_symbols()
       }
-      waiter::waiter_hide()
       tmp
     })
     
@@ -177,8 +175,18 @@ InputServer <- function(id, contrast_act) {
       spacing = "m",
     )
     
-    
-    
+
+    observeEvent(counts(), {
+      if(length(which(counts()$symbol == "")) != 0) {
+        showModal(modalDialog(
+          title = "The version of the .rds file does not match the version of Radish",
+          "Please contact our team to recreate the .rds file with the up-to-date pipeline",
+          easyClose = FALSE
+        ))
+      }
+    })
+
+
     all_results_choice <- reactive({
       names_ch <- purrr::map2_chr(
         contrastes_df()[, 2],

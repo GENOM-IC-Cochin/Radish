@@ -61,11 +61,6 @@ contr_str <- function(contrastes, contrast_act, ...) {
 }
 
 
-waiting_screen <- tagList(
-  waiter::spin_folding_cube(),
-  h3("Importing data...")
-)
-
 recalc_pca <- tagList(
   waiter::spin_folding_cube(),
   h3("Recomputing PCA...")

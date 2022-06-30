@@ -2,8 +2,8 @@
   "export": {
     "pca-levels": [
       "Control",
-      "Cond1",
-      "Cond2"
+      "PBC",
+      "PSC"
     ],
     "pca-pcadata": {
       "data": {
@@ -154,14 +154,14 @@
           "Control",
           "Control",
           "Control",
-          "Cond1",
-          "Cond1",
-          "Cond1",
-          "Cond1",
-          "Cond2",
-          "Cond2",
-          "Cond2",
-          "Cond2"
+          "PBC",
+          "PBC",
+          "PBC",
+          "PBC",
+          "PSC",
+          "PSC",
+          "PSC",
+          "PSC"
         ],
         "Cholangitis": [
           "No",
