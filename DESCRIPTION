@@ -36,6 +36,7 @@ Imports:
     RColorBrewer,
     BiocGenerics,
     SummarizedExperiment,
-    pkgload
+    pkgload,
+    rprojroot
 Suggests: 
     shinytest2
