@@ -90,8 +90,6 @@ InputServer <- function(id, contrast_act) {
       # Permet de remplacer un nom variable (hgcn_symbol, mgi_symbol) par un nom fixe
       tmp <- data()[["dataMerged"]] %>%
         dplyr::rename("symbol" = dplyr::contains("symbol"))
-      # Noms de gènes "" -> NA
-      tmp %<>% mutate(across(everything(), na_if, "")) 
       # Avoids duplicated symbol names
       tmp$symbol %<>% tidy_symbols()
       tmp
@@ -104,10 +102,7 @@ InputServer <- function(id, contrast_act) {
       for (contraste in seq_along(data()[["all_results"]])) {
         tmp[[contraste]] <- data()[["all_results"]][[contraste]] %>% 
           dplyr::rename("symbol" = dplyr::contains("symbol"))
-        tmp[[contraste]] %<>%
-          # Noms de gènes "" -> NA
-          mutate(across(everything(), na_if, "")) 
-        tmp[[contraste]]$symbol %<>% 
+        tmp[[contraste]]$symbol %<>%
           tidy_symbols()
       }
       waiter::waiter_hide()
