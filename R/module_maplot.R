@@ -49,7 +49,14 @@ MAplotUI <- function(id) {
                 value = 1,
                 min = 0.5,
                 max = 2
-              )
+              ),
+              sliderInput(
+                     inputId = ns("y_max"),
+                     label = "Maximum value of the y axis",
+                     min = 0,
+                     max = 100,
+                     value = 10
+                   )
           ),
           bs4Dash::box(title = "Text",
               status = "info",
@@ -125,13 +132,21 @@ MAplotServer <- function(id,
       )
     })
     
-    
+    observeEvent(res(), {
+      updateSliderInput(
+        inputId = "y_max",
+        max = lfc_max_abs(donnees = res()),
+        value = lfc_max_abs(donnees = res())
+      )
+    })
+
     observeEvent(input$reset, {
       colourpicker::updateColourInput(session = session, "up_col", value = "#fe7f00")
       colourpicker::updateColourInput(session = session, "down_col", value = "#007ffe")
       updateSelectInput(inputId = "theme", selected = "Classic")
       updateSliderInput(inputId = "ratio", value = 1)
       updateTextInput(inputId = "up_leg", value = "up")
+      updateSliderInput(inputId = "y_max", value = lfc_max_abs(donnees = res()))
       updateTextInput(inputId = "down_leg", value = "down")
       updateTextInput(inputId = "ns_leg", value = "ns")
       updateSliderInput(inputId = "lab_size", value = 3)
@@ -144,17 +159,31 @@ MAplotServer <- function(id,
     })
     
     filter_res <- FilterServer("fil", res, list("pval" = 0.05), reactive(input$reset))
-    
+
+
+    plot_data <- eventReactive({
+      filter_res$res_filtered()
+      input$y_max
+    }, {
+      filter_res$res_filtered() %>%
+        mutate(outside = case_when(
+          abs(log2FoldChange) > input$y_max ~ "out",
+          TRUE ~ "in"
+        ))
+    })
+
+
     cur_plot <- eventReactive(input$draw, {
       req(filter_res$res_filtered())
       my_maplot(
-        plot_data = filter_res$res_filtered(),
+        plot_data = plot_data(),
         title = input$plot_title,
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
         ratio = input$ratio,
         selected_genes = c(genes_selected$sel_genes_names(),
                            genes_selected$sel_genes_ids()),
+        y_axis_max = input$y_max,
         theme = input$theme,
         label_size = input$lab_size
       )
@@ -167,9 +196,10 @@ MAplotServer <- function(id,
     output$plotly <- plotly::renderPlotly({
       req(filter_res$res_filtered())
       ggpl <- my_maplot(
-        plot_data = filter_res$res_filtered(),
+        plot_data = plot_data(),
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
+        y_axis_max = input$y_max,
         ratio = input$ratio,
         theme = input$theme
       )

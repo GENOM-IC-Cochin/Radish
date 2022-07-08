@@ -69,7 +69,7 @@ HeatmapUI <- function(id) {
             "<p> If one goes over 1080, (or 2160 in the case of a 4k screen)",
             "genes, then there are less pixels than rows in the matrix",
             "and the results displayed is a sort of mean of multiple rows.",
-            "It is well explained <a href='https://gdevailly.netlify.app/post/plotting-big-matrices-in-r/'>here</a>.",
+            "It is well explained <a href='https://gdevailly.netlify.app/post/plotting-big-matrices-in-r/', target='_blank'>here</a>.",
             "If you are still willing to obtain such a matrix, please contact the developpers </p>"
           ))
         )

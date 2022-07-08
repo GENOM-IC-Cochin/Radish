@@ -128,16 +128,16 @@ VolcanoServer <- function(id,
     observeEvent(res(),{
       updateSliderInput(
         inputId = "x_max",
-        max = x_max_abs(donnees = res()),
-        value = x_max_abs(donnees = res())
+        max = lfc_max_abs(donnees = res()),
+        value = lfc_max_abs(donnees = res())
       )
     })
     
     observeEvent(res(), {
       updateSliderInput(
         inputId = "y_max",
-        max = y_max(donnees = res()),
-        value = y_max(donnees = res())
+        max = log_padj_max(donnees = res()),
+        value = log_padj_max(donnees = res())
       )
     })
     
@@ -159,8 +159,8 @@ VolcanoServer <- function(id,
       updateTextInput(inputId = "ns_leg", value = "ns")
       updateSliderInput(inputId = "lab_size", value = 3)
       req(res())
-      updateSliderInput(inputId = "y_max", value = y_max(donnees = res()))
-      updateSliderInput(inputId = "x_max", value = x_max_abs(donnees = res()))
+      updateSliderInput(inputId = "y_max", value = log_padj_max(donnees = res()))
+      updateSliderInput(inputId = "x_max", value = lfc_max_abs(donnees = res()))
       req(contrast_act())
       updateTextInput(
         inputId = "plot_title",
@@ -196,7 +196,6 @@ VolcanoServer <- function(id,
           -log10(padj) > input$y_max | abs(log2FoldChange) > input$x_max ~ "out",
           TRUE ~ "in"
         ))
-      
     })
     
     cur_plot <- eventReactive(input$draw, {

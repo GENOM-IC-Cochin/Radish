@@ -71,10 +71,10 @@ my_volcanoplot <- function(plot_data,
                               hjust = 0.5),
     aspect.ratio = ratio
   )
-  if (axis_max[2] != y_max(plot_data)) {
+  if (axis_max[2] != log_padj_max(plot_data)) {
     tmp <- tmp + geom_hline(yintercept = axis_max[2], linetype = "dotted")
   }
-  if (axis_max[1] != x_max_abs(plot_data)) {
+  if (axis_max[1] != lfc_max_abs(plot_data)) {
     tmp <- tmp + geom_vline(
       xintercept = c(-axis_max[1], axis_max[1]),
       linetype = "dotted"

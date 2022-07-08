@@ -1,5 +1,5 @@
-y_max <- function(donnees) {
-  # Returns the maximum of the -log10padj (for vp)
+log_padj_max <- function(donnees) {
+  # Returns the maximum of the -log10padj
   donnees %>%
     select(log2FoldChange, padj) %>%
     na.omit() %>%
@@ -9,8 +9,8 @@ y_max <- function(donnees) {
 }
 
 
-x_max_abs <- function(donnees) {
-  # Returns the maximum (absolute) of the ldc (for vp)
+lfc_max_abs <- function(donnees) {
+  # Returns the maximum (absolute) of the lfc
   min_x <- donnees %>%
     select(log2FoldChange, padj) %>%
     na.omit() %>%
