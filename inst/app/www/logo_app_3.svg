@@ -11,7 +11,7 @@
    sodipodi:docname="logo_app_3.svg"
    width="1662.1437"
    height="368.38199"
-   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@
    inkscape:pagecheckerboard="0"
    showgrid="false"
    inkscape:zoom="0.54447523"
-   inkscape:cx="873.31797"
+   inkscape:cx="876.99123"
    inkscape:cy="251.61843"
    inkscape:window-width="1920"
    inkscape:window-height="1011"
@@ -43,7 +43,9 @@
    inkscape:window-y="0"
    inkscape:window-maximized="1"
    inkscape:current-layer="logo_paul_5_xA0_Image_00000024003944768920300260000014176394035079969450_"
-   inkscape:snap-page="false" />
+   inkscape:snap-page="false"
+   inkscape:showpageshadow="2"
+   inkscape:deskcolor="#d1d1d1" />
 <style
    type="text/css"
    id="style2">
@@ -471,13 +473,19 @@
    id="path150"
    style="fill-opacity:1;fill-rule:nonzero" />
 	</g>
-</g><text
-   xml:space="preserve"
-   style="font-style:normal;font-variant:normal;font-weight:200;font-stretch:normal;font-size:200px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Ultra-Light';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ffffff;fill-opacity:1;stroke:none"
-   x="163.14934"
-   y="252.491"
-   id="text4011"><tspan
-     sodipodi:role="line"
-     id="tspan4009"
-     x="163.14934"
-     y="252.491">RADISH</tspan></text></svg>
+</g><g
+   aria-label="RADISH"
+   id="text4011"
+   style="font-weight:200;font-size:200px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans, Ultra-Light';fill:#ffffff"><path
+     d="m 262.34934,252.491 h 8.8 l -38,-64.8 c 18.8,-4.4 31,-14.6 31,-35.6 0,-23.2 -14.2,-36 -46.2,-36 h -31 v 136.4 h 7 v -63.6 h 31.6 z m -68.4,-70 v -60.2 h 23.4 c 28.8,0 39.4,10.6 39.4,29.8 0,21 -13.8,30.4 -37.4,30.4 z"
+     id="path499" /><path
+     d="m 378.54905,252.491 h 7.4 l -46.8,-136.4 h -8.6 l -46.8,136.4 h 7 l 13.2,-39.4 h 61.4 z m -72.4,-45.8 28.6,-85 28.4,85 z"
+     id="path501" /><path
+     d="m 440.54867,116.091 h -26 v 136.4 h 26.8 c 27,0 59.4,-12.2 59.4,-69.6 0,-55.8 -30.6,-66.8 -60.2,-66.8 z m -0.4,6.4 c 25.6,0 53.2,7.6 53.2,60.4 0,51.8 -26.6,63.2 -51.8,63.2 h -20 v -123.6 z"
+     id="path503" /><path
+     d="m 546.1485,116.091 h -7 v 136.4 h 7 z"
+     id="path505" /><path
+     d="m 622.94829,113.891 c -23,0 -38,14 -38,32.2 0,18.4 10.2,27.4 37.8,36 25.2,7.8 34.4,15 34.4,34 0,19.6 -14.6,32 -36,32 -16.6,0 -27.2,-6 -37,-15 l -4.6,4.8 c 11.2,10 23.8,16.6 41.8,16.6 25.2,0 42.8,-15.6 42.8,-38.8 0,-22.6 -12.2,-31.6 -38.8,-39.6 -24.4,-7.4 -33.2,-14.2 -33.2,-30 0,-15.2 12,-25.6 31,-25.6 13.4,0 22.4,3.8 32.4,12.8 l 4.4,-4.8 c -10,-9 -20,-14.6 -37,-14.6 z"
+     id="path507" /><path
+     d="m 778.74823,252.491 h 7 v -136.4 h -7 v 61.2 h -71 v -61.2 h -7 v 136.4 h 7 v -68.8 h 71 z"
+     id="path509" /></g></svg>
