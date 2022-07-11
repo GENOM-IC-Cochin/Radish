@@ -64,6 +64,7 @@ radish_ui <- function() {
           tabName = "tabl_gene"
         ),
         bs4Dash::menuItem("Counts plot", tabName = "countsplot"),
+        bs4Dash::menuItem("Upset plot", tabName = "upset"),
         bs4Dash::menuItem("MA-plot", tabName = "maplot"),
         bs4Dash::menuItem("Volcano plot", tabName = "volcano"),
         bs4Dash::menuItem("Heatmap", tabName = "heatmap")
@@ -144,6 +145,10 @@ radish_ui <- function() {
         bs4Dash::tabItem(
           tabName = "countsplot",
           CountsUI("cnts")
+        ),
+        bs4Dash::tabItem(
+           tabName = "upset",
+           UpsetUI("up")
         ),
         bs4Dash::tabItem(
           tabName = "maplot",

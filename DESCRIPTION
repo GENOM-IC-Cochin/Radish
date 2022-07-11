@@ -37,6 +37,7 @@ Imports:
     BiocGenerics,
     SummarizedExperiment,
     pkgload,
-    rprojroot
+    rprojroot,
+    ComplexUpset
 Suggests: 
     shinytest2

@@ -1,0 +1,295 @@
+# Module for drawing upset plot
+
+# UI ---------------------------------------------------------------------------
+UpsetUI <- function(id) {
+  ns <- NS(id)
+  tagList(
+    fluidRow(
+      bs4Dash::box(
+        width = 12,
+        title = "Upset Plot",
+        plotOutput(ns("upset")),
+        bs4Dash::actionButton(
+          ns("draw"),
+          "Draw Upset plot",
+          status = "secondary"
+        )
+      )
+    ),
+    fluidRow(
+      column(
+        width = 4,
+        bs4Dash::box(
+          title = "About",
+          status = "secondary",
+          collapsed = TRUE,
+          width = 12,
+          HTML(paste(
+            "<p> The <strong> upset plot </strong> is a plot displaying information similar as a Venn diagram",
+            "but in a more informative way. It allows representation of the sizes of the different intersections.",
+            "Here, it is used to display the differences and similarities of differentially expressed genes (DEGs) across",
+            "the comparisons.</p>",
+            "<p> <strong> Warning : </strong> By default, this plot shows <em> exclusive intersections </em> :",
+            "intersections displayed show genes belonging to two (or more) comparison, but <strong> not </strong> to the remaining ones.",
+            "For instance, a bar for a single contrast indicates all DEGs in this comparison not found in others.",
+            "The <strong> Intersect type </strong> option also has the option <em> inclusive intersection</em>,",
+            "that shows genes belonging to the selected contrast(s), but that may also be differentially expressed in other contrasts.",
+            "For instance, a bar for a single contrast indicates all DEGs in this comparison. Those DEGs can eventually",
+            "be differentially expressed in other comparisons as well. Detailed and visual explanations can be found",
+            "<a href='https://krassowski.github.io/complex-upset/articles/Examples_R.html#0-2-region-selection-modes',",
+            "target='_blank'>here</a> (the code can be ignored)."
+          ))
+        ),
+        bs4Dash::box(
+          title = "Settings",
+          status = "info",
+          width = 12,
+          selectInput(
+            inputId = ns("int_type"),
+            label = "Intersection type",
+            choices = c("exclusive" = "exclusive_intersection",
+                        "inclusive" = "inclusive_intersection"
+                        )
+          ),
+          FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+          selectizeInput(
+            inputId = ns("contrastes_sel"),
+            label = "Select the contrasts to display",
+            multiple = TRUE,
+            choices = NULL,
+            selected = NULL
+          )
+        )
+      ),
+      column(
+        width = 4,
+        bs4Dash::box(
+          title = "Download sets",
+          status = "info",
+          width = 12,
+          selectizeInput(
+            inputId = ns("sets_1"),
+            label = "First set(s)",
+            multiple = TRUE,
+            choices = NULL,
+            selected = NULL
+          ),
+          selectInput(
+            inputId = ns("operation"),
+            label = "Select the operation",
+            choices = c("union",
+                        "exclusive intersect (plot default)",
+                        "inclusive intersect",
+                        "except")
+          ),
+          selectizeInput(
+            inputId = ns("sets_2"),
+            label = "Second set(s)",
+            multiple = TRUE,
+            choices = NULL,
+            selected = NULL
+          ),
+          selectInput(
+            inputId = ns("format"),
+            label = "Select the download format",
+            choices = c(
+              "IDs" = "1",
+              "Gene Names (IDs where names missing)" = "2",
+              "Gene Names (missing when names missing)" = "3",
+              "IDs + Gene Names + padj" = "4"
+            )
+          ),
+          downloadButton(
+            ns("dl_set"),
+            label = "Download the created set"
+          )
+        )
+      ),
+      column(
+        width = 4,
+        bs4Dash::box(
+          title = "Download",
+          status = "info",
+          width = 12,
+          DownloadUI(ns("dl"))
+        )
+      )
+    )
+  )
+}
+
+
+# Server -----------------------------------------------------------------------
+UpsetServer <- function(id, all_results, all_results_choice, res) {
+  stopifnot(is.reactive(all_results))
+  stopifnot(is.reactive(all_results_choice))
+  stopifnot(is.reactive(res))
+
+  moduleServer(id, function(input, output, session) {
+    observeEvent(all_results_choice(), {
+      updateSelectizeInput(
+        inputId = "contrastes_sel",
+        choices = all_results_choice(),
+        selected = all_results_choice(),
+        options = list(minItems = 2)
+      )
+      updateSelectInput(
+        inputId = "sets_1",
+        choices = names(all_results_choice())
+      )
+      updateSelectizeInput(
+        inputId = "sets_2",
+        choices = names(all_results_choice())
+      )
+    })
+
+    filter_res <- FilterServer(
+      "fil",
+      res,
+      list("pval" = 0.05, "lfc" = 1),
+      reactive(0)
+    )
+
+    contrast_sel_numeric <- eventReactive(
+      input$contrastes_sel,
+      input$contrastes_sel %>% as.numeric()
+    )
+
+    genes_by_contrast <- eventReactive(
+      {
+        all_results()
+        input$contrastes_sel
+        filter_res$lfc()
+        filter_res$pval()
+      },
+      {
+        req(filter_res$lfc())
+        # Create lists of sig genes by contrast
+        genes_by_contrast <- vector(mode = "list", length = length(contrast_sel_numeric()))
+        names(genes_by_contrast) <- names(all_results_choice())[contrast_sel_numeric()]
+        for (i in seq_along(input$contrastes_sel)) {
+          genes_by_contrast[[i]] <- all_results()[[contrast_sel_numeric()[i]]] %>%
+            res_filter(
+              lfc_filter = filter_res$lfc(),
+              pval_filter = filter_res$pval()
+            ) %>%
+            filter(sig_expr != "ns") %>%
+            pull(Row.names)
+        }
+        genes_by_contrast
+      }
+    )
+
+    plot_data <- eventReactive(input$draw, {
+      unique_genes <- genes_by_contrast() %>%
+        unlist() %>%
+        unname() %>%
+        unique()
+      plot_data <- matrix(
+        data = FALSE,
+        ncol = length(contrast_sel_numeric()),
+        nrow = length(unique_genes)
+      )
+      colnames(plot_data) <- names(all_results_choice())[contrast_sel_numeric()]
+      rownames(plot_data) <- unique_genes
+      for (contr in colnames(plot_data)) {
+        for (gene in rownames(plot_data)) {
+          if (gene %in% genes_by_contrast()[[contr]]) {
+            plot_data[gene, contr] <- TRUE
+          }
+        }
+      }
+      plot_data
+    })
+
+
+    cur_plot <- eventReactive(plot_data(), {
+      req(
+        plot_data(),
+        contrast_sel_numeric(),
+        all_results_choice()
+      )
+      ComplexUpset::upset(
+        data = plot_data() %>% as.data.frame(),
+        intersect = names(all_results_choice())[contrast_sel_numeric()],
+        name = "contrast",
+        mode = input$int_type,
+        width_ratio = 0.2,
+        set_sizes = (
+          ComplexUpset::upset_set_size() +
+          geom_text(aes(label = ..count..), hjust = -0.3, stat = 'count', color = "white")
+        )
+        )
+    })
+
+    output$upset <- renderPlot({
+      cur_plot()
+    })
+
+    DownloadServer(
+      id = "dl",
+      cur_plot = cur_plot,
+      plotname = reactive("upset_plot"),
+      ratio = reactive(1)
+    )
+
+    dl_sets <- eventReactive(
+      {
+        genes_by_contrast()
+        input$operation
+        c(input$sets_1, input$sets_2)
+        input$format
+      },
+      {
+        if (input$operation == "union") {
+          res <- Reduce(union, genes_by_contrast()[c(input$sets_1, input$sets_2)])
+        } else if (input$operation == "exclusive intersect (plot default)") {
+          incl_res <- Reduce(intersect, genes_by_contrast()[c(input$sets_1, input$sets_2)])
+          rest_set <- Reduce(union, genes_by_contrast()[setdiff(names(all_results_choice()),
+                                                                c(input$sets_1, input$sets_2))])
+          res <- setdiff(incl_res, rest_set)
+        } else if (input$operation == "inclusive intersect") {
+          res <- Reduce(intersect, genes_by_contrast()[c(input$sets_1, input$sets_2)])
+        } else if (input$operation == "except") {
+          except_set <- Reduce(union, genes_by_contrast()[c(input$sets_2)])
+          res <- setdiff(genes_by_contrast()[c(input$sets_1)] %>% unlist(), except_set)
+        }
+
+        if (input$format == "2") {
+          res <- coalesce(all_results()[[1]][res, "symbol"], res)
+        } else if (input$format == "3") {
+          res <- all_results()[[1]][res, "symbol"]
+        } else if (input$format == "4") {
+          res <- all_results()[[1]][res, c("ensembl_gene_id", "symbol", "padj")]
+        }
+        res
+      }
+    )
+
+
+    output$dl_set <- downloadHandler(
+      filename = function() {
+        paste0(
+          input$sets_1,
+          "_",
+          input$operation,
+          "_",
+          paste0(input$sets_2, collapse = "-"),
+          ".txt"
+        )
+      },
+      content = function(file) {
+        if (is.character(dl_sets())) {
+          write(dl_sets(), file)
+        } else if (is.data.frame(dl_sets())) {
+          write.csv(dl_sets(), file, row.names = FALSE)
+        }
+      }
+    )
+
+    exportTestValues(
+      dl_sets = dl_sets(),
+      genes_by_contrast = genes_by_contrast()
+    )
+  })
+}

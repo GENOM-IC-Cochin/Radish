@@ -35,7 +35,7 @@ GeneTableUI <- function(id) {
                downloadButton(ns("down_fil"), "Download the filtered genes")
            ),
     ),
-           
+
     bs4Dash::column(9,
            bs4Dash::tabBox(title = "Genes Tables",
                   width = 12,
@@ -73,28 +73,28 @@ GeneTableServer <- function(id,
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(contrast_act))
   moduleServer(id, function(input, output, session){
-    
+
     my_values <- reactiveValues(
       given_genes_rows = NULL,
       items_length = 0 # Number of read IDs/names
     )
-    
-    
+
+
     # Genes Information --------------------------------------------------------
     output$outlier <- renderUI({
       req(res())
-      nb_na <- res() %>% 
+      nb_na <- res() %>%
         filter(if_any(padj, ~ is.na(.x))) %>%
         nrow()
-      HTML(paste("<p> <b>", 
+      HTML(paste("<p> <b>",
                  nb_na,
                  "</b>",
                  "genes have their <i> p-values </i> set to NA, as one sample has an extreme count outlier, or the gene has not passed independent filtering.",
                  "</p>"))
     })
-    
+
     # Row Selection ------------------------------------------------------------
-    
+
     output$given_genes <- renderUI({
       req(input$input_type)
       if(input$input_type == "IDs") {
@@ -103,8 +103,8 @@ GeneTableServer <- function(id,
         fileInput(session$ns("identifiers"), "Gene names for selection", accept = "text/plain")
       }
     })
-    
-    
+
+
     # Matches the genes given and the rows in the table
     observeEvent({
       input$identifiers
@@ -116,30 +116,30 @@ GeneTableServer <- function(id,
       if(input$input_type == "IDs") {
         extension <- tools::file_ext(input$identifiers$name)
         validate(need(extension == "txt", "Please upload a plain text (txt) file"))
-        
+
         gene_ids <- scan(file = input$identifiers$datapath,
                          what = character())
         my_values$given_genes_rows <- which(genes_table()$Row.names %in% gene_ids)
-        
+
       } else {
         extension <- tools::file_ext(input$identifiers$name)
         validate(need(extension == "txt", "Please upload a plain text (txt) file"))
-        
+
         gene_names <- scan(file = input$identifiers$datapath,
                            what = character())
         gg_reg <- paste(gene_names, collapse = "|")
-        my_values$given_genes_rows <- grep(gg_reg, 
+        my_values$given_genes_rows <- grep(gg_reg,
                                            genes_table()$symbol,
                                            ignore.case = TRUE)
       }
-    }) 
-    
-    
+    })
+
+
     observeEvent(input$clear_input,{
       my_values$given_genes_rows <- NULL
     })
-    
-    
+
+
     # Set length of read_items
     observeEvent({
       input$identifiers
@@ -147,7 +147,7 @@ GeneTableServer <- function(id,
       my_values$items_length <-scan(input$identifiers$datapath,
            what = character()) %>% length
     })
-    
+
     # Reset length of read_items
     observeEvent({
       input$clear_input
@@ -155,7 +155,7 @@ GeneTableServer <- function(id,
     },{
       my_values$items_length <- 0
     })
-    
+
     output$read_items <- renderUI({
       HTML("<p> <b>",
            my_values$items_length,
@@ -163,16 +163,16 @@ GeneTableServer <- function(id,
            "items were read.",
            "</p>")
     })
-    
-    
+
+
     # Selective Download -------------------------------------------------------
-    
+
     filter_res <- FilterServer("fil",
                                res,
                                list("pval" = 0.05, "lfc" = 1),
                                reactive(0))# no reset button here
-    
-    
+
+
     output$sig_genes <- renderUI({
       req(res(),
           filter_res$pval(),
@@ -187,7 +187,7 @@ GeneTableServer <- function(id,
                  filter_res$lfc(),
                  "</p>"))
     })
-    
+
     output$down_fil <- downloadHandler(
       filename = function() {
         paste0(contrast_act(),
@@ -204,11 +204,11 @@ GeneTableServer <- function(id,
           select(-sig_expr) %>%
           write.csv(., file)
       }
-    ) 
-    
-    
+    )
+
+
     # Tables -------------------------------------------------------------------
-    
+
     genes_table <- eventReactive({
       res()
     },{
@@ -216,8 +216,8 @@ GeneTableServer <- function(id,
         # Significant digits (DT function somewhere?)
         mutate(dplyr::across(where(is.numeric), signif, 3))
     })
-    
-    
+
+
     sel_genes_table <- eventReactive({
       genes_table()
       # Fourni par DT
@@ -232,34 +232,34 @@ GeneTableServer <- function(id,
     ignoreNULL = FALSE, # in order not to prevent sel_genes_table to return to NULL if the contrast changes
     label = "SEL_GENES"
     )
-    
-    
+
+
     cols_to_hide <- eventReactive(res(),{
       # - 1 because JS indices start at 0
       which(!(colnames(res()) %in% base_table_columns)) - 1
     })
-    
-    
+
+
     # Row selection in the DT table
     proxy <- DT::dataTableProxy("genes")
-    
-    
+
+
     observeEvent(input$select_genes, {
       proxy %>% DT::selectRows(my_values$given_genes_rows)
     })
-    
-    
+
+
     observeEvent(input$clear, {
       proxy %>% DT::selectRows(NULL)
     })
-    
-    
+
+
     # To reset selection if contrast_act() changes
     observeEvent(contrast_act(), {
       proxy %>% DT::selectRows(NULL)
     })
-    
-    
+
+
     output$genes <- DT::renderDT(
       expr = {
         genes_table()
@@ -285,14 +285,14 @@ GeneTableServer <- function(id,
                      )),
       selection = list(target = "row")
     )
-    
-    
+
+
     output$n_selected <- renderUI({
       HTML(paste("<p> <b>", length(input$genes_rows_selected), "</b>",
                  "rows are currently selected. </p>"))
     })
-    
-    
+
+
     output$genes_selected <- DT::renderDT(
       expr = {
         req(sel_genes_table())
@@ -319,8 +319,8 @@ GeneTableServer <- function(id,
                      )),
       selection = "none"
     )
-    
-    
+
+
     output$download_sel_genes <- downloadHandler(
       filename = function() {
         paste("selected_genes", ".csv", sep = "")
@@ -329,8 +329,8 @@ GeneTableServer <- function(id,
         write.csv(sel_genes_table(), file)
       }
     )
-    
-    
+
+
     output$download_sel_ids <- downloadHandler(
       filename = function() {
         paste("selected_genes_ids", ".txt", sep = "")
@@ -339,14 +339,14 @@ GeneTableServer <- function(id,
         write(sel_genes_table() %>% pull(Row.names), file)
       }
     )
-    
+
     shiny::exportTestValues(
       sel_genes_table = sel_genes_table()
     )
-    
+
     # Module output
     sel_genes_table
-    
+
   })
 }
 
@@ -359,7 +359,7 @@ GeneTableApp <- function() {
                 tabPanel("Table", GeneTableUI("tab"))
     )
   )
-  
+
   server <- function(input, output, session) {
     list_loaded <- InputServer("inp", reactive("1"))
     GeneTableServer(

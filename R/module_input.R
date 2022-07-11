@@ -196,6 +196,7 @@ InputServer <- function(id, contrast_act) {
     })
     
     list(
+      all_results = all_results,
       res = res,
       contrastes = contrastes_df,
       counts = counts,
