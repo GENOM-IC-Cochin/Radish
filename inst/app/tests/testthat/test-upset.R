@@ -17,5 +17,6 @@ test_that("upset plot", {
                  `up-operation` = "exclusive intersect (plot default)")
   app$wait_for_idle()
   app$expect_download("up-dl_set")
+  app$expect_values(export = "up-plot_data")
   app$stop()
 })

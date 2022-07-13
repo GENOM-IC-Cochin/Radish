@@ -364,8 +364,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
     )
 
     exportTestValues(
-      dl_sets = dl_sets(),
-      genes_by_contrast = genes_by_contrast()
+      plot_data = plot_data()
     )
   })
 }

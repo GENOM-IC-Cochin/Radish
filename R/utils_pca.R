@@ -46,7 +46,7 @@ rld_pca <- function(rld, config, txi.rsem, excl_samp_names, ntop) {
     rld_tr <- rld
   }
 
-  rv <- genefilter::rowVars(assay(rld_tr))
+  rv <- matrixStats::rowVars(assay(rld_tr))
   selected_genes <- order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
   mat <- t(assay(rld_tr)[selected_genes, ])
   pc <- prcomp(mat)
