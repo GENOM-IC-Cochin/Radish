@@ -246,11 +246,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       colnames(plot_data) <- names(all_results_choice())[contrast_sel_numeric()]
       rownames(plot_data) <- unique_genes
       for (contr in colnames(plot_data)) {
-        for (gene in rownames(plot_data)) {
-          if (gene %in% genes_by_contrast()[[contr]]) {
-            plot_data[gene, contr] <- TRUE
-          }
-        }
+        plot_data[, contr] <- rownames(plot_data) %in% genes_by_contrast()[[contr]]
       }
       plot_data %<>% tibble::as_tibble(rownames = NA)
       plot_data <- plot_data %>%
