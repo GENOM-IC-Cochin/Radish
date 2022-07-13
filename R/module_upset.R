@@ -238,19 +238,10 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         unlist() %>%
         unname() %>%
         unique()
-      plot_data <- matrix(
-        data = FALSE,
-        ncol = length(contrast_sel_numeric()),
-        nrow = length(unique_genes)
-      )
-      colnames(plot_data) <- names(all_results_choice())[contrast_sel_numeric()]
-      rownames(plot_data) <- unique_genes
-      for (contr in colnames(plot_data)) {
-        plot_data[, contr] <- rownames(plot_data) %in% genes_by_contrast()[[contr]]
-      }
-      plot_data %<>% tibble::as_tibble(rownames = NA)
+      contr_names <- all_results_choice()[contrast_sel_numeric()]
+      plot_data <- purrr::map_dfc(genes_by_contrast()[contr_names], ~ unique_genes %in% .x) %>%
+        mutate("Row.names" = unique_genes)
       plot_data <- plot_data %>%
-        tibble::rownames_to_column(var = "Row.names") %>%
         inner_join(res() %>% select(Row.names, baseMean), by = "Row.names") %>%
         tibble::column_to_rownames(var = "Row.names") %>%
         as.data.frame()
