@@ -47,9 +47,26 @@ UpsetUI <- function(id) {
           selectInput(
             inputId = ns("int_type"),
             label = "Intersection type",
-            choices = c("exclusive" = "exclusive_intersection",
-                        "inclusive" = "inclusive_intersection"
-                        )
+            choices = c(
+              "exclusive" = "exclusive_intersection",
+              "inclusive" = "inclusive_intersection"
+            )
+          ),
+          sliderInput(
+            inputId = ns("int_size"),
+            label = "Minimum intersection size",
+            min = 0,
+            max = 100,
+            value = 0,
+            step = 1
+          ),
+          sliderInput(
+            inputId = ns("min_degree"),
+            label = "Minimum degree of the intersections",
+            min = 1,
+            max = 1,
+            value = 1,
+            step = 1
           ),
           FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
           selectizeInput(
@@ -58,6 +75,11 @@ UpsetUI <- function(id) {
             multiple = TRUE,
             choices = NULL,
             selected = NULL
+          ),
+          checkboxInput(
+            inputId = ns("boxplot"),
+            label = "Add boxplot of counts means",
+            value = TRUE
           )
         )
       ),
@@ -77,10 +99,12 @@ UpsetUI <- function(id) {
           selectInput(
             inputId = ns("operation"),
             label = "Select the operation",
-            choices = c("union",
-                        "exclusive intersect (plot default)",
-                        "inclusive intersect",
-                        "except")
+            choices = c(
+              "union",
+              "exclusive intersect (plot default)",
+              "inclusive intersect",
+              "except"
+            )
           ),
           selectizeInput(
             inputId = ns("sets_2"),
@@ -111,6 +135,13 @@ UpsetUI <- function(id) {
           title = "Download",
           status = "info",
           width = 12,
+          sliderInput(
+                inputId = ns("ratio"),
+                label = "Choose the (downloaded) plot aspect ratio",
+                value = 1,
+                min = 0.5,
+                max = 2
+          ),
           DownloadUI(ns("dl"))
         )
       )
@@ -140,6 +171,28 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       updateSelectizeInput(
         inputId = "sets_2",
         choices = names(all_results_choice())
+      )
+    })
+
+    observeEvent(plot_data(), {
+      if (input$int_type == "inclusive_intersection") {
+        max_int_size <- purrr::map_dbl(plot_data() %>%
+                                       select(all_of(names(all_results_choice())[contrast_sel_numeric()])) %>%
+                                       as.data.frame(), sum) %>%
+          max()
+      } else {
+        max_int_size <- max_exclusive_intersection_size(plot_data())
+      }
+      updateSliderInput(
+        inputId = "int_size",
+        max = max_int_size
+      )
+    })
+
+    observeEvent(input$contrastes_sel, {
+      updateSliderInput(
+        inputId = "min_degree",
+        max = length(input$contrastes_sel)
       )
     })
 
@@ -199,6 +252,12 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
           }
         }
       }
+      plot_data %<>% tibble::as_tibble(rownames = NA)
+      plot_data <- plot_data %>%
+        tibble::rownames_to_column(var = "Row.names") %>%
+        inner_join(res() %>% select(Row.names, baseMean), by = "Row.names") %>%
+        tibble::column_to_rownames(var = "Row.names") %>%
+        as.data.frame()
       plot_data
     })
 
@@ -209,17 +268,32 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         contrast_sel_numeric(),
         all_results_choice()
       )
+      if(input$boxplot) {
+        list_annotation <- list(
+          "log10(baseMean)" = (
+            # note that aes(x=intersection) is supplied by default and can be skipped
+            ggplot(mapping = aes(y = baseMean))
+            # checkout ggbeeswarm::geom_quasirandom for better results!
+            ## + geom_jitter(aes(color = log10(votes)), na.rm = TRUE)
+            + geom_boxplot(na.rm = TRUE)
+            + scale_y_log10()
+         )
+        )
+      } else {
+        list_annotation <- list()
+      }
       ComplexUpset::upset(
-        data = plot_data() %>% as.data.frame(),
+        data = plot_data(),
         intersect = names(all_results_choice())[contrast_sel_numeric()],
         name = "contrast",
         mode = input$int_type,
         width_ratio = 0.2,
-        set_sizes = (
-          ComplexUpset::upset_set_size() +
-          geom_text(aes(label = ..count..), hjust = -0.3, stat = 'count', color = "white")
-        )
-        )
+        min_size = input$int_size,
+        min_degree = input$min_degree,
+        annotations = list_annotation,
+        set_size = ComplexUpset::upset_set_size() +
+          geom_text(aes(label = ..count..), hjust = -0.3, stat = "count", color = "white")
+      )
     })
 
     output$upset <- renderPlot({
@@ -230,7 +304,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       id = "dl",
       cur_plot = cur_plot,
       plotname = reactive("upset_plot"),
-      ratio = reactive(1)
+      ratio = reactive(input$ratio)
     )
 
     dl_sets <- eventReactive(
@@ -245,8 +319,10 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
           res <- Reduce(union, genes_by_contrast()[c(input$sets_1, input$sets_2)])
         } else if (input$operation == "exclusive intersect (plot default)") {
           incl_res <- Reduce(intersect, genes_by_contrast()[c(input$sets_1, input$sets_2)])
-          rest_set <- Reduce(union, genes_by_contrast()[setdiff(names(all_results_choice()),
-                                                                c(input$sets_1, input$sets_2))])
+          rest_set <- Reduce(union, genes_by_contrast()[setdiff(
+            names(all_results_choice()),
+            c(input$sets_1, input$sets_2)
+          )])
           res <- setdiff(incl_res, rest_set)
         } else if (input$operation == "inclusive intersect") {
           res <- Reduce(intersect, genes_by_contrast()[c(input$sets_1, input$sets_2)])
