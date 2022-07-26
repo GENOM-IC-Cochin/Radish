@@ -1,0 +1,35 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Radish
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Paul
+    family-names: Etheimer
+    email: paul.etheimer@inserm.fr
+    affiliation: >-
+      GENOM'IC, Institut Cochin, CNRS, Université
+      Paris Cité
+  - given-names: Benjamin
+    family-names: Saintpierre
+    email: benjamin.saintpierre@inserm.fr
+    affiliation: >-
+      GENOM'IC, Institut Cochin, Université Paris
+      Cité
+  - given-names: Juliette
+    family-names: Hamroune
+    email: juliette.hamroune@inserm.fr
+    affiliation: 'GENOM''IC, Institut Cochin, CNRS'
+repository-code: 'https://github.com/GENOM-IC-Cochin/Radish'
+repository-artifact: 'https://hub.docker.com/r/paulimer/radish'
+abstract: >-
+  Radish is a shiny application for the visualisation
+  and analysis of pre-processed RNA-seq data,
+  specifically differential expression analysis.
+license: MIT
+version: v0.1.0
+date-released: '2022-07-13'
