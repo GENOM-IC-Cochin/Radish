@@ -187,7 +187,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
                                        as.data.frame(), sum) %>%
           max()
       } else {
-        max_int_size <- max_exclusive_intersection_size(plot_data())
+        max_int_size <- max_exclusive_int_size(plot_data())
       }
       updateSliderInput(
         inputId = "int_size",

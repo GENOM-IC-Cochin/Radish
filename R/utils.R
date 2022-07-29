@@ -69,18 +69,28 @@ recalc_pca <- tagList(
 # Defaults for NULL values
 `%||%` <- function(a, b) if (is.null(a)) b else a
 
-max_exclusive_intersection_size <- function(upset_data) {
+max_exclusive_int_size <- function(upset_data) {
 # Gets the max exclusive intersection size in the data
 # For the uppper limit of the sliderInput
   upset_data %<>% select(where(is.logical))
   coln_data <- colnames(upset_data)
+  # possible columns combinations (2 by 2)
   col_comb_list <- combn(coln_data, 2, simplify = FALSE)
+  # Add also the columns on their own
+  col_comb_list <- c(col_comb_list, coln_data %>% as.list)
+  # The rest of columns
   anti_comb_list <- purrr::map(col_comb_list, ~ setdiff(coln_data, .))
   res <- rep(NA, length.out = length(col_comb_list))
+
   for (i in seq_along(col_comb_list)) {
-    except_set <- upset_data[apply(upset_data[, anti_comb_list[[i]]] %>% as.data.frame, 1, all), ] %>%
-      rownames()
-    incl_intersect <- upset_data[apply(upset_data[, col_comb_list[[i]]] %>% as.data.frame, 1, all), ] %>%
+    if (identical(anti_comb_list[[i]], character(0))) {
+      except_set <- character(0)
+    } else {
+      # apply(data, 1, any) -> select rows where any cell is TRUE
+      except_set <- upset_data[apply(upset_data %>% select(all_of(anti_comb_list[[i]])), 1, any), ] %>%
+        rownames()
+    }
+    incl_intersect <- upset_data[apply(upset_data %>% select(all_of(col_comb_list[[i]])), 1, all), ] %>%
       rownames()
     res[i] <- setdiff(incl_intersect, except_set) %>% length
   }
