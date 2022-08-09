@@ -218,6 +218,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       {
         req(filter_res$lfc())
         # Create lists of sig genes by contrast
+        validate(need(length(contrast_sel_numeric()) > 1, "The upset plot needs at least two contrasts"))
         genes_by_contrast <- vector(mode = "list", length = length(contrast_sel_numeric()))
         names(genes_by_contrast) <- names(all_results_choice())[contrast_sel_numeric()]
         for (i in seq_along(input$contrastes_sel)) {
@@ -239,8 +240,10 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         unname() %>%
         unique()
       contr_names <- all_results_choice()[contrast_sel_numeric()]
+
       plot_data <- purrr::map_dfc(genes_by_contrast()[contr_names], ~ unique_genes %in% .x) %>%
         mutate("Row.names" = unique_genes)
+
       plot_data <- plot_data %>%
         inner_join(res() %>% select(Row.names, baseMean), by = "Row.names") %>%
         tibble::column_to_rownames(var = "Row.names") %>%
