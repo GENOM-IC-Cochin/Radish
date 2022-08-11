@@ -79,7 +79,7 @@ UpsetUI <- function(id) {
           checkboxInput(
             inputId = ns("boxplot"),
             label = "Add boxplot of counts means",
-            value = TRUE
+            value = FALSE
           )
         )
       ),
