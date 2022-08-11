@@ -68,7 +68,7 @@ UpsetUI <- function(id) {
             value = 1,
             step = 1
           ),
-          FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+          FilterUI(ns("fil")),
           selectizeInput(
             inputId = ns("contrastes_sel"),
             label = "Select the contrasts to display",

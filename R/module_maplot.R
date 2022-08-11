@@ -26,7 +26,7 @@ MAplotUI <- function(id) {
           bs4Dash::box(title = "Appearance",
               status = "info",
               width = 4,
-              FilterUI(ns("fil"), list("pval" = 0.05)),
+              FilterUI(ns("fil")),
               colourpicker::colourInput(
                 inputId = ns("up_col"),
                 label = "Choose the color of the upregulated genes",

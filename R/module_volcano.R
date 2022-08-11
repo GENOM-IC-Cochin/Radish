@@ -42,7 +42,7 @@ VolcanoUI <- function(id) {
                      max = 100,
                      value = 10
                    ),
-                   FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+                   FilterUI(ns("fil")),
                    colourpicker::colourInput(
                                    inputId = ns("up_col"),
                                    label = "Choose the color of the upregulated genes",

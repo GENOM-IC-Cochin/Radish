@@ -1,7 +1,7 @@
 # Module for filtering on padj and/or lfc
 
 #UI ----------------------------------------------------------------------------
-FilterUI <- function(id, default) {
+FilterUI <- function(id) {
   ns <- NS(id)
   uiOutput(ns("filters"))
 }
@@ -13,7 +13,7 @@ FilterServer <- function(id, res, default, reset) {
   stopifnot(!is.reactive(default))
   stopifnot(is.reactive(reset))
   moduleServer(id, function(input, output, session) {
-    
+
     observeEvent(reset(), {
       if(!is.null(default$pval)) {
         shinyWidgets::updateSliderTextInput(session = session,
@@ -26,7 +26,7 @@ FilterServer <- function(id, res, default, reset) {
                      value = default$lfc)
       }
     })
-    
+
     res_filtered <- reactive({
       req(res())
       if(!is.null(input$lfc_filter) & !is.null(input$pval_filter)) {
@@ -41,7 +41,7 @@ FilterServer <- function(id, res, default, reset) {
                    pval_filter = input$pval_filter)
       }
     })
-    
+
     output$filters <- renderUI({
       # If there is no default pval or lfc specified, don't show the input for it
       # For instance maplot does not need a lfc cut.
@@ -61,7 +61,7 @@ FilterServer <- function(id, res, default, reset) {
         }
       )
     })
-    
+
     list(
       res_filtered = res_filtered,
       pval = reactive(input$pval_filter),
@@ -78,7 +78,7 @@ FilterApp <- function() {
       tabPanel("Input",
                InputUI("inp")),
       tabPanel("Filter",
-               FilterUI("fil", list("pval" = 0.05)),
+               FilterUI("fil"),
                bs4Dash::actionButton("reset", "Reset"),
                htmlOutput("nb")
       )

@@ -30,7 +30,7 @@ GeneTableUI <- function(id) {
            bs4Dash::box(title = "Filtered Download",
                status = "info",
                width = 12,
-               FilterUI(ns("fil"), list("pval" = 0.05, "lfc" = 1)),
+               FilterUI(ns("fil")),
                htmlOutput(ns("sig_genes")),
                downloadButton(ns("down_fil"), "Download the filtered genes")
            ),
