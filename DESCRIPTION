@@ -6,7 +6,7 @@ Description: This application is a natural follow up of the GENOM\'IC RNA-seq pi
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.1
 Imports:
     shiny,
     bs4Dash,

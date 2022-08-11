@@ -9,7 +9,7 @@
 #' @importFrom BiocGenerics rowSums
 #' @importFrom SummarizedExperiment assay
 #' @importFrom stats na.omit prcomp relevel setNames
-#' @importFrom utils head write.csv
+#' @importFrom utils head write.csv combn
 #' @importFrom grDevices colorRampPalette dev.off pdf
 #' @export
 run_radish_app <- function(...) {
