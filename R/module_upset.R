@@ -45,6 +45,12 @@ UpsetUI <- function(id) {
           status = "info",
           width = 12,
           selectInput(
+          inputId = ns("direction"),
+          label = "Direction of differentially expressed genes",
+          choices = c("upregulated genes" = "up",
+                      "downregulated genes" = "down")
+          ),
+          selectInput(
             inputId = ns("int_type"),
             label = "Intersection type",
             choices = c(
@@ -214,6 +220,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         input$contrastes_sel
         filter_res$lfc()
         filter_res$pval()
+        input$direction
       },
       {
         req(filter_res$lfc())
@@ -227,7 +234,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
               lfc_filter = filter_res$lfc(),
               pval_filter = filter_res$pval()
             ) %>%
-            filter(sig_expr != "ns") %>%
+            filter(sig_expr == input$direction) %>%
             pull(Row.names)
         }
         genes_by_contrast
