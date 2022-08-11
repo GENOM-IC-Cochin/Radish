@@ -199,7 +199,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
     filter_res <- FilterServer(
       "fil",
       res,
-      list("pval" = 0.05, "lfc" = 1),
+      list("pval" = 0.05, "lfc" = 0),
       reactive(0)
     )
 
