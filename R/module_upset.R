@@ -5,26 +5,20 @@ UpsetUI <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      bs4Dash::box(
+      bs4Dash::tabBox(
         width = 12,
-        title = "Upset Plot",
+        tabPanel(
+          title = "Upset Plot",
         plotOutput(ns("upset")),
         bs4Dash::actionButton(
           ns("draw"),
           "Draw Upset plot",
           status = "secondary"
         )
-      )
-    ),
-    fluidRow(
-      column(
-        width = 4,
-        bs4Dash::box(
-          title = "About",
-          status = "secondary",
-          collapsed = TRUE,
-          width = 12,
-          HTML(paste(
+      ),
+      tabPanel(
+        title = "About",
+        HTML(paste(
             "<p> The <strong> upset plot </strong> is a plot displaying information similar as a Venn diagram",
             "but in a more informative way. It allows representation of the sizes of the different intersections.",
             "Here, it is used to display the differences and similarities of differentially expressed genes (DEGs) across",
@@ -36,20 +30,53 @@ UpsetUI <- function(id) {
             "that shows genes belonging to the selected contrast(s), but that may also be differentially expressed in other contrasts.",
             "For instance, a bar for a single contrast indicates all DEGs in this comparison. Those DEGs can eventually",
             "be differentially expressed in other comparisons as well. Detailed and visual explanations can be found",
-            "<a href='https://krassowski.github.io/complex-upset/articles/Examples_R.html#0-2-region-selection-modes',",
-            "target='_blank'>here</a> (the code can be ignored)."
+            "<a href='https://upset.app/',",
+            "target='_blank'>here</a>."
           ))
-        ),
+      )
+      )
+    ),
+    fluidRow(
+      bs4Dash::column(
+        width = 6,
         bs4Dash::box(
-          title = "Settings",
+          title = "Differentially expressed genes",
+          status = "danger",
+          width = 12,
+          HTML(paste0(
+            "<p> <strong> <ul> <li>This setting is heavily influenced by comparison order ",
+            " (Treatment vs Control or Control vs Treatment).</li> <li> Moreover, the same gene,",
+            " overexpressed in one contrast, under-expressed in another, will be included",
+            " in the 'All DEGs' option.</li> </ul></strong> </p>"
+          )),
+          selectInput(
+            inputId = ns("deg_type"),
+            label = "Type of differentially expressed genes",
+            choices = c(
+              "Overexpressed only" = "up",
+              "Underexpressed only" = "down",
+              "All DEGs" = "all"
+            )
+          )
+        )
+        ),
+        bs4Dash::column(
+          width = 6,
+          bs4Dash::box(
+            title = "Filter differentially expressed genes",
+            status = "secondary",
+            width = 12,
+            FilterUI(ns("fil"))
+          )
+        )
+      ),
+    fluidRow(
+      bs4Dash::column(
+        width = 4,
+        bs4Dash::box(
+          title = "Plot settings",
           status = "info",
           width = 12,
-          selectInput(
-          inputId = ns("direction"),
-          label = "Direction of differentially expressed genes",
-          choices = c("upregulated genes" = "up",
-                      "downregulated genes" = "down")
-          ),
           selectInput(
             inputId = ns("int_type"),
             label = "Intersection type",
@@ -74,7 +101,6 @@ UpsetUI <- function(id) {
             value = 1,
             step = 1
           ),
-          FilterUI(ns("fil")),
           selectizeInput(
             inputId = ns("contrastes_sel"),
             label = "Select the contrasts to display",
@@ -82,10 +108,10 @@ UpsetUI <- function(id) {
             choices = NULL,
             selected = NULL
           ),
-          checkboxInput(
-            inputId = ns("boxplot"),
-            label = "Add boxplot of counts means",
-            value = FALSE
+          selectInput(
+            inputId = ns("ann_plot"),
+            label = "Add a plot of counts by set",
+            choices = c("no", "boxplot", "violin plot")
           )
         )
       ),
@@ -142,11 +168,11 @@ UpsetUI <- function(id) {
           status = "info",
           width = 12,
           sliderInput(
-                inputId = ns("ratio"),
-                label = "Choose the (downloaded) plot aspect ratio",
-                value = 1,
-                min = 0.5,
-                max = 2
+            inputId = ns("ratio"),
+            label = "Choose the (downloaded) plot aspect ratio",
+            value = 1,
+            min = 0.5,
+            max = 2
           ),
           DownloadUI(ns("dl"))
         )
@@ -183,8 +209,8 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
     observeEvent(plot_data(), {
       if (input$int_type == "inclusive_intersection") {
         max_int_size <- purrr::map_dbl(plot_data() %>%
-                                       select(all_of(names(all_results_choice())[contrast_sel_numeric()])) %>%
-                                       as.data.frame(), sum) %>%
+          select(all_of(names(all_results_choice())[contrast_sel_numeric()])) %>%
+          as.data.frame(), sum) %>%
           max()
       } else {
         max_int_size <- max_exclusive_int_size(plot_data())
@@ -220,10 +246,15 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         input$contrastes_sel
         filter_res$lfc()
         filter_res$pval()
-        input$direction
+        input$deg_type
       },
       {
         req(filter_res$lfc())
+        excl_deg <- switch(input$deg_type,
+          "up" = c("ns", "down"),
+          "down" = c("ns", "up"),
+          "all" = c("ns")
+        )
         # Create lists of sig genes by contrast
         validate(need(length(contrast_sel_numeric()) > 1, "The upset plot needs at least two contrasts"))
         genes_by_contrast <- vector(mode = "list", length = length(contrast_sel_numeric()))
@@ -234,7 +265,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
               lfc_filter = filter_res$lfc(),
               pval_filter = filter_res$pval()
             ) %>%
-            filter(sig_expr == input$direction) %>%
+            filter(!(sig_expr %in% excl_deg)) %>%
             pull(Row.names)
         }
         genes_by_contrast
@@ -265,16 +296,31 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         contrast_sel_numeric(),
         all_results_choice()
       )
-      if(input$boxplot) {
+      if (input$ann_plot == "boxplot") {
         list_annotation <- list(
-          "log10(baseMean)" = (
+          "baseMean" = (
             # note that aes(x=intersection) is supplied by default and can be skipped
             ggplot(mapping = aes(y = baseMean))
             # checkout ggbeeswarm::geom_quasirandom for better results!
             ## + geom_jitter(aes(color = log10(votes)), na.rm = TRUE)
-            + geom_boxplot(na.rm = TRUE)
-            + scale_y_log10()
-         )
+            +
+              geom_boxplot(na.rm = TRUE)
+              +
+              scale_y_log10()
+          )
+        )
+      } else if (input$ann_plot == "violin plot") {
+        list_annotation <- list(
+          "baseMean" = (
+            # note that aes(x=intersection) is supplied by default and can be skipped
+            ggplot(mapping = aes(y = baseMean))
+            # checkout ggbeeswarm::geom_quasirandom for better results!
+            ## + geom_jitter(aes(color = log10(votes)), na.rm = TRUE)
+            +
+              geom_violin(na.rm = TRUE)
+              +
+              scale_y_log10()
+          )
         )
       } else {
         list_annotation <- list()
@@ -342,14 +388,15 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
 
     output$dl_set <- downloadHandler(
       filename = function() {
-        paste0(
-          input$sets_1,
+        tmp_name <- paste0(
+          gsub(" ", "", paste0(input$sets_1, collapse = "-")),
           "_",
           input$operation,
           "_",
-          paste0(input$sets_2, collapse = "-"),
+          gsub(" ", "", paste0(input$sets_2, collapse = "-")),
           ".txt"
         )
+        gsub(" ", "-", tmp_name)
       },
       content = function(file) {
         if (is.character(dl_sets())) {

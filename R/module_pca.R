@@ -23,7 +23,7 @@ PcaUI <- function(id) {
       )
     ),
     fluidRow(
-      column(
+      bs4Dash::column(
         width = 4,
         bs4Dash::box(
           title = "Settings",

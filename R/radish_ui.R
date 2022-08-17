@@ -117,6 +117,14 @@ radish_ui <- function() {
               includeHTML("www/tutorials/table.html")
             ),
             tabPanel(
+              "Counts plot",
+              includeHTML("www/tutorials/counts.html")
+            ),
+            tabPanel(
+              "Upset plot",
+              includeHTML("www/tutorials/upset.html")
+            ),
+            tabPanel(
               "MA-plot",
               withMathJax(includeHTML("www/tutorials/maplot.html"))
             ),
