@@ -23,8 +23,8 @@ HeatmapUI <- function(id) {
             inputId = ns("top_gene"),
             label = "Choose the Heatmap",
             choices = c(
-              "Top genes from current contrast" = "diff",
-              "Selected genes" = "sel"
+              "Selected genes" = "sel",
+              "Top genes from current contrast" = "diff"
             )
           ),
           uiOutput(ns("samp_choice")),
@@ -362,12 +362,12 @@ HeatmapServer <- function(id,
           samples_selected(),
           config(),
           counts(),
-          res_filtered(),
           input$top_gene
         )
 
         if (input$top_gene == "diff") {
-          req(input$nb_top_gene)
+          req(input$nb_top_gene,
+              res_filtered())
           # Si l'on veut que les plus différentiellement exprimés
           res_filtered() %>%
             filter(sig_expr != "ns") %>%
