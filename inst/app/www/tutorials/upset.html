@@ -1,0 +1,20 @@
+<p> The <strong> upset plot </strong> is a plot displaying information similar as a Venn diagram
+  but in a more informative way. It allows representation of the sizes of the different sets intersections.
+  Here, it is used to display the differences and similarities of differentially expressed genes (DEGs) across
+  the comparisons.</p>
+<h5>Settings</h5>
+<p> One of the most important setting is the type of differentially expressed genes you want to include. The default is only upregulated genes, but one can choose downregulated genes and all differentially expressed genes. Why not make the latter default? If we select all differentially expressed genes, it causes genes that are differentially expressed in different direction across contrasts to be included. For instance, if gene A is upregulated in cond1 versus control, and downregulated in cond2 versus control, it would be included as an intersection of the sets. Even though it might not make biological sense. Two contrasts going in biological opposite directions might show up as having a lot in common. If you understand this limitation, you can use it, but this is why it is not the default. </p>
+<p> <strong> Warning : </strong> By default, this plot shows <em> exclusive intersections </em> :
+  intersections displayed show genes belonging to two (or more) comparison, but <strong> not </strong> to the remaining ones.
+  For instance, a bar for a single contrast indicates all (up, down or DEG) genes in this comparison not found in others.
+  The <strong> Intersect type </strong> option also has the option <em> inclusive intersection</em>
+  that shows genes belonging to the selected contrast(s), but that may also be up, down or DE in other contrasts.
+  For instance, a bar for a single contrast indicates all up, down or DE genes in this comparison. Those genes can eventually
+  be differentially expressed in other comparisons as well. Detailed and visual explanations can be found
+  <a href='https://upset.app' target='_blank'>here</a>.</p>
+<p> There are a number of useful settings : There can be a lower limit on the size of the intersection, if you end up with a lot of very small intersections; you can also put a lower limit on the degree (number of sets of DEGs involved). You can choose only some sets, as well as put limits on the way DEGs are selected (<em>p-values</em> and LogFoldChange). Finally, you can choose to add a boxplot, or a violin plot of the involved genes' counts to the upset plot.</p>
+<h5>Download sets</h5>
+<p> In the event you are interested in the names (or Gene IDs, or names + IDs + adjusted <em> p-value </em>) of some combination of two or more sets, you can download them. You can combine sets in multiple ways (including some redundancy, for instance if First set(s) is set to a value, and nothing in the Second set(s) field, with the exclusive intersect operation, it is the same as this set expect all the others). You can then plug those lists into you favorite GSEA (Gene Set Enrichment Analysis) or ORA (OverRepresentation Analysis) tool (Radish does not and will not add such features, you can contact PROTEOM'IC's Morgane Le Gall <a href="https://3p5.recherche.parisdescartes.fr/prestations/analyses-fonctionnelles/" target="_blank">on this page</a> or use tools such as <a href='https://biit.cs.ut.ee/gprofiler/gost' target='_blank'>gprofiler</a>, or the more complex and powerful <a href="https://bioconductor.org/packages/release/bioc/vignettes/GeneTonic/inst/doc/GeneTonic_manual.html" target="_blank">GeneTonic</a> application for your plots)!</p>
+<p> If you are interested in downloading all the data about some genes, download the genes' IDs on the upset plot page, use the resulting file to select genes in the Table page, and download the selected genes table!</p>
+<h5>Download plot</h5>
+<p> Unfortunately, you cannot preview the aspect ratio of the upset plots before downloading (the plots always fills the available space). You can however set the downloaded plot's ratio.</p>
