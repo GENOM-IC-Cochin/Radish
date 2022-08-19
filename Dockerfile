@@ -29,7 +29,7 @@ RUN dnf -y upgrade && dnf install -y \
     && dnf clean all
 
 # Install renv
-ENV RENV_VERSION 0.15.4
+ENV RENV_VERSION 0.15.5
 RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
 RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
 RUN groupadd --system app \
