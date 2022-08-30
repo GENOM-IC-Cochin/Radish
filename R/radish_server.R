@@ -39,12 +39,6 @@ radish_server <- function(input, output, session) {
     contrastes = list_loaded$contrastes,
     sel_genes_table = sel_table
   )
-  UpsetServer(
-    id = "up",
-    all_results = list_loaded$all_results,
-    all_results_choice = list_loaded$all_results_choice,
-    res = list_loaded$res
-  )
   MAplotServer(
     id = "ma",
     res = list_loaded$res,
@@ -69,5 +63,11 @@ radish_server <- function(input, output, session) {
     contrast_act = reactive(input$contrast_act),
     contrastes = list_loaded$contrastes,
     sel_genes_table = sel_table
+  )
+  UpsetServer(
+    id = "up",
+    all_results = list_loaded$all_results,
+    all_results_choice = list_loaded$all_results_choice,
+    res = list_loaded$res
   )
 }

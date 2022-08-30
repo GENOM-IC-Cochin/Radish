@@ -64,10 +64,10 @@ radish_ui <- function() {
           tabName = "tabl_gene"
         ),
         bs4Dash::menuItem("Counts plot", tabName = "countsplot"),
-        bs4Dash::menuItem("Upset plot", tabName = "upset"),
         bs4Dash::menuItem("MA-plot", tabName = "maplot"),
         bs4Dash::menuItem("Volcano plot", tabName = "volcano"),
-        bs4Dash::menuItem("Heatmap", tabName = "heatmap")
+        bs4Dash::menuItem("Heatmap", tabName = "heatmap"),
+        bs4Dash::menuItem("Upset plot", tabName = "upset")
       ),
       selectInput(
         inputId = "contrast_act",
@@ -121,10 +121,6 @@ radish_ui <- function() {
               includeHTML("www/tutorials/counts.html")
             ),
             tabPanel(
-              "Upset plot",
-              includeHTML("www/tutorials/upset.html")
-            ),
-            tabPanel(
               "MA-plot",
               withMathJax(includeHTML("www/tutorials/maplot.html"))
             ),
@@ -135,6 +131,10 @@ radish_ui <- function() {
             tabPanel(
               "Heatmap",
               includeHTML("www/tutorials/heatmap.html")
+            ),
+            tabPanel(
+              "Upset plot",
+              includeHTML("www/tutorials/upset.html")
             )
           )
         ),
@@ -155,10 +155,6 @@ radish_ui <- function() {
           CountsUI("cnts")
         ),
         bs4Dash::tabItem(
-           tabName = "upset",
-           UpsetUI("up")
-        ),
-        bs4Dash::tabItem(
           tabName = "maplot",
           MAplotUI("ma")
         ),
@@ -169,6 +165,10 @@ radish_ui <- function() {
         bs4Dash::tabItem(
           tabName = "heatmap",
           HeatmapUI("hm")
+        ),
+        bs4Dash::tabItem(
+           tabName = "upset",
+           UpsetUI("up")
         )
       )
     )
