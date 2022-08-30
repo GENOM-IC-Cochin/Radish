@@ -13,12 +13,11 @@ HeatmapUI <- function(id) {
   ns <- NS(id)
   tagList(
     fluidRow(
-      bs4Dash::column(
-        width = 3,
-        bs4Dash::box(
-          title = "Settings",
-          status = "info",
-          width = 12,
+      bs4Dash::tabBox(
+        width = 12,
+        sidebar = bs4Dash::boxSidebar(
+          id = ns("sidebar"),
+          width = 25,
           selectInput(
             inputId = ns("top_gene"),
             label = "Choose the Heatmap",
@@ -26,29 +25,12 @@ HeatmapUI <- function(id) {
               "Selected genes" = "sel",
               "Top genes from current contrast" = "diff"
             )
-          ),
-          uiOutput(ns("samp_choice")),
-          checkboxGroupInput(ns("variables"),
-            "Choose the variables to display on the heatmap",
-            choices = NULL,
-            selected = NULL
-          ),
-          conditionalPanel(
-            condition = "input.top_gene == 'diff'",
-            FilterUI(ns("fil")),
-            numericInput(
-              ns("nb_top_gene"),
-              "Select the number of top differentially expressed genes (max 2000)",
-              value = 100,
-              min = 0,
-              max = 2000
-            ),
-            ns = ns,
-          ),
-          conditionalPanel(
-            condition = "input.top_gene == 'sel'",
-            GeneSelectUI(ns("gnsel")),
-            ns = ns
+          )
+        ),
+        tabPanel(
+          title = "Heatmap",
+          plotOutput(ns("heatmap"),
+            height = "600px"
           ),
           htmlOutput(ns("gene_number")),
           bs4Dash::actionButton(ns("draw"),
@@ -60,10 +42,8 @@ HeatmapUI <- function(id) {
             status = "secondary"
           )
         ),
-        bs4Dash::box(
+        tabPanel(
           title = "Information",
-          status = "info",
-          width = 12,
           HTML(paste(
             "<p> <strong> Why only 2000 rows maximum? </strong> </p>",
             "<p> If one goes over 1080, (or 2160 in the case of a 4k screen)",
@@ -73,81 +53,101 @@ HeatmapUI <- function(id) {
             "If you are still willing to obtain such a matrix, please contact the developpers </p>"
           ))
         )
-      ),
-      bs4Dash::column(
-        width = 9,
-        fluidRow(
-          bs4Dash::box(
-            title = "Heatmap",
-            status = "primary",
-            width = 12,
-            plotOutput(ns("heatmap"),
-              height = "600px"
-            ),
-            selectInput(
-              inputId = ns("format"),
-              label = "Format of the downloaded plot",
-              choices = c("png", "pdf", "svg"),
-              selected = "pdf"
-            ),
-            downloadButton(
-              outputId = ns("down"),
-              label = "Download plot"
-            )
-          )
+      )
+    ),
+    fluidRow(
+      bs4Dash::box(
+        title = "Settings",
+        status = "info",
+        width = 3,
+        uiOutput(ns("samp_choice")),
+        checkboxGroupInput(ns("variables"),
+          "Choose the variables to display on the heatmap",
+          choices = NULL,
+          selected = NULL
         ),
-        fluidRow(
-          bs4Dash::box(
-            title = "Appearance",
-            status = "info",
-            width = 6,
-            selectInput(
-              inputId = ns("palette"),
-              label = "Choose the color palette of the heatmap",
-              choices = c(brew_vec),
-              selected = "RdYlBu"
-            ),
-            checkboxInput(
-              ns("show_names"),
-              "Show gene names",
-              value = FALSE
-            ),
-            sliderInput(
-              ns("fontsize"),
-              "Choose the row names fontsize",
-              min = 3,
-              max = 12,
-              value = 10,
-              step = .5
-            ),
-            sliderInput(
-              inputId = ns("ratio"),
-              label = "Choose the plot aspect ratio",
-              value = 1,
-              min = 0.5,
-              max = 2
-            )
+        conditionalPanel(
+          condition = "input.top_gene == 'diff'",
+          FilterUI(ns("fil")),
+          numericInput(
+            ns("nb_top_gene"),
+            "Select the number of top differentially expressed genes (max 2000)",
+            value = 100,
+            min = 0,
+            max = 2000
           ),
-          bs4Dash::box(
-            title = "Advanced Settings",
-            status = "info",
-            width = 6,
-            selectInput(ns("cluster_control"),
-              "Cluster by columns",
-              choices = c("yes", "no"),
-              selected = "yes"
-            ),
-            conditionalPanel(
-              condition = "input.cluster_control == 'no'",
-              selectizeInput(
-                inputId = ns("col_order"),
-                label = "Choose the columns and their order",
-                choices = NULL,
-                multiple = TRUE
-              ),
-              ns = ns
-            )
-          )
+          ns = ns,
+        ),
+        conditionalPanel(
+          condition = "input.top_gene == 'sel'",
+          GeneSelectUI(ns("gnsel")),
+          ns = ns
+        )
+      ),
+      bs4Dash::box(
+        title = "Appearance",
+        status = "info",
+        width = 3,
+        selectInput(
+          inputId = ns("palette"),
+          label = "Choose the color palette of the heatmap",
+          choices = c(brew_vec),
+          selected = "RdYlBu"
+        ),
+        checkboxInput(
+          ns("show_names"),
+          "Show gene names",
+          value = FALSE
+        ),
+        sliderInput(
+          ns("fontsize"),
+          "Choose the row names fontsize",
+          min = 3,
+          max = 12,
+          value = 10,
+          step = .5
+        ),
+        sliderInput(
+          inputId = ns("ratio"),
+          label = "Choose the plot aspect ratio",
+          value = 1,
+          min = 0.5,
+          max = 2
+        )
+      ),
+      bs4Dash::box(
+        title = "Advanced Settings",
+        status = "info",
+        width = 3,
+        selectInput(ns("cluster_control"),
+          "Cluster by columns",
+          choices = c("yes", "no"),
+          selected = "yes"
+        ),
+        conditionalPanel(
+          condition = "input.cluster_control == 'no'",
+          selectizeInput(
+            inputId = ns("col_order"),
+            label = "Choose the columns and their order",
+            choices = NULL,
+            multiple = TRUE
+          ),
+          ns = ns
+        )
+      ),
+      bs4Dash::box(
+        title = "Download",
+        status = "info",
+        width = 3,
+        selectInput(
+          inputId = ns("format"),
+          label = "Format of the downloaded plot",
+          choices = c("png", "pdf", "svg"),
+          selected = "pdf"
+        ),
+        downloadButton(
+          outputId = ns("down"),
+          label = "Download plot"
         )
       )
     )
@@ -233,24 +233,29 @@ HeatmapServer <- function(id,
       )
     })
 
-    observeEvent({
-      input$top_gene
-      config()
-    }, {
-      if(input$top_gene == "sel")
-        freezeReactiveValue(input, "samples")
-      output$samp_choice <- renderUI({
+    observeEvent(
+      {
+        input$top_gene
+        config()
+      },
+      {
         if (input$top_gene == "sel") {
-          tagList(
-            selectizeInput(
-              session$ns("samples"),
-            "Select the samples to display",
-            choices = config() %>% pull(Name),
-            multiple = TRUE
-          ))
+          freezeReactiveValue(input, "samples")
         }
-      })
-    })
+        output$samp_choice <- renderUI({
+          if (input$top_gene == "sel") {
+            tagList(
+              selectizeInput(
+                session$ns("samples"),
+                "Select the samples to display",
+                choices = config() %>% pull(Name),
+                multiple = TRUE
+              )
+            )
+          }
+        })
+      }
+    )
 
     samples_selected <- reactive({
       if (!is.null(input$samples) & input$top_gene == "sel") {
@@ -262,8 +267,10 @@ HeatmapServer <- function(id,
           contrast_act()
         )
         concerned_variable <- contrastes()[strtoi(contrast_act()), 1]
-        concerned_levels <- c(contrastes()[strtoi(contrast_act()), 2],
-                              contrastes()[strtoi(contrast_act()), 3])
+        concerned_levels <- c(
+          contrastes()[strtoi(contrast_act()), 2],
+          contrastes()[strtoi(contrast_act()), 3]
+        )
         config() %>%
           select(all_of(c("Name", concerned_variable))) %>%
           filter(.data[[concerned_variable]] %in% concerned_levels) %>%
@@ -296,8 +303,10 @@ HeatmapServer <- function(id,
 
     output$gene_number <- renderUI({
       req(data())
-      HTML(paste("<p>", nrow(data()),
-                 "genes are to be displayed on the heatmap </p>"))
+      HTML(paste(
+        "<p>", nrow(data()),
+        "genes are to be displayed on the heatmap </p>"
+      ))
     })
 
 
@@ -366,8 +375,10 @@ HeatmapServer <- function(id,
         )
 
         if (input$top_gene == "diff") {
-          req(input$nb_top_gene,
-              res_filtered())
+          req(
+            input$nb_top_gene,
+            res_filtered()
+          )
           # Si l'on veut que les plus différentiellement exprimés
           res_filtered() %>%
             filter(sig_expr != "ns") %>%
@@ -395,12 +406,14 @@ HeatmapServer <- function(id,
     # Met en correspondance les conditions choisies et les échantillons
     # (Pour les couleurs de la heatmap)
     # retour : un df avec la correspondance désirée
-    annotation_col <- eventReactive({
+    annotation_col <- eventReactive(
+      {
         config()
         data()
         samples_selected()
         input$variables
-      }, {
+      },
+      {
         ## if(!is.null(input$variables) & input$top_gene == "sel") {
         if (!is.null(input$variables)) {
           data.frame("Name" = samples_selected()) %>%
@@ -418,10 +431,12 @@ HeatmapServer <- function(id,
     # A partir des annotations, leur affecte une couleur
     # retour : une liste avec la correspondance selon le format de pheatmap
     # pour le paramètre annotation_colors
-    annotation_colors <- eventReactive({
+    annotation_colors <- eventReactive(
+      {
         config()
         annotation_col()
-      }, {
+      },
+      {
         if (is.null(annotation_col())) {
           return(NULL)
         }
@@ -526,7 +541,6 @@ HeatmapServer <- function(id,
     exportTestValues(
       hmdata = head(data(), n = 50)
     )
-
   })
 }
 
