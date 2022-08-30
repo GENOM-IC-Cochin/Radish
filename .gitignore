@@ -21,3 +21,5 @@
 /modules_diagram.drawio
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
 *_.new.png
+# temporary ignoring non functioning GHA
+/.github
