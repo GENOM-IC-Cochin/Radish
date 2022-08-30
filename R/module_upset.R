@@ -37,19 +37,14 @@ UpsetUI <- function(id) {
       )
     ),
     fluidRow(
-      bs4Dash::column(
-        width = 6,
         bs4Dash::box(
           title = "Differentially expressed genes",
           status = "danger",
           width = 12,
-          HTML(paste0(
-            "<p> <strong> <ul> <li>This setting is heavily influenced by comparison order ",
-            " (Treatment vs Control or Control vs Treatment).</li> <li> Moreover, the same gene,",
-            " overexpressed in one contrast, under-expressed in another, will be included",
-            " in the 'All DEGs' option.</li> </ul></strong> </p>"
-          )),
-          selectInput(
+          fluidRow(
+            column(
+              width = 6,
+              selectInput(
             inputId = ns("deg_type"),
             label = "Type of differentially expressed genes",
             choices = c(
@@ -57,19 +52,21 @@ UpsetUI <- function(id) {
               "Underexpressed only" = "down",
               "All DEGs" = "all"
             )
-          )
-        )
+          ),
+          HTML(paste0(
+            "<p> <strong>The above setting is heavily influenced by comparison order ",
+            " (Treatment vs Control or Control vs Treatment).</p> <p> Moreover, the same gene,",
+            " overexpressed in one contrast, under-expressed in another, will be included",
+            " in the 'All DEGs' option.</strong> </p>"
+          ))
         ),
-        bs4Dash::column(
+        column(
           width = 6,
-          bs4Dash::box(
-            title = "Filter differentially expressed genes",
-            status = "secondary",
-            width = 12,
             FilterUI(ns("fil"))
           )
         )
-      ),
+      )
+     ),
     fluidRow(
       bs4Dash::column(
         width = 4,
