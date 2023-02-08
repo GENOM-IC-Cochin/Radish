@@ -39,6 +39,7 @@ Installation is only available through docker for now.
 -   Access the app through your usual web navigator (Chromium-based, there is an issue with Firefox and the tutorial videos), at the adress <http://localhost/>.
 -   Load your `result.rds` file in the **Data** tab
 -   Explore!
+-   Don't forget to stop the container image afterwards!
 
 
 <a id="orga7464b0"></a>
