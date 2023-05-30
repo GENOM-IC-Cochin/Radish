@@ -3,6 +3,14 @@
   Here, it is used to display the differences and similarities of differentially expressed genes (DEGs) across
   the comparisons.</p>
 <h5>Settings</h5>
+<p> Intersecting and subsetting False Discovery Rate (FDR) corrected DEGs lists is not trivial : indeed,
+  the FDR correction (Benjamini-Hochberg (BH) method) guarantees a maximum number of false positive in the list.
+  However, this guarantee does not hold if we intersect lists : by sheer luck, the intersection of those two lists
+  might consist of 50% false positives, or none at all. Thus it is usally recommended that such lists operations are
+  performed using stricter, Bonferroni-corrected DEGs lists. This comes at the cost of smaller lists of DEGs, that also
+  might be inconsistent with the other figures produced with the app. Thus we included the possibility to draw upset plots
+  with the BH-corrected lists. We advise to use them in an exploratory fashion only, even though probably many papers have been published
+  including Venn diagrams using FDR-corrected lists. </p>
 <p> One of the most important setting is the type of differentially expressed genes you want to include. The default is only upregulated genes, but one can choose downregulated genes and all differentially expressed genes. Why not make the latter default? If we select all differentially expressed genes, it causes genes that are differentially expressed in different direction across contrasts to be included. For instance, if gene A is upregulated in cond1 versus control, and downregulated in cond2 versus control, it would be included as an intersection of the sets. Even though it might not make biological sense. Two contrasts going in biological opposite directions might show up as having a lot in common. If you understand this limitation, you can use it, but this is why it is not the default. </p>
 <p> <strong> Warning : </strong> By default, this plot shows <em> exclusive intersections </em> :
   intersections displayed show genes belonging to two (or more) comparison, but <strong> not </strong> to the remaining ones.

@@ -23,6 +23,14 @@ UpsetUI <- function(id) {
             "but in a more informative way. It allows representation of the sizes of the different intersections.",
             "Here, it is used to display the differences and similarities of differentially expressed genes (DEGs) across",
             "the comparisons.</p>",
+            "<p> Intersecting and subsetting False Discovery Rate (FDR) corrected DEGs lists is not trivial : indeed,",
+            "the FDR correction (Benjamini-Hochberg (BH) method) guarantees a maximum number of false positive in the list.",
+            "However, this guarantee does not hold if we intersect lists : by sheer luck, the intersection of those two lists",
+            "might consist of 50% false positives, or none at all. Thus it is usally recommended that such lists operations are",
+            "performed using stricter, Bonferroni-corrected DEGs lists. This comes at the cost of smaller lists of DEGs, that also",
+            "might be inconsistent with the other figures produced with the app. Thus we included the possibility to draw upset plots",
+            "with the BH-corrected lists. We advise to use them in an exploratory fashion only, even though papers have been published",
+            "including Venn diagrams using FDR-corrected lists. </p>",
             "<p> <strong> Warning : </strong> By default, this plot shows <em> exclusive intersections </em> :",
             "intersections displayed show genes belonging to two (or more) comparison, but <strong> not </strong> to the remaining ones.",
             "For instance, a bar for a single contrast indicates all DEGs in this comparison not found in others.",
@@ -58,7 +66,13 @@ UpsetUI <- function(id) {
             " (Treatment vs Control or Control vs Treatment).</p> <p> Moreover, the same gene,",
             " overexpressed in one contrast, under-expressed in another, will be included",
             " in the 'All DEGs' option.</strong> </p>"
-          ))
+          )),
+          selectInput(
+            ns("adj"),
+            "Multiple tests correction :",
+            choices = c("Bonferroni" = "padj_bonf",
+                        "Benjamini-Hochberg" = "padj")
+          )
         ),
         column(
           width = 6,
@@ -225,6 +239,19 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       )
     })
 
+    observeEvent(input$draw, {
+      showModal(modalDialog(
+        title = "Multiple tests correction",
+        paste("The DEGs lists presented in this application use a FDR-corrected pvalue.",
+              "However, when intersecting or joining lists, the False Discovery Rate (FDR) is no longer guaranteed.",
+              "The most correct pvalue correction to use in the case of crossing lists is the Bonferroni correction.",
+              "This correction is stricter than the Benjamini-Hochberg method,",
+              "so selecting it below will lead to less genes differentially expressed.",
+              "Here, we leave you the choice, but the default is the most statistically correct one."),
+        size = "l",
+        easyClose = FALSE
+    ))})
+
     filter_res <- FilterServer(
       "fil",
       res,
@@ -244,6 +271,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         filter_res$lfc()
         filter_res$pval()
         input$deg_type
+        input$adj
       },
       {
         req(filter_res$lfc())
@@ -260,7 +288,8 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
           genes_by_contrast[[i]] <- all_results()[[contrast_sel_numeric()[i]]] %>%
             res_filter(
               lfc_filter = filter_res$lfc(),
-              pval_filter = filter_res$pval()
+              pval_filter = filter_res$pval(),
+              pval_column = input$adj
             ) %>%
             filter(!(sig_expr %in% excl_deg)) %>%
             pull(Row.names)
@@ -268,6 +297,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         genes_by_contrast
       }
     )
+
 
     plot_data <- eventReactive(input$draw, {
       unique_genes <- genes_by_contrast() %>%

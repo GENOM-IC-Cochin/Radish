@@ -103,6 +103,7 @@ InputServer <- function(id, contrast_act) {
           dplyr::rename("symbol" = dplyr::contains("symbol"))
         tmp[[contraste]]$symbol %<>%
           tidy_symbols()
+        tmp[[contraste]] <- add_bonferroni(tmp[[contraste]])
       }
       tmp
     })

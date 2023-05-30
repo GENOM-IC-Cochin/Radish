@@ -36,14 +36,22 @@ tidy_symbols <- function(symbols) {
 }
 
 
+add_bonferroni <- function(donnees) {
+  # Ajoute une colonne bonferroni dans les données
+  donnees$padj_bonf <- p.adjust(donnees$pvalue, method = "bonferroni")
+  donnees
+}
+
+
 res_filter <- function(deseq_results,
                        lfc_filter = 0,
-                       pval_filter = 1) {
+                       pval_filter = 1,
+                       pval_column = "padj") {
   # Ajoute la colonne sur l'expression significative
   res <- deseq_results %>%
     mutate(sig_expr = factor(case_when(
-      log2FoldChange >= lfc_filter & padj <= pval_filter ~ "up",
-      log2FoldChange <= -lfc_filter & padj <= pval_filter ~ "down",
+      log2FoldChange >= lfc_filter & .data[[pval_column]] <= pval_filter ~ "up",
+      log2FoldChange <= -lfc_filter & .data[[pval_column]] <= pval_filter ~ "down",
       TRUE ~ "ns"
     )))
   if ("up" %in% res$sig_expr) {
