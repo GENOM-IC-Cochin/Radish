@@ -1,4 +1,4 @@
-bioconductor.version: 3.14
+bioconductor.version: 3.16
 external.libraries:
 ignored.packages: languageserver, lintr, collections, rex, cyclocomp,
     xmlparsedata, R.methodsS3, R.oo, R.utils, R.cache, styler

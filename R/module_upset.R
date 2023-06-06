@@ -250,7 +250,9 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
               "Here, we leave you the choice, but the default is the most statistically correct one."),
         size = "l",
         easyClose = FALSE
-    ))})
+      ))},
+    once = TRUE
+    )
 
     filter_res <- FilterServer(
       "fil",
