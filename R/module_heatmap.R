@@ -68,7 +68,6 @@ HeatmapUI <- function(id) {
         ),
         conditionalPanel(
           condition = "input.top_gene == 'diff'",
-          FilterUI(ns("fil")),
           numericInput(
             ns("nb_top_gene"),
             "Select the number of top differentially expressed genes (max 2000)",
