@@ -66,18 +66,17 @@ UpsetUI <- function(id) {
             " (Treatment vs Control or Control vs Treatment).</p> <p> Moreover, the same gene,",
             " overexpressed in one contrast, under-expressed in another, will be included",
             " in the 'All DEGs' option.</strong> </p>"
-          )),
+          ))
+          ),
+          column(
+          width = 6,
           selectInput(
             ns("adj"),
             "Multiple tests correction :",
             choices = c("Bonferroni" = "padj_bonf",
                         "Benjamini-Hochberg" = "padj")
           )
-        ),
-        column(
-          width = 6,
-            FilterUI(ns("fil"))
-          )
+        )
         )
       )
      ),
@@ -254,13 +253,6 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
     once = TRUE
     )
 
-    filter_res <- FilterServer(
-      "fil",
-      res,
-      list("pval" = 0.05, "lfc" = 0),
-      reactive(0)
-    )
-
     contrast_sel_numeric <- eventReactive(
       input$contrastes_sel,
       input$contrastes_sel %>% as.numeric()
@@ -270,13 +262,10 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
       {
         all_results()
         input$contrastes_sel
-        filter_res$lfc()
-        filter_res$pval()
         input$deg_type
         input$adj
       },
       {
-        req(filter_res$lfc())
         excl_deg <- switch(input$deg_type,
           "up" = c("ns", "down"),
           "down" = c("ns", "up"),
@@ -289,8 +278,8 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         for (i in seq_along(input$contrastes_sel)) {
           genes_by_contrast[[i]] <- all_results()[[contrast_sel_numeric()[i]]] %>%
             res_filter(
-              lfc_filter = filter_res$lfc(),
-              pval_filter = filter_res$pval(),
+              lfc_filter = 0,
+              pval_filter = 0.05,
               pval_column = input$adj
             ) %>%
             filter(!(sig_expr %in% excl_deg)) %>%

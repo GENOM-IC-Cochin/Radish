@@ -316,13 +316,6 @@ HeatmapServer <- function(id,
       sel_genes_table = sel_genes_table
     )
 
-    res_filtered <- FilterServer(
-      "fil",
-      res,
-      list("pval" = 0.05, "lfc" = 1),
-      reactive(input$reset)
-    )$res_filtered
-
 
     observeEvent(
       {
@@ -358,7 +351,7 @@ HeatmapServer <- function(id,
 
     base_data <- eventReactive(
       {
-        res_filtered()
+        res()
         counts()
         samples_selected()
         genes_selected$sel_genes_ids() # sometimes NULL
@@ -377,10 +370,11 @@ HeatmapServer <- function(id,
         if (input$top_gene == "diff") {
           req(
             input$nb_top_gene,
-            res_filtered()
+            res()
           )
           # Si l'on veut que les plus différentiellement exprimés
-          res_filtered() %>%
+          res() %>%
+            res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
             filter(sig_expr != "ns") %>%
             slice_min(order_by = padj, n = input$nb_top_gene) %>%
             mutate(name = coalesce(symbol, Row.names)) %>%
