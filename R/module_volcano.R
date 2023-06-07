@@ -42,7 +42,6 @@ VolcanoUI <- function(id) {
                      max = 100,
                      value = 10
                    ),
-                   FilterUI(ns("fil")),
                    colourpicker::colourInput(
                                    inputId = ns("up_col"),
                                    label = "Choose the color of the upregulated genes",
@@ -181,17 +180,14 @@ VolcanoServer <- function(id,
       )
     })
     
-    filter_res <- FilterServer("fil",
-                               res,
-                               list("pval" = 0.05, "lfc" = 1),
-                               reactive(input$reset))
-    
+
     plot_data <- eventReactive({
-      filter_res$res_filtered()
+      res()
       input$x_max
       input$y_max
     }, {
-      filter_res$res_filtered() %>%
+      res() %>%
+        res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
         mutate(outside = case_when(
           -log10(padj) > input$y_max | abs(log2FoldChange) > input$x_max ~ "out",
           TRUE ~ "in"
@@ -199,7 +195,12 @@ VolcanoServer <- function(id,
     })
     
     cur_plot <- eventReactive(input$draw, {
-      req(filter_res)
+      req(res())
+
+    })
+    
+    output$volcano_plot <- renderPlot({
+      req(plot_data())
       my_volcanoplot(
         plot_data = plot_data(),
         titre = input$plot_title,
@@ -209,27 +210,19 @@ VolcanoServer <- function(id,
         ratio = input$ratio,
         theme = input$theme,
         selected_genes = c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids()),
-        label_size = input$lab_size,
-        lfc_cutoff = filter_res$lfc(),
-        pval_cutoff = filter_res$pval()
+        label_size = input$lab_size
       )
     })
     
-    output$volcano_plot <- renderPlot({
-      cur_plot()
-    })
-    
     output$plotly_vp <- plotly::renderPlotly({
-      req(filter_res)
+      req(res())
       gg_vp <- my_volcanoplot(
         plot_data = plot_data(),
         colors = c("up" = input$up_col, "down" = input$down_col),
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
         axis_max = c(input$x_max, input$y_max),
         ratio = input$ratio,
-        theme = input$theme,
-        lfc_cutoff = filter_res$lfc(),
-        pval_cutoff = filter_res$pval()
+        theme = input$theme
       )
       
       gply <- plotly::ggplotly(p = gg_vp,
