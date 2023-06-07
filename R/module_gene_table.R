@@ -8,7 +8,8 @@ GeneTableUI <- function(id) {
            bs4Dash::box(title = "Genes Information",
                status = "info",
                width = 12,
-               htmlOutput(ns("outlier"))
+               htmlOutput(ns("outlier")),
+               htmlOutput(ns("sig_genes"))
                ),
            bs4Dash::box(title = "Row selection",
                status = "info",
@@ -26,14 +27,7 @@ GeneTableUI <- function(id) {
                br(),
                bs4Dash::actionButton(ns("clear_input"),
                             "Clear Input")
-           ),
-           bs4Dash::box(title = "Filtered Download",
-               status = "info",
-               width = 12,
-               FilterUI(ns("fil")),
-               htmlOutput(ns("sig_genes")),
-               downloadButton(ns("down_fil"), "Download the filtered genes")
-           ),
+           )
     ),
 
     bs4Dash::column(9,
@@ -165,47 +159,17 @@ GeneTableServer <- function(id,
     })
 
 
-    # Selective Download -------------------------------------------------------
-
-    filter_res <- FilterServer("fil",
-                               res,
-                               list("pval" = 0.05, "lfc" = 1),
-                               reactive(0))# no reset button here
-
 
     output$sig_genes <- renderUI({
-      req(res(),
-          filter_res$pval(),
-          filter_res$lfc())
+      req(res())
       n_sig <- res() %>%
-        dplyr::filter(padj < filter_res$pval(), abs(log2FoldChange) > filter_res$lfc()) %>%
+        dplyr::filter(padj < 0.05) %>%
         nrow()
       HTML(paste("<p> <b>", n_sig, "</b>",
                  "genes are significantly differentially expressed",
-                 "at an adjusted <i> pvalue </i> of",
-                 filter_res$pval(), "and a minimum log2(Foldchange) of",
-                 filter_res$lfc(),
+                 "at an adjusted <i> pvalue </i> of 0.05",
                  "</p>"))
     })
-
-    output$down_fil <- downloadHandler(
-      filename = function() {
-        paste0(contrast_act(),
-               "_",
-               filter_res$pval(),
-               "_",
-               filter_res$lfc(),
-               ".csv"
-               )
-      },
-      content = function(file) {
-        filter_res$res_filtered() %>%
-          filter(sig_expr != "ns") %>%
-          select(-sig_expr) %>%
-          write.csv(., file)
-      }
-    )
-
 
     # Tables -------------------------------------------------------------------
 
