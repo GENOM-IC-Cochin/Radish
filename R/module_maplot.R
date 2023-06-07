@@ -26,7 +26,6 @@ MAplotUI <- function(id) {
           bs4Dash::box(title = "Appearance",
               status = "info",
               width = 4,
-              FilterUI(ns("fil")),
               colourpicker::colourInput(
                 inputId = ns("up_col"),
                 label = "Choose the color of the upregulated genes",
@@ -158,14 +157,14 @@ MAplotServer <- function(id,
       )
     })
     
-    filter_res <- FilterServer("fil", res, list("pval" = 0.05), reactive(input$reset))
 
 
     plot_data <- eventReactive({
-      filter_res$res_filtered()
+      res()
       input$y_max
     }, {
-      filter_res$res_filtered() %>%
+      res() %>%
+        res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
         mutate(outside = case_when(
           abs(log2FoldChange) > input$y_max ~ "out",
           TRUE ~ "in"
@@ -174,7 +173,7 @@ MAplotServer <- function(id,
 
 
     cur_plot <- eventReactive(input$draw, {
-      req(filter_res$res_filtered())
+      req(res())
       my_maplot(
         plot_data = plot_data(),
         title = input$plot_title,
@@ -194,7 +193,7 @@ MAplotServer <- function(id,
     })
 
     output$plotly <- plotly::renderPlotly({
-      req(filter_res$res_filtered())
+      req(res())
       ggpl <- my_maplot(
         plot_data = plot_data(),
         colors = c("up" = input$up_col, "down" = input$down_col),
