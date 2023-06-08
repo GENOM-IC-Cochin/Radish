@@ -43,13 +43,11 @@ add_bonferroni <- function(donnees) {
 }
 
 
-res_filter <- function(deseq_results,
+add_sig_expr <- function(deseq_results,
                        lfc_filter = 0,
                        pval_filter = 1,
                        pval_column = "padj") {
   # Ajoute la colonne sur l'expression significative
-  # héritage des possibilités de filtrer sur padj et pvalue
-  # normalement devrait dégager
   res <- deseq_results %>%
     mutate(sig_expr = factor(case_when(
       log2FoldChange >= lfc_filter & .data[[pval_column]] <= pval_filter ~ "up",

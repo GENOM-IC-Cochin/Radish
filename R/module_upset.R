@@ -277,7 +277,7 @@ UpsetServer <- function(id, all_results, all_results_choice, res) {
         names(genes_by_contrast) <- names(all_results_choice())[contrast_sel_numeric()]
         for (i in seq_along(input$contrastes_sel)) {
           genes_by_contrast[[i]] <- all_results()[[contrast_sel_numeric()[i]]] %>%
-            res_filter(
+            add_sig_expr(
               lfc_filter = 0,
               pval_filter = 0.05,
               pval_column = input$adj

@@ -373,7 +373,6 @@ HeatmapServer <- function(id,
           )
           # Si l'on veut que les plus différentiellement exprimés
           res() %>%
-            res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
             filter(sig_expr != "ns") %>%
             slice_min(order_by = padj, n = input$nb_top_gene) %>%
             mutate(name = coalesce(symbol, Row.names)) %>%

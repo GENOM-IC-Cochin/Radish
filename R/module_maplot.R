@@ -164,7 +164,6 @@ MAplotServer <- function(id,
       input$y_max
     }, {
       res() %>%
-        res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
         mutate(outside = case_when(
           abs(log2FoldChange) > input$y_max ~ "out",
           TRUE ~ "in"

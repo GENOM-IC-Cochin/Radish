@@ -187,7 +187,6 @@ VolcanoServer <- function(id,
       input$y_max
     }, {
       res() %>%
-        res_filter(lfc_filter = 0, pval_filter = 0.05) %>%
         mutate(outside = case_when(
           -log10(padj) > input$y_max | abs(log2FoldChange) > input$x_max ~ "out",
           TRUE ~ "in"

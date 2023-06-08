@@ -104,6 +104,12 @@ InputServer <- function(id, contrast_act) {
         tmp[[contraste]]$symbol %<>%
           tidy_symbols()
         tmp[[contraste]] <- add_bonferroni(tmp[[contraste]])
+        tmp[[contraste]] <- add_sig_expr(
+          tmp[[contraste]],
+          lfc_filter = 0,
+          pval_filter = 0.05,
+          pval_column = "padj"
+        )
       }
       tmp
     })

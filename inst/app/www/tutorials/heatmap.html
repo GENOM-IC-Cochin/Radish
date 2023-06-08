@@ -3,7 +3,7 @@
 The first one is almost always done with a hierarchical clustering algorithm, at least for the rows. This allows to bring similar genes/samples closer. Here, you can choose whether you want to cluster the columns. The rows are always clustered based on normalized expression (prior to z-score calculation).
 The color mapping is done after <a href="https://en.wikipedia.org/wiki/Standard_score">Z-scoring</a>. This means that cells with the same color, across different lines <em>do not have the same underlying expression values</em>.</p>
 <p> The app allows you to plot your genes of interest, across selected samples. You can choose the variables to display, as well as <em>p-values</em> and LFC thresholds.
-In an alternative mode (accessible under the cog icon of the heatmap box, see video), it also allows you to plot differentially expressed genes of the current contrast, up to 2000 genes. </p>
+In an alternative mode (accessible under the cog icon of the heatmap box, see video), it also allows you to plot differentially expressed genes of the current contrast, up to 2000 genes. You can choose to plot the number of genes you like in this mode, they are ordered by adjusted p value. However, subsetting the list of differentially expressed genes results in losing the FDR control. It is not statistically correct, this mode is then only available for exploration purposes. </p>
 <p>A short video showing these features :</p>
 <video  width="620" controls> <source src="../videos/hm_basics.webm" type="video/webm"> </video>
 </div>
