@@ -195,11 +195,6 @@ VolcanoServer <- function(id,
     
     cur_plot <- eventReactive(input$draw, {
       req(res())
-
-    })
-    
-    output$volcano_plot <- renderPlot({
-      req(plot_data())
       my_volcanoplot(
         plot_data = plot_data(),
         titre = input$plot_title,
@@ -211,6 +206,11 @@ VolcanoServer <- function(id,
         selected_genes = c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids()),
         label_size = input$lab_size
       )
+    })
+    
+    output$volcano_plot <- renderPlot({
+      req(cur_plot())
+      cur_plot()
     })
     
     output$plotly_vp <- plotly::renderPlotly({

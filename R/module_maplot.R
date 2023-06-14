@@ -188,6 +188,7 @@ MAplotServer <- function(id,
     })
     
     output$plot <- renderPlot({
+      req(cur_plot())
       cur_plot()
     })
 
