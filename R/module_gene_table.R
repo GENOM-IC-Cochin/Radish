@@ -61,11 +61,9 @@ GeneTableUI <- function(id) {
 
 GeneTableServer <- function(id,
                             res,
-                            config,
-                            contrast_act) {
+                            config) {
   stopifnot(is.reactive(res))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrast_act))
   moduleServer(id, function(input, output, session){
 
     my_values <- reactiveValues(
@@ -78,7 +76,7 @@ GeneTableServer <- function(id,
     output$outlier <- renderUI({
       req(res())
       nb_na <- res() %>%
-        filter(if_any(padj, ~ is.na(.x))) %>%
+        dplyr::filter(dplyr::if_any(padj, ~ is.na(.x))) %>%
         nrow()
       HTML(paste("<p> <b>",
                  nb_na,
@@ -102,7 +100,7 @@ GeneTableServer <- function(id,
     # Matches the genes given and the rows in the table
     observeEvent({
       input$identifiers
-      genes_table()
+      res()
     },
     {
       req(input$input_type,
@@ -113,7 +111,7 @@ GeneTableServer <- function(id,
 
         gene_ids <- scan(file = input$identifiers$datapath,
                          what = character())
-        my_values$given_genes_rows <- which(genes_table()$Row.names %in% gene_ids)
+        my_values$given_genes_rows <- which(res()$Row.names %in% gene_ids)
 
       } else {
         extension <- tools::file_ext(input$identifiers$name)
@@ -123,7 +121,7 @@ GeneTableServer <- function(id,
                            what = character())
         gg_reg <- paste(gene_names, collapse = "|")
         my_values$given_genes_rows <- grep(gg_reg,
-                                           genes_table()$symbol,
+                                           res()$symbol,
                                            ignore.case = TRUE)
       }
     })
@@ -171,27 +169,16 @@ GeneTableServer <- function(id,
                  "</p>"))
     })
 
+
     # Tables -------------------------------------------------------------------
 
-    genes_table <- eventReactive({
-      res()
-    },{
-      res() %>%
-        # Significant digits (DT function somewhere?)
-        mutate(dplyr::across(where(is.numeric), signif, 3))
-    })
-
-
     sel_genes_table <- eventReactive({
-      genes_table()
+      res()
       # Fourni par DT
       input$genes_rows_selected
     },{
       # res, pour avoir tous les chiffres significatifs?
-        genes_rows <- input$genes_rows_selected
-        res()[genes_rows, ] %>%
-          select(Row.names) %>%
-          inner_join(res(), by = "Row.names")
+      res()[input$genes_rows_selected, ]
     },
     ignoreNULL = FALSE, # in order not to prevent sel_genes_table to return to NULL if the contrast changes
     label = "SEL_GENES"
@@ -203,6 +190,9 @@ GeneTableServer <- function(id,
       which(!(colnames(res()) %in% base_table_columns)) - 1
     })
 
+    numeric_cols <- eventReactive(res(), {
+      which(purrr::map_lgl(res(), is.numeric))
+    })
 
     # Row selection in the DT table
     proxy <- DT::dataTableProxy("genes")
@@ -219,35 +209,37 @@ GeneTableServer <- function(id,
 
 
     # To reset selection if contrast_act() changes
-    observeEvent(contrast_act(), {
+    observeEvent(res(), {
       proxy %>% DT::selectRows(NULL)
     })
 
 
     output$genes <- DT::renderDT(
       expr = {
-        genes_table()
-      },
-      rownames = FALSE,
-      # filter = "top", # ne permet pas de sélectionner abs(x) > 1
-      class = "cell-border stripe hover order-colum",
-      colnames = c("Gene ID" = "Row.names",
-                   "Adjusted p-value" = "padj",
-                   "Mean of normalised counts, all samples" = "baseMean",
-                   "log2(FoldChange)" = "log2FoldChange",
-                   "Gene name" = "symbol",
-                   "Gene description" = "description"),
-      extensions = "Buttons",
-      options = list(scrollX = TRUE,
-                     dom = "Bfrtip",
-                     columnDefs = list(
-                       list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
-                       list(targets = cols_to_hide(), visible = FALSE)
-                     ),
-                     buttons = list(
-                       list(extend = 'colvis', columns = I(':not(.noVis)'))
-                     )),
-      selection = list(target = "row")
+        DT::datatable(
+              res(),
+              rownames = FALSE,
+              # filter = "top", # ne permet pas de sélectionner abs(x) > 1
+              class = "cell-border stripe hover order-colum",
+              colnames = c("Gene ID" = "Row.names",
+                           "Adjusted p-value" = "padj",
+                           "Mean of normalised counts, all samples" = "baseMean",
+                           "log2(FoldChange)" = "log2FoldChange",
+                           "Gene name" = "symbol",
+                           "Gene description" = "description"),
+              extensions = "Buttons",
+              options = list(scrollX = TRUE,
+                             dom = "Bfrtip",
+                             columnDefs = list(
+                               list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
+                               list(targets = cols_to_hide(), visible = FALSE)
+                             ),
+                             buttons = list(
+                               list(extend = 'colvis', columns = I(':not(.noVis)'))
+                             )),
+              selection = list(target = "row")
+            ) %>% DT::formatSignif(numeric_cols(), 3)
+      }
     )
 
 
@@ -260,28 +252,29 @@ GeneTableServer <- function(id,
     output$genes_selected <- DT::renderDT(
       expr = {
         req(sel_genes_table())
-        sel_genes_table() %>%
-          mutate(dplyr::across(where(is.numeric), signif, 3))
-      },
-      rownames = FALSE,
-      class = "cell-border stripe hover order-colum",
-      colnames = c("Gene ID" = "Row.names",
-                   "Adjusted p-value" = "padj",
-                   "Mean of normalised counts, all samples" = "baseMean",
-                   "log2(FoldChange)" = "log2FoldChange",
-                   "Gene name" = "symbol",
-                   "Gene description" = "description"),
-      extensions = "Buttons",
-      options = list(scrollX = TRUE,
-                     dom = "Bfrtip",
-                     columnDefs = list(
-                       list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
-                       list(targets = cols_to_hide(), visible = FALSE)
-                     ),
-                     buttons = list(
-                       list(extend = 'colvis', columns = I(':not(.noVis)'))
-                     )),
-      selection = "none"
+        DT::datatable(
+              sel_genes_table(),
+              rownames = FALSE,
+              class = "cell-border stripe hover order-colum",
+              colnames = c("Gene ID" = "Row.names",
+                           "Adjusted p-value" = "padj",
+                           "Mean of normalised counts, all samples" = "baseMean",
+                           "log2(FoldChange)" = "log2FoldChange",
+                           "Gene name" = "symbol",
+                           "Gene description" = "description"),
+              extensions = "Buttons",
+              options = list(scrollX = TRUE,
+                             dom = "Bfrtip",
+                             columnDefs = list(
+                               list(targets = c(0, 1, 2, 6, 8), className = "noVis"),
+                               list(targets = cols_to_hide(), visible = FALSE)
+                             ),
+                             buttons = list(
+                               list(extend = 'colvis', columns = I(':not(.noVis)'))
+                             )),
+              selection = "none"
+        ) %>% DT::formatSignif(numeric_cols(), 3)
+      }
     )
 
 
@@ -329,8 +322,7 @@ GeneTableApp <- function() {
     GeneTableServer(
       id = "tab",
       res = list_loaded$res,
-      config = list_loaded$config,
-      contrast_act = reactive("1")
+      config = list_loaded$config
     )
   }
   shinyApp(ui, server)

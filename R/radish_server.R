@@ -29,8 +29,7 @@ radish_server <- function(input, output, session) {
   sel_table <- GeneTableServer(
     id = "gntab",
     res = list_loaded$res,
-    config = list_loaded$config,
-    contrast_act = reactive(input$contrast_act) # should be recalculated with change
+    config = list_loaded$config
   )
   CountsServer(
     id = "cnts",
