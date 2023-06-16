@@ -4,6 +4,12 @@ Radish is a GENOM'IC tool for RNA-seq exploration. It uses data processed with G
 
 If you encounter any issue, or have any suggestion, don't hesitate to [contact me](mailto:paul.etheimer@inserm.fr) (English or French)!
 
+
+**Changes in version 1.1.0 !**
+
+All filters (on *p values* or log Fold Change) on lists of Differentially Expressed Genes (DEGs) have been removed : as those list are False Discovery Rate (FDR)-corrected (the [wikipedia page](https://en.wikipedia.org/wiki/False_discovery_rate) is quite complete) for multiple testing, subsetting or intersecting those lists leads to losing the FDR control.
+
+
 **Usage :**
 
 - In the tutorial tab you can access a thorough tutorial on how to use the app.
