@@ -21,27 +21,23 @@ radish_server <- function(input, output, session) {
 
   PcaServer(
     id = "pca",
-    counts = list_loaded$counts,
     config = list_loaded$config,
     txi.rsem = list_loaded$txi.rsem,
     rld = list_loaded$rld
   )
   sel_table <- GeneTableServer(
     id = "gntab",
-    res = list_loaded$res,
-    config = list_loaded$config
+    res = list_loaded$res
   )
   CountsServer(
     id = "cnts",
     counts = list_loaded$counts,
     config = list_loaded$config,
-    contrastes = list_loaded$contrastes,
     sel_genes_table = sel_table
   )
   MAplotServer(
     id = "ma",
     res = list_loaded$res,
-    config = list_loaded$config,
     contrast_act = reactive(input$contrast_act),
     contrastes = list_loaded$contrastes,
     sel_genes_table = sel_table
@@ -49,7 +45,6 @@ radish_server <- function(input, output, session) {
   VolcanoServer(
     id = "vp",
     res = list_loaded$res,
-    config = list_loaded$config,
     contrast_act = reactive(input$contrast_act),
     contrastes = list_loaded$contrastes,
     sel_genes_table = sel_table

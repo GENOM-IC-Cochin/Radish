@@ -60,10 +60,8 @@ GeneTableUI <- function(id) {
 
 
 GeneTableServer <- function(id,
-                            res,
-                            config) {
+                            res) {
   stopifnot(is.reactive(res))
-  stopifnot(is.reactive(config))
   moduleServer(id, function(input, output, session){
 
     my_values <- reactiveValues(
@@ -321,8 +319,7 @@ GeneTableApp <- function() {
     list_loaded <- InputServer("inp", reactive("1"))
     GeneTableServer(
       id = "tab",
-      res = list_loaded$res,
-      config = list_loaded$config
+      res = list_loaded$res
     )
   }
   shinyApp(ui, server)

@@ -91,11 +91,9 @@ CountsUI <- function(id) {
 CountsServer <- function(id,
                          counts,
                          config,
-                         contrastes,
                          sel_genes_table) {
   stopifnot(is.reactive(counts))
   stopifnot(is.reactive(config))
-  stopifnot(is.reactive(contrastes))
   stopifnot(is.reactive(sel_genes_table))
 
   moduleServer(id, function(input, output, session){
@@ -249,7 +247,6 @@ CountsApp <- function() {
     CountsServer(id = "counts",
                  counts = list_loaded$counts,
                   config = list_loaded$config,
-                  contrastes = list_loaded$contrastes,
                   sel_genes_table = reactive(head(list_loaded$res())))
 
   }

@@ -95,11 +95,9 @@ PcaUI <- function(id) {
 # Server -----------------------------------------------------------------------
 
 PcaServer <- function(id,
-                      counts,
                       config,
                       txi.rsem,
                       rld) {
-  stopifnot(is.reactive(counts))
   stopifnot(is.reactive(config))
   stopifnot(is.reactive(txi.rsem))
   stopifnot(is.reactive(rld))
@@ -301,7 +299,6 @@ PcaApp <- function() {
     list_loaded <- InputServer("inp", reactive("1"))
     PcaServer(
       id = "pca1",
-      counts = list_loaded$counts,
       config = list_loaded$config,
       txi.rsem = list_loaded$txi.rsem,
       rld = list_loaded$rld
