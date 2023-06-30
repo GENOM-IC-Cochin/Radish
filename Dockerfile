@@ -1,39 +1,41 @@
-FROM registry.fedoraproject.org/fedora:36
+FROM rocker/r-ver:4.2.3
 LABEL maintainer="Paul Etheimer <paul.etheimer@inserm.fr>"
-RUN dnf -y upgrade && dnf install -y \
+RUN  apt update && \
+    DEBIAN_FRONTEND=noninteractive apt install --yes \
     gcc \
-    gcc-c++ \
-    R-core \
-    R-devel \
-    gnutls-devel \
-    cairo-devel \
-    libXt-devel \
-    openssl-devel \
-    harfbuzz-devel \
+    g++ \
+    libcairo2-dev \
+    libxt-dev \
+    libssl-dev \
+    pandoc \
+    libharfbuzz-dev \
 # for ragg & svglite
-    fontconfig-devel \
-    freetype-devel \
-    fribidi-devel \
-    libjpeg-turbo-devel \
-    libpng-devel \
-    libtiff-devel \
+    libfontconfig1-dev \
+    libfreetype6-dev \
+    libfribidi-dev \
+    libjpeg-dev \
+    libpng-dev \
+    libtiff-dev \
 # for colourpicker
-    zlib-devel \
+    zlib1g-dev \
 # for devtools
-    libcurl-devel \
-    libgit2-devel \
+    libcurl4-openssl-dev \
+    git \
+    libgit2-dev \
 # for DESeq2
-    libxml2-devel \
+    libxml2-dev \
 # for stringr
-    libicu-devel \
-    && dnf clean all
+    libicu-dev && \
+    apt autoremove --yes && \
+    apt clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install renv
-ENV RENV_VERSION 0.16.0
+ENV RENV_VERSION 0.17.3
 RUN R -e "install.packages('remotes', repos = c(CRAN = 'https://cloud.r-project.org'))"
 RUN R -e "remotes::install_github('rstudio/renv@${RENV_VERSION}')"
 RUN groupadd --system app \
-    && adduser --system --gid app app
+    && useradd --system --gid app app
 WORKDIR /home/app
 COPY . .
 RUN chown app:app -R /home/app
