@@ -188,7 +188,11 @@ VolcanoServer <- function(id,
         mutate(outside = case_when(
           -log10(padj) > input$y_max | abs(log2FoldChange) > input$x_max ~ "out",
           TRUE ~ "in"
-        ))
+        )) %>%
+        add_sig_expr(
+              lfc_filter = 1,
+              pval_filter = 0.05
+        )
     })
     
     cur_plot <- eventReactive(input$draw, {
