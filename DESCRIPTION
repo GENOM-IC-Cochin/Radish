@@ -38,6 +38,7 @@ Imports:
     SummarizedExperiment,
     pkgload,
     rprojroot,
-    ComplexUpset
+    ComplexUpset,
+    cluster
 Suggests: 
     shinytest2
