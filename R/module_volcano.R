@@ -64,6 +64,11 @@ VolcanoUI <- function(id) {
                      value = 1,
                      min = 0.5,
                      max = 2
+                   ),
+                   checkboxInput(
+                   inputId = ns("lfc_cut"),
+                   label = "Add vertical dashed lines at lfc = 1 and lfc = -1",
+                   value = TRUE
                    )
                    ),
       bs4Dash::box(title = "Text",
@@ -183,6 +188,7 @@ VolcanoServer <- function(id,
       res()
       input$x_max
       input$y_max
+      input$lfc_cut
     }, {
       res() %>%
         mutate(outside = case_when(
@@ -190,7 +196,7 @@ VolcanoServer <- function(id,
           TRUE ~ "in"
         )) %>%
         add_sig_expr(
-              lfc_filter = 1,
+              lfc_filter = if (input$lfc_cut) 1 else 0,
               pval_filter = 0.05
         )
     })
@@ -206,7 +212,8 @@ VolcanoServer <- function(id,
         ratio = input$ratio,
         theme = input$theme,
         selected_genes = c(genes_selected$sel_genes_names(), genes_selected$sel_genes_ids()),
-        label_size = input$lab_size
+        label_size = input$lab_size,
+        lfc_cutoff = if (input$lfc_cut) 1 else 0
       )
     })
     
@@ -223,7 +230,8 @@ VolcanoServer <- function(id,
         legends = c("up" = input$up_leg, "down" = input$down_leg, "ns" = input$ns_leg),
         axis_max = c(input$x_max, input$y_max),
         ratio = input$ratio,
-        theme = input$theme
+        theme = input$theme,
+        lfc_cutoff = if (input$lfc_cut) 1 else 0
       )
       
       gply <- plotly::ggplotly(p = gg_vp,
