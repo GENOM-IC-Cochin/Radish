@@ -25,7 +25,7 @@ authors:
     email: juliette.hamroune@inserm.fr
     affiliation: 'GENOM''IC, Institut Cochin, CNRS'
 repository-code: 'https://github.com/GENOM-IC-Cochin/Radish'
-repository-artifact: 'https://hub.docker.com/r/paulimer/radish'
+repository-artifact: 'https://hub.docker.com/r/bsgenomique/radish'
 abstract: >-
   Radish is a shiny application for the visualisation
   and analysis of pre-processed RNA-seq data,

@@ -28,6 +28,6 @@ Mais dans tous les cas il ne consiste qu'en 3 lignes dont je ne suis pas certain
 Il doit toujours être exécuté avec `sudo`.
 ```sh
 systemctl stop container-radish.service
-podman pull docker.io/paulimer/radish:latest
+podman pull docker.io/bsgenomique/radish:latest
 systemctl start container-radish.service
 ```

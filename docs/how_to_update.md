@@ -16,5 +16,5 @@ Pour chaque changement introduit dans Radish, il vaut mieux lancer les quelques 
 
 
 ## Reconstruire l'image
-Pour reconstruire l'image de Radish, et la pousser ensuite sur le Docker hub, il faut être loggé comme paulimer (ah oui j'y avais pas pensé).
-Il faut commencer par tagger l'image précédente d'un autre tag et le push s'il on souhaite conserver les deux versions en lignes (```docker tag docker.io/paulimer/radish:latest paulimer/radish:v1.0.0``` puis ```docker push -a paulimer/radish:v1.0.0``` (-a c'est pour all tags)). Ensuite il faut construire l'image : ```docker build -t paulimer/radish .``` qui sera automatiquement taggué latest. Puis enfin il faut pusher ```docker push paulimer/radish```.
+Pour reconstruire l'image de Radish, et la pousser ensuite sur le Docker hub, il faut être loggé comme bsgenomique.
+Il faut commencer par tagger l'image précédente d'un autre tag et le push s'il on souhaite conserver les deux versions en lignes (```docker tag docker.io/bsgenomique/radish:latest bsgenomique/radish:v1.0.0``` puis ```docker push -a bsgenomique/radish:v1.0.0``` (-a c'est pour all tags)). Ensuite il faut construire l'image : ```docker build -t bsgenomique/radish .``` qui sera automatiquement taggué latest. Puis enfin il faut pusher ```docker push bsgenomique/radish```.

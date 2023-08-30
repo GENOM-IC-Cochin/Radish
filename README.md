@@ -34,12 +34,12 @@ Installation is only available through docker for now.
 -   First, install Docker : <https://docs.docker.com/get-docker/>
 -   Then run (on Windows, use the command prompt):
     
-        docker pull paulimer/radish
-        docker run -dp 80:3838 --rm paulimer/radish
+        docker pull bsgenomique/radish
+        docker run -dp 80:3838 --rm bsgenomique/radish
 -   Access the app through your usual web navigator (Chromium-based, there is an issue with Firefox and the tutorial videos), at the adress <http://localhost/>.
 -   Load your `result.rds` file in the **Data** tab
 -   Explore!
--   Don't forget to stop the container image afterwards!
+-   Don't forget to stop the container afterwards!
 
 
 <a id="orga7464b0"></a>
